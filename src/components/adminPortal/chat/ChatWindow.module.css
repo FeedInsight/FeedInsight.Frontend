@@ -1,0 +1,14 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 140px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-md);
+}

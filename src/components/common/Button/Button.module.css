@@ -1,0 +1,42 @@
+/* src/components/common/Button/Button.module.css
+   Scoped styles for Button. Reference design tokens from
+   src/assets/styles/variables.css (e.g. var(--color-primary)) — do not
+   hardcode color/spacing values here. */
+
+.button {
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.primary {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.secondary {
+  background-color: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.danger {
+  background-color: var(--color-danger);
+  color: var(--color-on-primary);
+}
+
+.ghost {
+  background-color: transparent;
+  color: var(--color-text);
+}
+
+.sm { padding: 6px 12px; font-size: 13px; }
+.md { padding: 10px 16px; font-size: 14px; }
+.lg { padding: 12px 20px; font-size: 16px; }
