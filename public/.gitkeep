@@ -1,0 +1,3 @@
+Place static assets that must be served as-is (favicon.ico, robots.txt,
+tenant logos fallback) here. Anything imported from src/assets instead goes
+through the Vite build pipeline (hashing, optimization).

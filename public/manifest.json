@@ -1,9 +1,0 @@
-{
-  "short_name": "FeedInsight",
-  "name": "FeedInsight - AI-Powered Product Intelligence",
-  "icons": [],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#0F172A",
-  "background_color": "#ffffff"
-}

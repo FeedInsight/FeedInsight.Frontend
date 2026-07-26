@@ -1,29 +1,15 @@
+import AppProviders from '@app/providers/AppProviders.jsx'
+import AppRouter from '@router/AppRouter.jsx'
+
 /**
- * src/App.jsx
- * ----------------------------------------------------------------------------
- * Top-level component. Responsibilities ONLY:
- *   - Render <AppRoutes /> (src/routes/AppRoutes.jsx).
- *   - Render the single global <ToastContainer /> (src/components/common/Toast)
- *     so toasts triggered from ANYWHERE (customer portal, admin portal, api
- *     interceptors) can render above everything else.
- *   - Optionally render a top-level error boundary wrapper.
- *
- * Do NOT add page markup, headers, sidebars here — those are portal-specific
- * and live inside src/components/adminPortal/layout/AdminLayout.jsx or are
- * simply absent for the public Customer Portal pages.
- * ----------------------------------------------------------------------------
+ * Root component. Composition root only: wrap the router with every global
+ * provider (React Query client, toast portal, future theme/i18n providers).
+ * Do not add routes, layout markup, or fetching logic in this file.
  */
-import React from "react";
-import AppRoutes from "./routes/AppRoutes";
-import ToastContainer from "./components/common/Toast/ToastContainer";
-
-function App() {
+export default function App() {
   return (
-    <>
-      <AppRoutes />
-      <ToastContainer />
-    </>
-  );
+    <AppProviders>
+      <AppRouter />
+    </AppProviders>
+  )
 }
-
-export default App;
