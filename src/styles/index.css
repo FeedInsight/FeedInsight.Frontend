@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Global style layer. Rules of thumb for this project:
+ *  - Prefer Tailwind utility classes directly in JSX. Only add rules here
+ *    for things Tailwind cannot express cleanly (custom scrollbars,
+ *    third-party widget overrides, @font-face, print styles).
+ *  - Component-specific one-off tweaks belong next to the component using
+ *    a CSS module or inline classes, never appended to this file.
+ */
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 antialiased;
+}
+
+/* Scrollbar styling for the AI Product Assistant chat thread and long
+   backlog review lists. */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full;
+}
