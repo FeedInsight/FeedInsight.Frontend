@@ -10,6 +10,7 @@ export const ROUTES = {
 
   // Auth
   login: '/login',
+  register: '/register',
 
   // Admin Portal
   adminDashboard: '/admin/dashboard',

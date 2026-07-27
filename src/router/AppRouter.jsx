@@ -9,6 +9,7 @@ import AdminLayout from '@shared/layouts/AdminLayout.jsx'
 
 import CustomerFeedbackPage from '@features/customerPortal/pages/CustomerFeedbackPage.jsx'
 import LoginPage from '@features/auth/pages/LoginPage.jsx'
+import RegisterPage from '@features/auth/pages/RegisterPage.jsx'
 import DashboardPage from '@features/dashboard/pages/DashboardPage.jsx'
 import CategoriesPage from '@features/categories/pages/CategoriesPage.jsx'
 import BacklogReviewPage from '@features/backlog/pages/BacklogReviewPage.jsx'
@@ -41,6 +42,7 @@ export default function AppRouter() {
       {/* --- Auth --- */}
       <Route element={<AuthLayout />}>
         <Route path={ROUTES.login} element={<LoginPage />} />
+        <Route path={ROUTES.register} element={<RegisterPage />} />
       </Route>
 
       {/* --- Admin Portal (JWT-protected) --- */}
