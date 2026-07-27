@@ -10,6 +10,7 @@ export const ROUTES = {
 
   // Auth
   login: '/login',
+  register: '/register',
 
   // Admin Portal
   adminDashboard: '/admin/dashboard',
@@ -19,4 +20,6 @@ export const ROUTES = {
   adminAssistant: '/admin/assistant',
   adminUsers: '/admin/users',
   adminSettings: '/admin/settings',
+  jiraIntegrationSettings: '/workspace/settings/integrations',
+  apiSettings: '/workspace/api-settings',
 }

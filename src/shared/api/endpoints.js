@@ -10,57 +10,66 @@
 export const ENDPOINTS = {
   // --- Public / Customer Portal (no auth, requires X-Tenant-Id) ---
   feedback: {
-    submit: '/public/feedback', // POST multipart/form-data -> SubmitFeedbackCommand
+    submit: '/api/Ingestion/feedback', // POST -> SubmitFeedbackCommand
   },
 
   // --- Auth (Admin Portal) ---
   auth: {
-    login: '/auth/login', // POST { email, password } -> { token, user }
-    me: '/auth/me', // GET current session user
+    login: '/api/Auth/login', // POST -> LoginCommand
+    refresh: '/api/Auth/refresh', // POST -> RefreshTokenCommand
+    logout: '/api/Auth/logout', // POST -> LogoutCommand
+    register: '/api/Auth/register', // POST -> RegisterProductOwnerCommand
+    registerAdmin: '/api/Auth/register-admin', // POST -> RegisterUserCommand
+    me: '/api/Profile/me', // PUT -> UpdateProfileCommand (not GET)
   },
 
   // --- Dashboard / Analytics ---
   analytics: {
-    dailySnapshots: '/analytics/daily-snapshots', // GET ?from=&to=
+    dailySnapshots: '/analytics/daily-snapshots', // TODO: not in current API spec
   },
 
   // --- Categories ---
   categories: {
-    list: '/categories', // GET
-    create: '/categories', // POST
-    update: (id) => `/categories/${id}`, // PUT
-    remove: (id) => `/categories/${id}`, // DELETE (soft delete)
+    list: '/api/Categories', // TODO: not in current API spec
+    create: '/api/Categories', // TODO: not in current API spec
+    update: (id) => `/api/Categories/${id}`, // TODO: not in current API spec
+    remove: (id) => `/api/Categories/${id}`, // TODO: not in current API spec
   },
 
   // --- Backlog Review Workspace ---
   stories: {
-    listDrafts: '/stories/draft', // GET -> GetDraftStoriesQuery
-    detail: (id) => `/stories/${id}`, // GET
-    approve: (id) => `/stories/${id}/approve`, // POST -> ApproveStoryCommandHandler
-    reject: (id) => `/stories/${id}/reject`, // POST
-    publishToJira: (id) => `/stories/${id}/publish`, // POST -> triggers Jira issue creation
-    duplicates: (id) => `/stories/${id}/duplicates`, // GET -> Qdrant K-NN matches
+    listDrafts: '/api/Stories/draft', // TODO: not in current API spec
+    detail: (id) => `/api/Stories/${id}`, // TODO: not in current API spec
+    approve: (id) => `/api/Stories/${id}/approve`, // TODO: not in current API spec
+    reject: (id) => `/api/Stories/${id}/reject`, // TODO: not in current API spec
+    publishToJira: (id) => `/api/Stories/${id}/publish`, // TODO: not in current API spec
+    duplicates: (id) => `/api/Stories/${id}/duplicates`, // TODO: not in current API spec
   },
 
   // --- AI Product Assistant (Chat) ---
   chat: {
-    sessions: '/chat/sessions', // GET (list), POST (create)
-    sessionMessages: (sessionId) => `/chat/sessions/${sessionId}/messages`, // GET, POST -> SendAssistantMessageCommand
-    clearSession: (sessionId) => `/chat/sessions/${sessionId}`, // DELETE -> ClearHistoryCommandHandler
+    sessions: '/api/Chat/sessions', // TODO: not in current API spec
+    sessionMessages: (sessionId) => `/api/Chat/sessions/${sessionId}/messages`, // TODO: not in current API spec
+    clearSession: (sessionId) => `/api/Chat/sessions/${sessionId}`, // TODO: not in current API spec
   },
 
   // --- Tenant Settings (Jira connection) ---
   tenant: {
-    settings: '/tenant/settings', // GET, PUT
-    testJiraConnection: '/tenant/settings/jira/test', // POST
-    regenerateWebhookSecret: '/tenant/settings/jira/webhook-secret', // POST
+    settings: '/api/Tenants/my-company', // PUT -> UpdateTenantCommand
+    testJiraConnection: '/api/Tenants/my-company/jira-config', // TODO: not in current API spec
+    regenerateWebhookSecret: '/api/Tenants/my-company/jira-config', // TODO: not in current API spec
+    configureJiraIntegration: '/api/Tenants/my-company/jira-config', // POST -> TODO: not in current API spec
+  },
+
+  apiSettings: {
+    ingestionKeys: '/api/Tenants/my-company/api-keys', // GET
   },
 
   // --- Admin Users ---
   adminUsers: {
-    list: '/admin-users', // GET
-    invite: '/admin-users/invite', // POST
-    updateRole: (id) => `/admin-users/${id}/role`, // PUT
-    deactivate: (id) => `/admin-users/${id}/deactivate`, // POST
+    list: '/api/Users/product-owners', // GET
+    invite: '/api/Tenants/my-company/owners', // POST -> CreateTenantOwnerCommand
+    updateRole: (id) => `/api/Users/${id}/role`, // TODO: not in current API spec
+    deactivate: (id) => `/api/Users/${id}/lock`, // POST -> LockUserRequest
   },
 }
