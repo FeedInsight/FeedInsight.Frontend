@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import InputField from '../components/InputField'
-import toast from './../../node_modules/react-hot-toast/src/index'
+import { useRegister } from '../hooks/useRegister.js'
 
 const initialFormData = {
   companyName: '',
-  adminName: '',
+  firstName: '',
+  lastName: '',
   workEmail: '',
   password: '',
 }
@@ -12,6 +13,7 @@ const initialFormData = {
 export default function RegisterPage() {
   const [formData, setFormData] = useState(initialFormData)
   const [errors, setErrors] = useState({})
+  const { mutate, isPending } = useRegister()
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -31,10 +33,12 @@ export default function RegisterPage() {
       newErrors.companyName = 'Company name is required'
     }
 
-    if (!formData.adminName.trim()) {
-      newErrors.adminName = 'Full name is required'
-    } else if (formData.adminName.trim().length < 3) {
-      newErrors.adminName = 'Full name must be at least 3 characters'
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required'
+    }
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required'
     }
 
     if (!formData.workEmail.trim()) {
@@ -62,77 +66,96 @@ export default function RegisterPage() {
     }
 
     setErrors({})
-    toast.success('Account Created Successfully!')
-    //// ROUTING
-    //  navigate("/login or dashboard");
-    console.log(formData)
+
+    const payload = {
+      companyName: formData.companyName.trim(),
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      email: formData.workEmail.trim().toLowerCase(),
+      password: formData.password,
+    }
+
+    mutate(payload)
   }
 
   return (
     <>
-      <div className="flex min-h-screen items-center justify-center bg-[#fbfcff]">
-        <div className="flex w-[45%] flex-col justify-center rounded-xl bg-white px-12 py-8 shadow-lg shadow-slate-200/60">
+      <div className="flex flex-col gap-3">
+        <div>
           <div className="text-3xl font-bold mb-1 text-[#111827]">Create your account</div>
-          <div className="text-l mb-5 text-[#6B7280]">
+          <div className="text-lg mb-5 text-[#6B7280]">
             Join thousands of enterprises optimizing their feedback loops
           </div>
-          <form className="mb-4 w-full" onSubmit={handleSubmit} noValidate>
-            <InputField
-              label="Company Name"
-              type="text"
-              name="companyName"
-              placeholder="Enter Company Name"
-              value={formData.companyName}
-              onChange={handleChange}
-              error={errors.companyName}
-              required
-            />
-            <div className="flex w-full flex-col gap-2 sm:flex-row">
-              <div className="min-w-0 flex-1">
-                <InputField
-                  label="Admin Full Name"
-                  type="text"
-                  name="adminName"
-                  placeholder="Example Name"
-                  value={formData.adminName}
-                  onChange={handleChange}
-                  error={errors.adminName}
-                  required
-                />
-              </div>
-              <div className="min-w-0 flex-1">
-                <InputField
-                  label="Work Email"
-                  type="email"
-                  name="workEmail"
-                  placeholder="example@company.com"
-                  value={formData.workEmail}
-                  onChange={handleChange}
-                  error={errors.workEmail}
-                  required
-                />
-              </div>
+        </div>
+
+        <form className="w-full" onSubmit={handleSubmit} noValidate>
+          <InputField
+            label="Company Name"
+            type="text"
+            name="companyName"
+            placeholder="Enter Company Name"
+            value={formData.companyName}
+            onChange={handleChange}
+            error={errors.companyName}
+            required
+          />
+          <div className="flex w-full flex-col gap-2 sm:flex-row">
+            <div className="min-w-0 flex-1">
+              <InputField
+                label="First Name"
+                type="text"
+                name="firstName"
+                placeholder="Admin First Name"
+                value={formData.firstName}
+                onChange={handleChange}
+                error={errors.firstName}
+                required
+              />
             </div>
-            <InputField
-              label="Password"
-              type="password"
-              name="password"
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={handleChange}
-              error={errors.password}
-              required
-            />
-            <button
-              type="submit"
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-primary/90"
-            >
-              Create account
-            </button>
-          </form>
-          <div className="text-sm flex justify-center text-[#6B7280]">
-            By signing up, you agree to our Terms and Privacy Policy.
+            <div className="min-w-0 flex-1">
+              <InputField
+                label="Last Name"
+                type="text"
+                name="lastName"
+                placeholder="Admin Last Name"
+                value={formData.lastName}
+                onChange={handleChange}
+                error={errors.lastName}
+                required
+              />
+            </div>
           </div>
+          <InputField
+            label="Work Email"
+            type="email"
+            name="workEmail"
+            placeholder="example@company.com"
+            value={formData.workEmail}
+            onChange={handleChange}
+            error={errors.workEmail}
+            required
+          />
+          <InputField
+            label="Password"
+            type="password"
+            name="password"
+            placeholder="••••••••"
+            value={formData.password}
+            onChange={handleChange}
+            error={errors.password}
+            required
+          />
+          <button
+            type="submit"
+            disabled={isPending}
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-primary/60"
+          >
+            {isPending ? 'Creating account...' : 'Create account'}
+          </button>
+        </form>
+
+        <div className="text-sm flex justify-center text-[#6B7280]">
+          By signing up, you agree to our Terms and Privacy Policy.
         </div>
       </div>
     </>

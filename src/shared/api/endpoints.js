@@ -15,8 +15,9 @@ export const ENDPOINTS = {
 
   // --- Auth (Admin Portal) ---
   auth: {
-    login: '/auth/login', // POST { email, password } -> { token, user }
-    me: '/auth/me', // GET current session user
+    login: '/Auth/login', // POST { email, password } -> { token, user }
+    register: '/Auth/register',
+    me: '/Auth/me', // GET current session user
   },
 
   // --- Dashboard / Analytics ---

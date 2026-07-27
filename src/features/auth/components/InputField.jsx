@@ -6,7 +6,7 @@ const InputField = ({ label, error, ...props }) => {
 
   return (
     <div className="mb-4 flex w-full flex-col gap-2">
-      <label htmlFor={props.name} className="text-l font-bold text-[#374151]">
+      <label htmlFor={props.name} className="text-sm font-bold text-[#374151]">
         {label}
       </label>
 
