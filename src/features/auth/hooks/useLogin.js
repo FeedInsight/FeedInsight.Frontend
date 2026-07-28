@@ -7,9 +7,7 @@ import { useTenantStore } from '@app/store/tenantStore.js'
 import { ROUTES } from '@router/routes.js'
 
 /** Backing hook for LoginForm. On success: hydrate authStore + tenantStore
- * together (tenant comes from the logged-in user's TenantId, per
- * tenantStore.js's documented resolution strategy for the Admin Portal),
- * then redirect into the app. */
+ * together when the backend returns a token/user payload. */
 export function useLogin() {
   const navigate = useNavigate()
   const setSession = useAuthStore((s) => s.setSession)
@@ -17,10 +15,19 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: login,
-    onSuccess: ({ token, user }) => {
-      setSession(token, user)
-      setTenant(user.tenantId)
-      navigate(ROUTES.adminDashboard)
+    onSuccess: (result) => {
+      const token = result?.token || result?.accessToken
+      const user = result?.user || result?.profile || result
+      if (token && user) {
+        setSession(token, user)
+        setTenant(user.tenantId || user.tenant?.id || user.tenantId || 'demo-tenant')
+        navigate(ROUTES.adminDashboard)
+        toast.success('Signed in successfully')
+        return
+      }
+
+      toast.success('Signed in successfully')
+      navigate(ROUTES.login)
     },
     onError: () => {
       toast.error('Invalid email or password.')
