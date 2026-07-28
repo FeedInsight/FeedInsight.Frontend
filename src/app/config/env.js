@@ -7,8 +7,7 @@
  */
 const required = (key, value) => {
   if (value === undefined || value === '') {
-    // eslint-disable-next-line no-console
-    console.warn(`[env] Missing expected environment variable: ${key}`)
+    throw new Error(`[env] Missing expected environment variable: ${key}`)
   }
   return value
 }

@@ -15,12 +15,9 @@ export const ENDPOINTS = {
 
   // --- Auth (Admin Portal) ---
   auth: {
-    login: '/api/Auth/login', // POST -> LoginCommand
-    refresh: '/api/Auth/refresh', // POST -> RefreshTokenCommand
-    logout: '/api/Auth/logout', // POST -> LogoutCommand
-    register: '/api/Auth/register', // POST -> RegisterProductOwnerCommand
-    registerAdmin: '/api/Auth/register-admin', // POST -> RegisterUserCommand
-    me: '/api/Profile/me', // PUT -> UpdateProfileCommand (not GET)
+    login: '/Auth/login', // POST { email, password } -> { token, user }
+    register: '/Auth/register',
+    me: '/Auth/me', // GET current session user
   },
 
   // --- Dashboard / Analytics ---

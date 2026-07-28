@@ -25,21 +25,11 @@ export async function login(credentials) {
 }
 
 /**
- * @param {{ companyName: string, firstName: string, lastName: string, email: string, password: string }} payload
+ * @param {{ companyName: string, firstName: string, lastName: string, email: string, password: string }} registrationData
+ * @returns {Promise<{ token: string, user: { id, tenantId, fullName, email, role } }>}
  */
-export async function register(payload) {
-  if (env.isDev || env.useMocks) {
-    return {
-      success: true,
-      message: 'Demo registration successful',
-      user: {
-        fullName: `${payload?.firstName || 'Demo'} ${payload?.lastName || 'User'}`.trim(),
-        email: payload?.email || 'demo@example.com',
-      },
-    }
-  }
-
-  const { data } = await axiosClient.post(ENDPOINTS.auth.register, payload)
+export async function register(registrationData) {
+  const { data } = await axiosClient.post(ENDPOINTS.auth.register, registrationData)
   return data
 }
 
