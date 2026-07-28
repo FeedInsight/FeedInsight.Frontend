@@ -4,6 +4,7 @@ import {
   fetchTenantSettings,
   updateTenantSettings,
   testJiraConnection,
+  configureJiraIntegration,
   regenerateWebhookSecret,
 } from '@features/tenantSettings/api/tenantApi.js'
 import { QUERY_KEYS } from '@app/config/constants.js'
@@ -28,6 +29,20 @@ export function useTestJiraConnection() {
     mutationFn: testJiraConnection,
     onSuccess: (result) => {
       result?.success ? toast.success('Jira connection OK') : toast.error('Jira connection failed')
+    },
+  })
+}
+
+export function useConfigureJiraIntegration() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: configureJiraIntegration,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tenantSettings })
+      toast.success('Jira integration saved')
+    },
+    onError: () => {
+      toast.error('Failed to save Jira integration')
     },
   })
 }
