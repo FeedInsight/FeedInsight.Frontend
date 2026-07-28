@@ -18,6 +18,8 @@ import StoryDetailPage from '@features/backlog/pages/StoryDetailPage.jsx'
 import AssistantPage from '@features/chat/pages/AssistantPage.jsx'
 import AdminUsersPage from '@features/adminUsers/pages/AdminUsersPage.jsx'
 import TenantSettingsPage from '@features/tenantSettings/pages/TenantSettingsPage.jsx'
+import JiraIntegrationPage from '@features/tenantSettings/pages/JiraIntegrationPage.jsx'
+import ApiSettingsPage from '@features/apiSettings/pages/ApiSettingsPage.jsx'
 
 /**
  * Single route table for the whole app. Both portals are registered in one

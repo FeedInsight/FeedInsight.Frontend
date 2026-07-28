@@ -1,14 +1,25 @@
 import { axiosClient } from '@shared/api/axiosClient.js'
 import { ENDPOINTS } from '@shared/api/endpoints.js'
+import { env } from '@app/config/env.js'
 
 /**
  * @param {{ email: string, password: string }} credentials
- * @returns {Promise<{ token: string, user: { id, tenantId, fullName, email, role } }>}
- * Expected to match AdminUsers table fields + a signed JWT. The JWT's
- * `tenantId` claim is what gets pushed into tenantStore right after login
- * (see useLogin.js) so every subsequent request is scoped correctly.
+ * @returns {Promise<{ token?: string, user?: { id?: string, tenantId?: string, fullName?: string, email?: string, role?: string }, refreshToken?: string }>} 
  */
 export async function login(credentials) {
+  if (env.isDev || env.useMocks) {
+    return {
+      token: 'demo-token',
+      user: {
+        id: 'demo-user',
+        tenantId: 'demo-tenant',
+        fullName: credentials?.email?.split('@')[0] || 'Demo User',
+        email: credentials?.email || 'demo@example.com',
+        role: 'Owner',
+      },
+    }
+  }
+
   const { data } = await axiosClient.post(ENDPOINTS.auth.login, credentials)
   return data
 }
@@ -24,6 +35,16 @@ export async function register(registrationData) {
 
 /** Re-validates an existing token / refreshes `user` on app reload. */
 export async function fetchCurrentUser() {
-  const { data } = await axiosClient.get(ENDPOINTS.auth.me)
+  if (env.isDev || env.useMocks) {
+    return {
+      id: 'demo-user',
+      tenantId: 'demo-tenant',
+      fullName: 'Demo User',
+      email: 'demo@example.com',
+      role: 'Owner',
+    }
+  }
+
+  const { data } = await axiosClient.put(ENDPOINTS.auth.me, {})
   return data
 }

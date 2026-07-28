@@ -7,9 +7,7 @@ import { useTenantStore } from '@app/store/tenantStore.js'
 import { ROUTES } from '@router/routes.js'
 
 /** Backing hook for LoginForm. On success: hydrate authStore + tenantStore
- * together (tenant comes from the logged-in user's TenantId, per
- * tenantStore.js's documented resolution strategy for the Admin Portal),
- * then redirect into the app. */
+ * together when the backend returns a token/user payload. */
 export function useLogin() {
   const navigate = useNavigate()
   const setSession = useAuthStore((s) => s.setSession)

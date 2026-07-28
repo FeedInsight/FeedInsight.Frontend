@@ -20,4 +20,6 @@ export const ROUTES = {
   adminAssistant: '/admin/assistant',
   adminUsers: '/admin/users',
   adminSettings: '/admin/settings',
+  jiraIntegrationSettings: '/workspace/settings/integrations',
+  apiSettings: '/workspace/api-settings',
 }
