@@ -1,7 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ROUTES } from './routes.js'
 import ProtectedRoute from './ProtectedRoute.jsx'
-import { CAN_MANAGE_TENANT_SETTINGS, CAN_MANAGE_ADMIN_USERS } from '@shared/constants/roles.js'
+import { CAN_MANAGE_TENANT_SETTINGS } from '@shared/constants/roles.js'
+import { CAN_MANAGE_ADMIN_USERS } from '@shared/constants/roles.js'
 
 import CustomerLayout from '@shared/layouts/CustomerLayout.jsx'
 import AuthLayout from '@shared/layouts/AuthLayout.jsx'
@@ -47,21 +48,21 @@ export default function AppRouter() {
 
       {/* --- Admin Portal (JWT-protected) --- */}
       <Route element={<ProtectedRoute />}>
-        <Route element={<AdminLayout />}>
-          <Route path={ROUTES.adminDashboard} element={<DashboardPage />} />
-          <Route path={ROUTES.adminCategories} element={<CategoriesPage />} />
-          <Route path={ROUTES.adminBacklog} element={<BacklogReviewPage />} />
-          <Route path={ROUTES.adminStoryDetail} element={<StoryDetailPage />} />
-          <Route path={ROUTES.adminAssistant} element={<AssistantPage />} />
+      <Route element={<AdminLayout />}>
+        <Route path={ROUTES.adminDashboard} element={<DashboardPage />} />
+        <Route path={ROUTES.adminCategories} element={<CategoriesPage />} />
+        <Route path={ROUTES.adminBacklog} element={<BacklogReviewPage />} />
+        <Route path={ROUTES.adminStoryDetail} element={<StoryDetailPage />} />
+        <Route path={ROUTES.adminAssistant} element={<AssistantPage />} />
 
-          <Route element={<ProtectedRoute requiredRoles={CAN_MANAGE_ADMIN_USERS} />}>
-            <Route path={ROUTES.adminUsers} element={<AdminUsersPage />} />
-          </Route>
-
-          <Route element={<ProtectedRoute requiredRoles={CAN_MANAGE_TENANT_SETTINGS} />}>
-            <Route path={ROUTES.adminSettings} element={<TenantSettingsPage />} />
-          </Route>
+        <Route element={<ProtectedRoute requiredRoles={CAN_MANAGE_ADMIN_USERS} />}>
+        <Route path={ROUTES.adminUsers} element={<AdminUsersPage />} />
         </Route>
+
+        <Route element={<ProtectedRoute requiredRoles={CAN_MANAGE_TENANT_SETTINGS} />}>
+          <Route path={ROUTES.adminSettings} element={<TenantSettingsPage />} />
+        </Route>
+      </Route>
       </Route>
 
       <Route path="/" element={<Navigate to={ROUTES.adminDashboard} replace />} />

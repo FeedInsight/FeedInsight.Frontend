@@ -64,4 +64,16 @@ export const ENDPOINTS = {
     updateRole: (id) => `/admin-users/${id}/role`, // PUT
     deactivate: (id) => `/admin-users/${id}/deactivate`, // POST
   },
+
+  // --- Users (Product Owners) ---
+  users: {
+    productOwners: '/Users/product-owners',
+    lock: (id) => `/Users/${id}/lock`,
+    unlock: (id) => `/Users/${id}/unlock`,
+  },
+
+  // --- Tenants ---
+  tenants: {
+    lookup: '/Tenants/lookup', // GET
+  },
 }

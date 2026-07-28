@@ -13,13 +13,19 @@ export default function Table({ className, children }) {
 }
 
 Table.Head = function TableHead({ children }) {
-  return <thead className="border-b border-slate-200 text-xs uppercase text-slate-500">{children}</thead>
+  return (
+    <thead className="border-b border-slate-200 text-xs uppercase text-slate-500">{children}</thead>
+  )
 }
 
 Table.Row = function TableRow({ children, className }) {
   return <tr className={cn('border-b border-slate-100 last:border-0', className)}>{children}</tr>
 }
 
-Table.Cell = function TableCell({ children, className, as: Tag = 'td' }) {
-  return <Tag className={cn('px-3 py-2.5', className)}>{children}</Tag>
+Table.Cell = function TableCell({ children, className, as: Tag = 'td', ...props }) {
+  return (
+    <Tag className={cn('px-3 py-2.5', className)} {...props}>
+      {children}
+    </Tag>
+  )
 }
