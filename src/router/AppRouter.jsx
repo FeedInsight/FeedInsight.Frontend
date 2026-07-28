@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ROUTES } from './routes.js'
 import ProtectedRoute from './ProtectedRoute.jsx'
-import { CAN_MANAGE_TENANT_SETTINGS } from '@shared/constants/roles.js'
+import { CAN_MANAGE_TENANT_SETTINGS, CAN_VIEW_ALL_TENANTS } from '@shared/constants/roles.js'
 import { CAN_MANAGE_ADMIN_USERS } from '@shared/constants/roles.js'
 
 import CustomerLayout from '@shared/layouts/CustomerLayout.jsx'
@@ -20,6 +20,7 @@ import AdminUsersPage from '@features/adminUsers/pages/AdminUsersPage.jsx'
 import TenantSettingsPage from '@features/tenantSettings/pages/TenantSettingsPage.jsx'
 import JiraIntegrationPage from '@features/tenantSettings/pages/JiraIntegrationPage.jsx'
 import ApiSettingsPage from '@features/apiSettings/pages/ApiSettingsPage.jsx'
+import TenantsDirectoryPage from '@features/tenantsDirectory/pages/TenantsDirectoryPage.jsx'
 
 /**
  * Single route table for the whole app. Both portals are registered in one
@@ -50,26 +51,29 @@ export default function AppRouter() {
 
       {/* --- Admin Portal (JWT-protected) --- */}
       <Route element={<ProtectedRoute />}>
-      <Route element={<AdminLayout />}>
-        <Route path={ROUTES.adminDashboard} element={<DashboardPage />} />
-        <Route path={ROUTES.adminCategories} element={<CategoriesPage />} />
-        <Route path={ROUTES.adminBacklog} element={<BacklogReviewPage />} />
-        <Route path={ROUTES.adminStoryDetail} element={<StoryDetailPage />} />
-        <Route path={ROUTES.adminAssistant} element={<AssistantPage />} />
+        <Route element={<AdminLayout />}>
+          <Route path={ROUTES.adminDashboard} element={<DashboardPage />} />
+          <Route path={ROUTES.adminCategories} element={<CategoriesPage />} />
+          <Route path={ROUTES.adminBacklog} element={<BacklogReviewPage />} />
+          <Route path={ROUTES.adminStoryDetail} element={<StoryDetailPage />} />
+          <Route path={ROUTES.adminAssistant} element={<AssistantPage />} />
 
-        <Route element={<ProtectedRoute requiredRoles={CAN_MANAGE_ADMIN_USERS} />}>
-        <Route path={ROUTES.adminUsers} element={<AdminUsersPage />} />
-        </Route>
+          <Route element={<ProtectedRoute requiredRoles={CAN_MANAGE_ADMIN_USERS} />}>
+            <Route path={ROUTES.adminUsers} element={<AdminUsersPage />} />
+          </Route>
+          <Route element={<ProtectedRoute requiredRoles={CAN_VIEW_ALL_TENANTS} />}>
+            <Route path={ROUTES.tenantsDirectory} element={<TenantsDirectoryPage />} />
+          </Route>
 
-        <Route element={<ProtectedRoute requiredRoles={CAN_MANAGE_TENANT_SETTINGS} />}>
-          <Route path={ROUTES.adminSettings} element={<TenantSettingsPage />} />
           <Route element={<ProtectedRoute requiredRoles={CAN_MANAGE_TENANT_SETTINGS} />}>
             <Route path={ROUTES.adminSettings} element={<TenantSettingsPage />} />
-            <Route path={ROUTES.jiraIntegrationSettings} element={<JiraIntegrationPage />} />
-            <Route path={ROUTES.apiSettings} element={<ApiSettingsPage />} />
+            <Route element={<ProtectedRoute requiredRoles={CAN_MANAGE_TENANT_SETTINGS} />}>
+              <Route path={ROUTES.adminSettings} element={<TenantSettingsPage />} />
+              <Route path={ROUTES.jiraIntegrationSettings} element={<JiraIntegrationPage />} />
+              <Route path={ROUTES.apiSettings} element={<ApiSettingsPage />} />
+            </Route>
           </Route>
         </Route>
-      </Route>
       </Route>
 
       <Route path="/" element={<Navigate to={ROUTES.adminDashboard} replace />} />
