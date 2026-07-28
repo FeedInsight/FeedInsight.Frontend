@@ -22,6 +22,11 @@ export async function testJiraConnection() {
   return data
 }
 
+export async function configureJiraIntegration(payload) {
+  const { data } = await axiosClient.post(ENDPOINTS.tenant.configureJiraIntegration, payload)
+  return data
+}
+
 /** Rotates JiraWebhookSecret; backend returns the new plaintext secret
  * exactly once for the admin to copy into their Jira webhook config. */
 export async function regenerateWebhookSecret() {
