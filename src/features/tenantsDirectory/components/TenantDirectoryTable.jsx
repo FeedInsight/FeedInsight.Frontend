@@ -8,9 +8,11 @@ import SearchBar from '@shared/components/ui/SearchBar.jsx'
 import TablePagination from '@shared/components/ui/TablePagination.jsx'
 import { useDebounce } from '@shared/hooks/useDebounce'
 import { usePagination } from '@shared/hooks/usePagination'
+import Badge from '@shared/components/ui/Badge'
 
 const TenantDirectoryTable = () => {
   const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
   const debouncedSearchTerm = useDebounce(searchTerm, 300)
 
   const { page, pageSize, params, setPage, nextPage, prevPage } = usePagination(10)
@@ -25,9 +27,14 @@ const TenantDirectoryTable = () => {
 
   useEffect(() => {
     setPage(1)
-  }, [debouncedSearchTerm, setPage])
+  }, [debouncedSearchTerm, statusFilter, setPage])
 
-  const tenants = data?.data ?? []
+  const allTenants = data?.data ?? []
+
+  const tenants =
+    statusFilter === 'all'
+      ? allTenants
+      : allTenants.filter((tenant) => tenant.status === statusFilter)
 
   const totalItems = data?.pagination?.totalItems ?? 0
   const hasNextPage = data?.pagination?.hasNextPage ?? false
@@ -47,15 +54,28 @@ const TenantDirectoryTable = () => {
     )
   }
 
-  const hasActiveFilters = Boolean(debouncedSearchTerm)
+  const hasActiveFilters = Boolean(debouncedSearchTerm) || statusFilter !== 'all'
 
   return (
     <div className="flex flex-col gap-4">
-      <SearchBar
-        value={searchTerm}
-        onChange={(event) => setSearchTerm(event.target.value)}
-        placeholder="Search by company name..."
-      />
+      <div className="flex flex-col gap-4 py-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 w-full max-w-3xl">
+          <SearchBar
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            placeholder="Search by company name..."
+          />
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none"
+          >
+            <option value="all">All status</option>
+            <option value="Active">Active</option>
+            <option value="Suspended">Suspended</option>
+          </select>
+        </div>
+      </div>
 
       <Table>
         <Table.Head>
@@ -65,20 +85,44 @@ const TenantDirectoryTable = () => {
             </Table.Cell>
             <Table.Cell as="th">Company Name</Table.Cell>
             <Table.Cell as="th">Tenant ID</Table.Cell>
+            <Table.Cell as="th">Status</Table.Cell>
+            <Table.Cell as="th">Created At</Table.Cell>
           </Table.Row>
         </Table.Head>
         <tbody>
           {tenants.length > 0 ? (
             tenants.map((tenant, index) => (
               <Table.Row key={tenant.id}>
-                <Table.Cell className="text-slate-400">{rangeStart + index}</Table.Cell>
-                <Table.Cell className="font-medium text-slate-900">{tenant.companyName}</Table.Cell>
-                <Table.Cell className="font-mono text-xs text-slate-400">{tenant.id}</Table.Cell>
+                <Table.Cell className="text-slate-400">{rangeStart + index ?? 0}</Table.Cell>
+                <Table.Cell className="font-medium text-slate-900">
+                  {tenant.companyName ?? 'Unknown Company'}
+                </Table.Cell>
+                <Table.Cell className="font-mono text-xs text-slate-400">
+                  {tenant.id ?? 'Unknown ID'}
+                </Table.Cell>
+                <Table.Cell>
+                  <Badge
+                    className={
+                      tenant.status === 'Active'
+                        ? 'bg-emerald-100 text-emerald-700'
+                        : 'bg-red-100 text-red-700'
+                    }
+                  >
+                    {tenant.status ?? 'Unknown Status'}
+                  </Badge>
+                </Table.Cell>
+                <Table.Cell className="text-sm text-slate-500">
+                  {tenant.createdAt
+                    ? new Date(tenant.createdAt).toLocaleDateString('en-US', {
+                        dateStyle: 'medium',
+                      })
+                    : 'Unknown Date'}
+                </Table.Cell>
               </Table.Row>
             ))
           ) : (
             <Table.Row>
-              <Table.Cell colSpan={3} className="text-center py-10 text-sm text-slate-500">
+              <Table.Cell colSpan={5} className="text-center py-10 text-sm text-slate-500">
                 {isLoading ? (
                   <div className="flex justify-center items-center py-4">
                     <Spinner size={24} className="text-slate-400" />
