@@ -42,6 +42,7 @@ export const QUERY_KEYS = {
   chatSessions: ['chat', 'sessions'],
   chatMessages: (sessionId) => ['chat', 'sessions', sessionId, 'messages'],
   tenantSettings: ['tenant', 'settings'],
+  apiSettings: ['api', 'settings'],
   adminUsers: ['admin-users'],
   tenantsLookup: ['tenants', 'lookup'],
 }
