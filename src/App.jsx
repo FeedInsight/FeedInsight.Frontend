@@ -1,5 +1,6 @@
 import AppProviders from '@app/providers/AppProviders.jsx'
 import AppRouter from '@router/AppRouter.jsx'
+import { Toaster } from 'react-hot-toast'
 
 /**
  * Root component. Composition root only: wrap the router with every global
@@ -8,8 +9,11 @@ import AppRouter from '@router/AppRouter.jsx'
  */
 export default function App() {
   return (
-    <AppProviders>
-      <AppRouter />
-    </AppProviders>
+    <>
+      <Toaster position="top-right" />
+      <AppProviders>
+        <AppRouter />
+      </AppProviders>
+    </>
   )
 }

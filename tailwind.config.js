@@ -13,6 +13,9 @@ export default {
           600: '#4338ca',
           700: '#3730a3',
         },
+        primary: {
+          DEFAULT: '#1D4ED8',
+        },
         status: {
           draft: '#94a3b8',
           approved: '#22c55e',

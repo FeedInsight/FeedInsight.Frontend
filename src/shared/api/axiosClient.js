@@ -23,8 +23,11 @@ export const axiosClient = axios.create({
  * the tenant header.
  */
 axiosClient.interceptors.request.use((config) => {
+  const requestUrl = (config.url ?? '').toLowerCase()
+  const isAuthRoute = requestUrl.startsWith('/auth/')
   const tenantId = useTenantStore.getState().tenantId || env.devTenantId
-  if (tenantId) {
+
+  if (!isAuthRoute && tenantId) {
     config.headers[HTTP_HEADERS.TENANT_ID] = tenantId
   }
 
