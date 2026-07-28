@@ -22,4 +22,6 @@ export const ROUTES = {
   adminSettings: '/admin/settings',
   jiraIntegrationSettings: '/workspace/settings/integrations',
   apiSettings: '/workspace/api-settings',
+
+  tenantsDirectory: '/super-admin/tenants',
 }

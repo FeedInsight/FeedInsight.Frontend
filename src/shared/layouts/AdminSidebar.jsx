@@ -1,5 +1,15 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Tags, ListChecks, MessageSquare, Settings, Users, Plug, KeyRound } from 'lucide-react'
+import {
+  LayoutDashboard,
+  Tags,
+  ListChecks,
+  MessageSquare,
+  Settings,
+  Users,
+  Plug,
+  KeyRound,
+  Building,
+} from 'lucide-react'
 import { cn } from '@shared/utils/classNames.js'
 import { useUiStore } from '@app/store/uiStore.js'
 
@@ -15,6 +25,7 @@ const NAV_ITEMS = [
   { to: '/admin/backlog', label: 'Backlog Review', icon: ListChecks },
   { to: '/admin/assistant', label: 'AI Assistant', icon: MessageSquare },
   { to: '/admin/users', label: 'Admin Users', icon: Users },
+  { to: '/super-admin/tenants', label: 'Tenants Directory', icon: Building },
   { to: '/admin/settings', label: 'Tenant Settings', icon: Settings },
   { to: '/workspace/settings/integrations', label: 'Jira Integration', icon: Plug },
   { to: '/workspace/api-settings', label: 'API Settings', icon: KeyRound },
