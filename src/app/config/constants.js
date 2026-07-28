@@ -6,7 +6,7 @@
 // Matches AdminUsers.Role in the SQL schema. Keep these string values in
 // exact sync with the backend enum/check-constraint.
 export const ADMIN_ROLES = {
-  OWNER: 'Owner',
+  OWNER: 'SuperAdmin',
   PRODUCT_MANAGER: 'ProductManager',
   VIEWER: 'Viewer',
 }
@@ -43,6 +43,7 @@ export const QUERY_KEYS = {
   chatMessages: (sessionId) => ['chat', 'sessions', sessionId, 'messages'],
   tenantSettings: ['tenant', 'settings'],
   adminUsers: ['admin-users'],
+  tenantsLookup: ['tenants', 'lookup'],
 }
 
 export const HTTP_HEADERS = {
