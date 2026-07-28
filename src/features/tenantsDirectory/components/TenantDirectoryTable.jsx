@@ -9,10 +9,14 @@ import TablePagination from '@shared/components/ui/TablePagination.jsx'
 import { useDebounce } from '@shared/hooks/useDebounce'
 import { usePagination } from '@shared/hooks/usePagination'
 import Badge from '@shared/components/ui/Badge'
+import ChangeTenantStatusModal from './ChangeTenantStatusModal'
+import Button from '@shared/components/ui/Button'
 
 const TenantDirectoryTable = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [selectedTenant, setSelectedTenant] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const debouncedSearchTerm = useDebounce(searchTerm, 300)
 
   const { page, pageSize, params, setPage, nextPage, prevPage } = usePagination(10)
@@ -58,7 +62,7 @@ const TenantDirectoryTable = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-4 py-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 w-full max-w-3xl">
           <SearchBar
             value={searchTerm}
@@ -87,6 +91,9 @@ const TenantDirectoryTable = () => {
             <Table.Cell as="th">Tenant ID</Table.Cell>
             <Table.Cell as="th">Status</Table.Cell>
             <Table.Cell as="th">Created At</Table.Cell>
+            <Table.Cell as="th" className="text-right">
+              Actions
+            </Table.Cell>
           </Table.Row>
         </Table.Head>
         <tbody>
@@ -118,11 +125,27 @@ const TenantDirectoryTable = () => {
                       })
                     : 'Unknown Date'}
                 </Table.Cell>
+                <Table.Cell className="text-right">
+                  <Button
+                    size="sm"
+                    className={
+                      tenant.status === 'Active'
+                        ? 'bg-red-600 text-white hover:bg-red-700'
+                        : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                    }
+                    onClick={() => {
+                      setSelectedTenant(tenant)
+                      setIsModalOpen(true)
+                    }}
+                  >
+                    {tenant.status === 'Active' ? 'Suspend' : 'Activate'}
+                  </Button>
+                </Table.Cell>
               </Table.Row>
             ))
           ) : (
             <Table.Row>
-              <Table.Cell colSpan={5} className="text-center py-10 text-sm text-slate-500">
+              <Table.Cell colSpan={6} className="text-center py-10 text-sm text-slate-500">
                 {isLoading ? (
                   <div className="flex justify-center items-center py-4">
                     <Spinner size={24} className="text-slate-400" />
@@ -151,6 +174,12 @@ const TenantDirectoryTable = () => {
         onNext={nextPage}
         onPrevious={prevPage}
         isLoading={isLoading}
+      />
+
+      <ChangeTenantStatusModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        tenant={selectedTenant}
       />
     </div>
   )

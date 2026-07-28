@@ -77,6 +77,7 @@ export const ENDPOINTS = {
 
   // --- Tenants ---
   tenants: {
-    lookup: '/Tenants/lookup', // GET
+    lookup: '/Tenants/lookup',
+    updateStatus: (id) => `/Tenants/${id}/status`,
   },
 }
