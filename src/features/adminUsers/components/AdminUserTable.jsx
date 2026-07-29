@@ -13,12 +13,14 @@ import {
 } from '@features/adminUsers/hooks/useAdminUsers.js'
 import InviteUserModal from './InviteUserModal.jsx'
 import SearchBar from './SearchBar'
+import LockConfirmModal from './LockConfirmModal.jsx';
 
 export default function AdminUserTable() {
   const [isInviteOpen, setIsInviteOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTenantId, setSelectedTenantId] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [pendingLockUser, setPendingLockUser] = useState(null)
   const debouncedSearchTerm = useDebounce(searchTerm, 300)
   const { page, pageSize, params, setPage, nextPage, prevPage } = usePagination(5)
 
@@ -32,8 +34,6 @@ export default function AdminUserTable() {
   })
   const { toggleActiveState } = useAdminUserMutations()
 
-  // Reset to page 1 whenever any filter changes, so we don't request a page
-  // that no longer exists for the new filtered result set.
   useEffect(() => {
     setPage(1)
   }, [debouncedSearchTerm, selectedTenantId, statusFilter, setPage])
@@ -52,11 +52,31 @@ export default function AdminUserTable() {
   const rangeStart = users.length > 0 ? (page - 1) * pageSize + 1 : 0
   const rangeEnd = (page - 1) * pageSize + users.length
 
+
   const pendingUserId = toggleActiveState.isPending ? toggleActiveState.variables?.id : null
 
-  const handleToggleLock = (user) => {
+
+  const handleUnlock = (user) => {
     const id = user.userId ?? user.id
-    toggleActiveState.mutate({ id, isActive: !user.isLocked })
+    toggleActiveState.mutate({ id, isActive: false })
+  }
+
+  const handleRequestLock = (user) => {
+    setPendingLockUser(user)
+  }
+
+  const handleConfirmLock = () => {
+    if (!pendingLockUser) return
+    const id = pendingLockUser.userId ?? pendingLockUser.id
+    toggleActiveState.mutate(
+      { id, isActive: true },
+      { onSuccess: () => setPendingLockUser(null) },
+    )
+  }
+
+  const handleCancelLock = () => {
+    if (toggleActiveState.isPending) return
+    setPendingLockUser(null)
   }
 
   return (
@@ -153,7 +173,7 @@ export default function AdminUserTable() {
                   </Table.Cell>
                   <Table.Cell className="text-right">
                     <button
-                      onClick={() => handleToggleLock(user)}
+                      onClick={() => (isLocked ? handleUnlock(user) : handleRequestLock(user))}
                       disabled={isRowPending}
                       aria-label={isLocked ? 'Unlock user' : 'Lock user'}
                       title={isLocked ? 'Unlock user' : 'Lock user'}
@@ -202,6 +222,14 @@ export default function AdminUserTable() {
       </div>
 
       <InviteUserModal isOpen={isInviteOpen} onClose={() => setIsInviteOpen(false)} />
+
+      <LockConfirmModal
+        isOpen={Boolean(pendingLockUser)}
+        email={pendingLockUser?.email}
+        isSubmitting={toggleActiveState.isPending && pendingUserId === (pendingLockUser?.userId ?? pendingLockUser?.id)}
+        onConfirm={handleConfirmLock}
+        onCancel={handleCancelLock}
+      />
     </div>
   )
 }
