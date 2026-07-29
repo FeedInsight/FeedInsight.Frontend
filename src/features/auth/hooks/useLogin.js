@@ -4,12 +4,12 @@ import toast from 'react-hot-toast'
 import { login } from '@features/auth/api/authApi.js'
 import { useAuthStore } from '@app/store/authStore.js'
 import { useTenantStore } from '@app/store/tenantStore.js'
-import { ROUTES } from '@router/routes.js'
+import { getDashboardRouteForRole } from '@shared/utils/roleUtils.js'
 
 /** Backing hook for LoginForm. On success: hydrate authStore + tenantStore
  * together (tenant comes from the logged-in user's TenantId, per
  * tenantStore.js's documented resolution strategy for the Admin Portal),
- * then redirect into the app. */
+ * then redirect into the app based on the user's RBAC role. */
 export function useLogin() {
   const navigate = useNavigate()
   const setSession = useAuthStore((s) => s.setSession)
@@ -90,7 +90,10 @@ export function useLogin() {
       } else {
         console.warn('Login response has no tenantId; tenant header will not be set.')
       }
-      navigate(ROUTES.adminDashboard)
+
+      const targetRoute = getDashboardRouteForRole(user.role)
+      toast.success('Logged in successfully!')
+      navigate(targetRoute)
     },
     onError: (error) => {
       const responseData = error?.response?.data
@@ -99,8 +102,7 @@ export function useLogin() {
         responseData?.message ||
         responseData?.detail ||
         (typeof responseData === 'string' ? responseData : null) ||
-        'Login failed. Please check your details and try again.'
-      toast.error('Invalid email or password.')
+        'Login failed. Please check your credentials and try again.'
       console.error('Login error:', error)
       toast.error(message)
     },

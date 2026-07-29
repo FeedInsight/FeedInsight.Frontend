@@ -38,7 +38,6 @@ export function useRegister() {
         (typeof responseData === 'string' ? responseData : null) ||
         'Registration failed. Please check your details and try again.'
 
-      // eslint-disable-next-line no-console
       console.error('Registration error:', error)
       toast.error(message)
     },

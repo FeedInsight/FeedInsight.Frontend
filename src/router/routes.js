@@ -14,6 +14,8 @@ export const ROUTES = {
 
   // Admin Portal
   adminDashboard: '/admin/dashboard',
+  workspaceDashboard: '/workspace/dashboard',
+  superAdminDashboard: '/super-admin/dashboard',
   adminCategories: '/admin/categories',
   adminBacklog: '/admin/backlog',
   adminStoryDetail: '/admin/backlog/:storyId',
