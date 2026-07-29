@@ -13,9 +13,10 @@ export async function fetchProductOwners(params = {}) {
   if (params.tenantId) {
     queryParams.TenantId = params.tenantId
   }
-  // if (params.status) {
-  //   queryParams.Status = params.status
-  // }
+  if (params.status) {
+    queryParams.IsActive = params.status === 'active' ? true : false
+    console.log(queryParams.IsActive)
+  }
 
   const response = await axiosClient.get(ENDPOINTS.users.productOwners, { params: queryParams })
   const payload = response.data
