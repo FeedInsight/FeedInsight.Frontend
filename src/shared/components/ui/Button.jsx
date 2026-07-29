@@ -1,15 +1,5 @@
 import { cn } from '@shared/utils/classNames.js'
 
-/**
- * Base button used everywhere in both portals. Only extend this component's
- * `variant`/`size` maps for new visual styles -- do not create parallel
- * one-off `<button className="...">` elements in feature components.
- *
- * Props:
- *  - variant: 'primary' | 'secondary' | 'danger' | 'ghost'
- *  - size: 'sm' | 'md' | 'lg'
- *  - isLoading: boolean -> disables button and shows inline spinner text
- */
 const VARIANTS = {
   primary: 'bg-brand-600 text-white hover:bg-brand-700 disabled:bg-brand-300',
   secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50',
