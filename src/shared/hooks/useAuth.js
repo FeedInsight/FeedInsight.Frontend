@@ -1,4 +1,6 @@
 import { useAuthStore } from '@app/store/authStore.js'
+import { useTenantStore } from '@app/store/tenantStore.js'
+import { logout as apiLogout } from '@features/auth/api/authApi.js'
 
 /**
  * Thin convenience wrapper around authStore for components that only need
@@ -8,5 +10,13 @@ import { useAuthStore } from '@app/store/authStore.js'
  */
 export function useAuth() {
   const { user, token, isAuthenticated, setSession, clearSession } = useAuthStore()
-  return { user, token, isAuthenticated, setSession, clearSession }
+  const clearTenant = useTenantStore((s) => s.clearTenant)
+
+  const logout = async () => {
+    await apiLogout()
+    clearSession()
+    clearTenant()
+  }
+
+  return { user, token, isAuthenticated, setSession, clearSession, logout }
 }

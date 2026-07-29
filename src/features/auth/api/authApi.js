@@ -22,6 +22,15 @@ export async function register(registrationData) {
   return data
 }
 
+/** Calls server logout endpoint to invalidate active session. */
+export async function logout() {
+  try {
+    await axiosClient.post(ENDPOINTS.auth.logout)
+  } catch (error) {
+    console.warn('Backend logout call failed or endpoint unavailable:', error)
+  }
+}
+
 /** Re-validates an existing token / refreshes `user` on app reload. */
 export async function fetchCurrentUser() {
   const { data } = await axiosClient.get(ENDPOINTS.auth.me)
