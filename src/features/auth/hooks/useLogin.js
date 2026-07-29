@@ -92,17 +92,8 @@ export function useLogin() {
       }
       navigate(ROUTES.adminDashboard)
     },
-    onError: (error) => {
-      const responseData = error?.response?.data
-      const message =
-        responseData?.title ||
-        responseData?.message ||
-        responseData?.detail ||
-        (typeof responseData === 'string' ? responseData : null) ||
-        'Login failed. Please check your details and try again.'
+    onError: () => {
       toast.error('Invalid email or password.')
-      console.error('Login error:', error)
-      toast.error(message)
     },
   })
 }

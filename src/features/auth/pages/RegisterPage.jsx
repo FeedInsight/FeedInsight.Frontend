@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import InputField from '../components/InputField'
+import Button from '@shared/components/ui/Button.jsx'
 import { useRegister } from '../hooks/useRegister.js'
 
 const initialFormData = {
@@ -145,13 +146,15 @@ export default function RegisterPage() {
             error={errors.password}
             required
           />
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            size="lg"
             disabled={isPending}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-5 py-3.5 text-sm font-semibold text-white transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:bg-primary/60"
+            className="w-full mt-2"
           >
             {isPending ? 'Creating account...' : 'Create account'}
-          </button>
+          </Button>
         </form>
 
         <div className="text-sm flex justify-center text-[#6B7280]">
