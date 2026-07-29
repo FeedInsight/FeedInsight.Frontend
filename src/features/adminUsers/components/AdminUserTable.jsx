@@ -12,8 +12,9 @@ import {
   useAdminUserMutations,
 } from '@features/adminUsers/hooks/useAdminUsers.js'
 import InviteUserModal from './InviteUserModal.jsx'
-import SearchBar from './SearchBar'
 import LockConfirmModal from './LockConfirmModal.jsx';
+import SearchBar from '@shared/components/ui/SearchBar.jsx'
+import TablePagination from '@shared/components/ui/TablePagination.jsx'
 
 export default function AdminUserTable() {
   const [isInviteOpen, setIsInviteOpen] = useState(false)
@@ -87,7 +88,7 @@ export default function AdminUserTable() {
             <SearchBar
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              className="w-full"
+              placeholder="Search by name, email, or company..."
             />
             {isFetching ? <Spinner className="text-slate-500" size={18} /> : null}
           </div>
@@ -203,23 +204,16 @@ export default function AdminUserTable() {
         </tbody>
       </Table>
 
-      <div className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-sm text-slate-500">
-          Showing {rangeStart} - {rangeEnd} of {totalItems}
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            onClick={prevPage}
-            disabled={!hasPreviousPage || isLoading || isFetching}
-          >
-            Previous
-          </Button>
-          <Button size="sm" onClick={nextPage} disabled={!hasNextPage || isLoading || isFetching}>
-            Next
-          </Button>
-        </div>
-      </div>
+      <TablePagination
+        rangeStart={rangeStart}
+        rangeEnd={rangeEnd}
+        totalItems={totalItems}
+        hasNextPage={hasNextPage}
+        hasPreviousPage={hasPreviousPage}
+        onNext={nextPage}
+        onPrevious={prevPage}
+        isLoading={isLoading || isFetching}
+      />
 
       <InviteUserModal isOpen={isInviteOpen} onClose={() => setIsInviteOpen(false)} />
 
