@@ -10,9 +10,6 @@ export function useStoryDetail(storyId) {
   })
 }
 
-/** Separate query (not merged into useStoryDetail) because duplicate
- * matches are a heavier Qdrant call the reviewer may not always need to
- * see immediately -- DuplicateMatchPanel can lazy-load this on expand. */
 export function useStoryDuplicates(storyId) {
   return useQuery({
     queryKey: [...QUERY_KEYS.story(storyId), 'duplicates'],

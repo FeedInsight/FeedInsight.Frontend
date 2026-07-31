@@ -8,13 +8,10 @@ import {
 import { QUERY_KEYS } from '@app/config/constants.js'
 import { useUiStore } from '@app/store/uiStore.js'
 
-/** List of ChatSessions for ChatSessionList's sidebar. */
 export function useChatSessions() {
   return useQuery({ queryKey: QUERY_KEYS.chatSessions, queryFn: fetchChatSessions })
 }
 
-/** Message thread for the currently active session (see uiStore's
- * activeChatSessionId). Disabled until a session is selected/created. */
 export function useChatMessages(sessionId) {
   return useQuery({
     queryKey: QUERY_KEYS.chatMessages(sessionId),
@@ -23,8 +20,6 @@ export function useChatMessages(sessionId) {
   })
 }
 
-/** Creates a session and immediately marks it active in uiStore so
- * ChatWindow switches to it without an extra selection step. */
 export function useCreateChatSession() {
   const queryClient = useQueryClient()
   const setActiveChatSessionId = useUiStore((s) => s.setActiveChatSessionId)

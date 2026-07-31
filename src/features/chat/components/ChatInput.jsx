@@ -2,9 +2,6 @@ import { useState } from 'react'
 import { Send } from 'lucide-react'
 import Button from '@shared/components/ui/Button.jsx'
 
-/** Bottom input bar for ChatWindow. Kept uncontrolled-by-parent (owns its
- * own draft text state) and only calls onSend with the final string, so
- * ChatWindow doesn't re-render on every keystroke. */
 export default function ChatInput({ onSend, isSending }) {
   const [value, setValue] = useState('')
 

@@ -1,8 +1,6 @@
 import { forwardRef } from 'react'
 import { cn } from '@shared/utils/classNames.js'
 
-/** Multi-line counterpart to Input.jsx -- used by FeedbackForm (customer
- * complaint text) and AcceptanceCriteriaEditor (Given-When-Then editing). */
 const Textarea = forwardRef(({ label, error, className, id, rows = 5, ...props }, ref) => {
   return (
     <div className="flex flex-col gap-1">

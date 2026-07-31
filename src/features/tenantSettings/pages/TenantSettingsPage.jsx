@@ -3,8 +3,6 @@ import WebhookSecretDisplay from '@features/tenantSettings/components/WebhookSec
 import Card from '@shared/components/ui/Card.jsx'
 import { env } from '@app/config/env.js'
 
-/** Only reachable by roles in CAN_MANAGE_TENANT_SETTINGS (enforced by
- * ProtectedRoute in router/AppRouter.jsx). */
 export default function TenantSettingsPage() {
   return (
     <div className="flex max-w-xl flex-col gap-6">

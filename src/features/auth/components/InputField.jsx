@@ -1,35 +1,38 @@
-import { useState } from "react";
+import React, { useState } from 'react'
 
-const InputField = ({ label, error, ...props }) => {
-  const [showPassword, setShowPassword] = useState(false);
-  const isPassword = props.type === "password";
+const InputField = React.forwardRef(({ label, error, ...props }, ref) => {
+  const [showPassword, setShowPassword] = useState(false)
+  const isPassword = props.type === 'password'
 
   return (
     <div className="mb-4 flex w-full flex-col gap-2">
-      <label htmlFor={props.name} className="text-sm font-bold text-[#374151]">
-        {label}
-      </label>
+      {label && (
+        <label htmlFor={props.name} className="text-sm font-bold text-[#374151]">
+          {label}
+        </label>
+      )}
 
       <div
         className={`flex items-center rounded-lg border px-4 py-3 focus-within:bg-white ${
           error
-            ? "border-red-500 focus-within:border-red-500"
-            : "border-[#D1D5DB] focus-within:border-primary"
+            ? 'border-red-500 focus-within:border-red-500'
+            : 'border-[#D1D5DB] focus-within:border-primary'
         }`}
       >
         <input
           {...props}
+          ref={ref}
           id={props.name}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${props.name}-error` : undefined}
-          type={isPassword && showPassword ? "text" : props.type}
+          type={isPassword && showPassword ? 'text' : props.type}
           className="w-full bg-transparent text-sm outline-none placeholder:text-[#D1D5DB]"
         />
         {isPassword && (
           <button
             type="button"
             onClick={() => setShowPassword((visible) => !visible)}
-            aria-label={showPassword ? "Hide password" : "Show password"}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
             className="text-[#6B7280] transition hover:text-[#374151]"
           >
             {showPassword ? (
@@ -77,7 +80,9 @@ const InputField = ({ label, error, ...props }) => {
         </p>
       )}
     </div>
-  );
-};
+  )
+})
 
-export default InputField;
+InputField.displayName = 'InputField'
+
+export default InputField
