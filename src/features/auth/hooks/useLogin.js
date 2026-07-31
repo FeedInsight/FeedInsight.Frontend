@@ -6,10 +6,6 @@ import { useAuthStore } from '@app/store/authStore.js'
 import { useTenantStore } from '@app/store/tenantStore.js'
 import { getDashboardRouteForRole } from '@shared/utils/roleUtils.js'
 
-/** Backing hook for LoginForm. On success: hydrate authStore + tenantStore
- * together (tenant comes from the logged-in user's TenantId, per
- * tenantStore.js's documented resolution strategy for the Admin Portal),
- * then redirect into the app based on the user's RBAC role. */
 export function useLogin() {
   const navigate = useNavigate()
   const setSession = useAuthStore((s) => s.setSession)

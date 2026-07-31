@@ -4,8 +4,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Brand palette used across both portals. Keep these as the single
-        // source of truth for color -- do not hardcode hex values in components.
         brand: {
           50: '#eff6ff',
           100: '#dbeafe',

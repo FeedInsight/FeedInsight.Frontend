@@ -1,7 +1,5 @@
 import { cn } from '@shared/utils/classNames.js'
 
-/** Consistent "nothing here yet" block for empty lists: no draft stories,
- * no chat sessions, no admin users besides the current one, etc. */
 export default function EmptyState({ icon: Icon, title, description, action, className }) {
   return (
     <div className={cn('flex flex-col items-center justify-center gap-2 py-12 text-center', className)}>

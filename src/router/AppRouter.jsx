@@ -36,12 +36,6 @@ function HomeRedirect() {
   return <Navigate to={getDashboardRouteForRole(user?.role)} replace />
 }
 
-/**
- * Single route table for the whole app. Both portals are registered in one
- * project as required, but stay visually and behaviorally separate through
- * their layouts: CustomerLayout (public) vs AdminLayout (behind
- * ProtectedRoute).
- */
 export default function AppRouter() {
   return (
     <Routes>
@@ -65,7 +59,7 @@ export default function AppRouter() {
 
           {/* Super Admin Dashboard Route */}
           <Route element={<RoleGuard allowedRoles={CAN_VIEW_ALL_TENANTS} />}>
-            <Route path={ROUTES.superAdminDashboard} element={<TenantsDirectoryPage />} />
+            <Route path={ROUTES.superAdminDashboard} element={<DashboardPage />} />
           </Route>
 
           <Route path={ROUTES.adminCategories} element={<CategoriesPage />} />

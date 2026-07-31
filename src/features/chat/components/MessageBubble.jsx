@@ -2,8 +2,6 @@ import { cn } from '@shared/utils/classNames.js'
 import { CHAT_SENDER_ROLE } from '@app/config/constants.js'
 import { formatRelative } from '@shared/utils/formatDate.js'
 
-/** Renders one CHATMESSAGES row. Alignment/color flips based on
- * SenderRole so the thread reads like a normal chat UI. */
 export default function MessageBubble({ message }) {
   const isUser = message.senderRole === CHAT_SENDER_ROLE.USER
 

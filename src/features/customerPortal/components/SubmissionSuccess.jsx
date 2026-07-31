@@ -1,8 +1,5 @@
 import { CheckCircle2 } from 'lucide-react'
 
-/** Shown after a successful FeedbackForm submit. Stateless confirmation --
- * the Customer Portal never shows the user how their feedback was
- * classified (that's Admin Portal territory). */
 export default function SubmissionSuccess({ onSubmitAnother }) {
   return (
     <div className="flex flex-col items-center gap-3 py-10 text-center">
