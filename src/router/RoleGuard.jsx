@@ -3,21 +3,20 @@ import { useAuth } from '@shared/hooks/useAuth.js'
 import { getDashboardRouteForRole } from '@shared/utils/roleUtils.js'
 
 /**
- * Route guard for every /admin/*, /workspace/*, and /super-admin/* screen.
- * Redirects to /login when there is no valid session.
+ * Role-based route guard for RBAC.
+ * Checks if the logged-in user's role is included in `allowedRoles`.
+ * If unauthorized, redirects the user to their role-appropriate dashboard.
  *
- * `requiredRoles` is an optional escape hatch for pages (Tenant Settings,
- * Admin Users, Super Admin Tenants Directory) that should be inaccessible outright
- * for unauthorized roles.
+ * @param {{ allowedRoles: string[] }} props
  */
-export default function ProtectedRoute({ requiredRoles }) {
+export default function RoleGuard({ allowedRoles }) {
   const { isAuthenticated, user } = useAuth()
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
 
-  if (requiredRoles && !requiredRoles.includes(user?.role)) {
+  if (allowedRoles && !allowedRoles.includes(user?.role)) {
     const fallbackRoute = getDashboardRouteForRole(user?.role)
     return <Navigate to={fallbackRoute} replace />
   }

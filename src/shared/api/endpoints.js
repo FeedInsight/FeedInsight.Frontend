@@ -15,8 +15,12 @@ export const ENDPOINTS = {
 
   // --- Auth (Admin Portal) ---
   auth: {
-    login: '/auth/login', // POST { email, password } -> { token, user }
-    me: '/auth/me', // GET current session user
+    login: '/Auth/login', // POST { email, password } -> { token, user }
+    register: '/Auth/register',
+    refresh: '/api/Auth/refresh', // POST -> RefreshTokenCommand
+    logout: '/api/Auth/logout', // POST -> LogoutCommand
+    registerAdmin: '/api/Auth/register-admin', // POST -> RegisterUserCommand
+    me: '/api/Profile/me', // PUT -> UpdateProfileCommand (not GET)
   },
 
   // --- Dashboard / Analytics ---
@@ -62,5 +66,18 @@ export const ENDPOINTS = {
     invite: '/admin-users/invite', // POST
     updateRole: (id) => `/admin-users/${id}/role`, // PUT
     deactivate: (id) => `/admin-users/${id}/deactivate`, // POST
+  },
+
+  // --- Users (Product Owners) ---
+  users: {
+    productOwners: '/Users/product-owners',
+    lock: (id) => `/Users/${id}/lock`,
+    unlock: (id) => `/Users/${id}/unlock`,
+  },
+
+  // --- Tenants ---
+  tenants: {
+    lookup: '/Tenants/lookup',
+    updateStatus: (id) => `/Tenants/${id}/status`,
   },
 }

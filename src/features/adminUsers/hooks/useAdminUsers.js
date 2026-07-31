@@ -1,20 +1,38 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import {
-  fetchAdminUsers,
+  fetchProductOwners,
+  fetchTenantLookup,
   inviteAdminUser,
   updateAdminUserRole,
-  deactivateAdminUser,
+  lockUser,
+  unlockUser,
 } from '@features/adminUsers/api/adminUsersApi.js'
 import { QUERY_KEYS } from '@app/config/constants.js'
 
-export function useAdminUsers() {
-  return useQuery({ queryKey: QUERY_KEYS.adminUsers, queryFn: fetchAdminUsers })
+export function useProductOwners({ searchTerm, tenantId, status, page, pageSize }) {
+  return useQuery({
+    queryKey: [
+      ...QUERY_KEYS.adminUsers,
+      'productOwners',
+      { searchTerm, tenantId, status, page, pageSize },
+    ],
+    queryFn: () => fetchProductOwners({ searchTerm, tenantId, status, page, pageSize }),
+    keepPreviousData: true,
+  })
+}
+
+export function useTenantLookup() {
+  return useQuery({
+    queryKey: QUERY_KEYS.tenantsLookup,
+    queryFn: fetchTenantLookup,
+  })
 }
 
 export function useAdminUserMutations() {
   const queryClient = useQueryClient()
-  const invalidate = () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.adminUsers })
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.adminUsers, exact: false })
 
   const invite = useMutation({
     mutationFn: inviteAdminUser,
@@ -29,13 +47,13 @@ export function useAdminUserMutations() {
     onSuccess: invalidate,
   })
 
-  const deactivate = useMutation({
-    mutationFn: deactivateAdminUser,
+  const toggleActiveState = useMutation({
+    mutationFn: ({ id, isActive }) => (isActive ? lockUser(id) : unlockUser(id)),
     onSuccess: () => {
       invalidate()
-      toast.success('User deactivated')
+      toast.success('User state updated')
     },
   })
 
-  return { invite, updateRole, deactivate }
+  return { invite, updateRole, toggleActiveState }
 }

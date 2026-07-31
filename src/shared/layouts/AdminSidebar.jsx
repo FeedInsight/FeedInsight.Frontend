@@ -1,25 +1,49 @@
 import { NavLink } from 'react-router-dom'
-import { LayoutDashboard, Tags, ListChecks, MessageSquare, Settings, Users } from 'lucide-react'
+import {
+  LayoutDashboard,
+  Tags,
+  ListChecks,
+  MessageSquare,
+  Settings,
+  Users,
+  Plug,
+  KeyRound,
+  Building,
+} from 'lucide-react'
 import { cn } from '@shared/utils/classNames.js'
 import { useUiStore } from '@app/store/uiStore.js'
+import { useAuth } from '@shared/hooks/useAuth.js'
+import {
+  CAN_MANAGE_ADMIN_USERS,
+  CAN_VIEW_ALL_TENANTS,
+  CAN_MANAGE_TENANT_SETTINGS,
+} from '@shared/constants/roles.js'
+import { ROUTES } from '@router/routes.js'
 
 /**
  * Left navigation for the Admin Portal Control Center. Each entry maps 1:1
  * to a feature's top-level page route registered in router/routes.js.
- * Add a new entry here whenever a new admin feature page is added -- routes
- * that shouldn't appear in nav (e.g. StoryDetailPage) stay out of this list.
  */
 const NAV_ITEMS = [
-  { to: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/admin/categories', label: 'Categories', icon: Tags },
-  { to: '/admin/backlog', label: 'Backlog Review', icon: ListChecks },
-  { to: '/admin/assistant', label: 'AI Assistant', icon: MessageSquare },
-  { to: '/admin/users', label: 'Admin Users', icon: Users },
-  { to: '/admin/settings', label: 'Tenant Settings', icon: Settings },
+  { to: ROUTES.adminDashboard, label: 'Dashboard', icon: LayoutDashboard },
+  { to: ROUTES.adminCategories, label: 'Categories', icon: Tags },
+  { to: ROUTES.adminBacklog, label: 'Backlog Review', icon: ListChecks },
+  { to: ROUTES.adminAssistant, label: 'AI Assistant', icon: MessageSquare },
+  { to: ROUTES.adminUsers, label: 'Admin Users', icon: Users, roles: CAN_MANAGE_ADMIN_USERS },
+  { to: ROUTES.tenantsDirectory, label: 'Tenants Directory', icon: Building, roles: CAN_VIEW_ALL_TENANTS },
+  { to: ROUTES.adminSettings, label: 'Tenant Settings', icon: Settings, roles: CAN_MANAGE_TENANT_SETTINGS },
+  { to: ROUTES.jiraIntegrationSettings, label: 'Jira Integration', icon: Plug, roles: CAN_MANAGE_TENANT_SETTINGS },
+  { to: ROUTES.apiSettings, label: 'API Settings', icon: KeyRound, roles: CAN_MANAGE_TENANT_SETTINGS },
 ]
 
 export default function AdminSidebar() {
   const { isSidebarCollapsed } = useUiStore()
+  const { user } = useAuth()
+
+  const visibleNavItems = NAV_ITEMS.filter((item) => {
+    if (!item.roles) return true
+    return item.roles.includes(user?.role)
+  })
 
   return (
     <aside
@@ -28,7 +52,7 @@ export default function AdminSidebar() {
         isSidebarCollapsed ? 'w-16' : 'w-60',
       )}
     >
-      {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+      {visibleNavItems.map(({ to, label, icon: Icon }) => (
         <NavLink
           key={to}
           to={to}

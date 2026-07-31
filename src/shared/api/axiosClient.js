@@ -23,8 +23,11 @@ export const axiosClient = axios.create({
  * the tenant header.
  */
 axiosClient.interceptors.request.use((config) => {
+  const requestUrl = (config.url ?? '').toLowerCase()
+  const isAuthRoute = requestUrl.startsWith('/auth/') || requestUrl.startsWith('/api/auth/')
   const tenantId = useTenantStore.getState().tenantId || env.devTenantId
-  if (tenantId) {
+
+  if (!isAuthRoute && tenantId) {
     config.headers[HTTP_HEADERS.TENANT_ID] = tenantId
   }
 
@@ -38,8 +41,8 @@ axiosClient.interceptors.request.use((config) => {
 
 /**
  * Response interceptor: normalizes error handling.
- *  - 401 -> session expired/invalid: clear auth store, let ProtectedRoute
- *    redirect to /login on next render.
+ *  - 401 -> session expired/invalid: clear auth store & tenant store, let
+ *    ProtectedRoute redirect to /login on next render.
  *  - Anything else is re-thrown as-is so React Query / calling hooks can
  *    surface `error.response.data` (expected to be a ProblemDetails-style
  *    payload from the Global Exception Handler middleware) to the UI.
@@ -49,6 +52,7 @@ axiosClient.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().clearSession()
+      useTenantStore.getState().clearTenant()
     }
     return Promise.reject(error)
   },

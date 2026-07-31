@@ -1,29 +1,136 @@
-import { useState } from 'react'
-import { UserX, Plus } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Lock, Unlock, Plus, Loader2 } from 'lucide-react'
 import Table from '@shared/components/ui/Table.jsx'
 import Button from '@shared/components/ui/Button.jsx'
 import Badge from '@shared/components/ui/Badge.jsx'
-import { ADMIN_ROLES } from '@app/config/constants.js'
-import { useAdminUsers, useAdminUserMutations } from '@features/adminUsers/hooks/useAdminUsers.js'
+import Spinner from '@shared/components/ui/Spinner.jsx'
+import { useDebounce } from '@shared/hooks/useDebounce.js'
+import { usePagination } from '@shared/hooks/usePagination.js'
+import {
+  useProductOwners,
+  useTenantLookup,
+  useAdminUserMutations,
+} from '@features/adminUsers/hooks/useAdminUsers.js'
 import InviteUserModal from './InviteUserModal.jsx'
+import LockConfirmModal from './LockConfirmModal.jsx';
+import SearchBar from '@shared/components/ui/SearchBar.jsx'
+import TablePagination from '@shared/components/ui/TablePagination.jsx'
 
-/**
- * Table of ADMINUSERS rows for the current tenant, only reachable via
- * CAN_MANAGE_ADMIN_USERS (Owner role) per router/AppRouter.jsx's
- * ProtectedRoute gating. Role changes use a plain <select> rather than a
- * modal since it's a single-field edit.
- */
 export default function AdminUserTable() {
-  const { data: users = [] } = useAdminUsers()
-  const { updateRole, deactivate } = useAdminUserMutations()
   const [isInviteOpen, setIsInviteOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedTenantId, setSelectedTenantId] = useState('')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [pendingLockUser, setPendingLockUser] = useState(null)
+  const debouncedSearchTerm = useDebounce(searchTerm, 300)
+  const { page, pageSize, params, setPage, nextPage, prevPage } = usePagination(5)
+
+  const { data: tenants = [], isLoading: isTenantLoading } = useTenantLookup()
+  const { data, isLoading, isFetching } = useProductOwners({
+    searchTerm: debouncedSearchTerm || undefined,
+    tenantId: selectedTenantId || undefined,
+    status: statusFilter !== 'all' ? statusFilter : undefined,
+    page: params.page,
+    pageSize: params.pageSize,
+  })
+  const { toggleActiveState } = useAdminUserMutations()
+
+  useEffect(() => {
+    setPage(1)
+  }, [debouncedSearchTerm, selectedTenantId, statusFilter, setPage])
+
+  const users = Array.isArray(data?.items) ? data.items : []
+
+  const totalItems = data?.totalItems ?? 0
+  const hasNextPage = data?.hasNextPage ?? false
+  const hasPreviousPage = data?.hasPreviousPage ?? page > 1
+
+  const tenantOptions = Array.isArray(tenants) ? tenants : []
+
+  const hasActiveFilters =
+    Boolean(debouncedSearchTerm) || Boolean(selectedTenantId) || statusFilter !== 'all'
+
+  const rangeStart = users.length > 0 ? (page - 1) * pageSize + 1 : 0
+  const rangeEnd = (page - 1) * pageSize + users.length
+
+
+  const pendingUserId = toggleActiveState.isPending ? toggleActiveState.variables?.id : null
+
+
+  const handleUnlock = (user) => {
+    const id = user.userId ?? user.id
+    toggleActiveState.mutate({ id, isActive: false })
+  }
+
+  const handleRequestLock = (user) => {
+    setPendingLockUser(user)
+  }
+
+  const handleConfirmLock = () => {
+    if (!pendingLockUser) return
+    const id = pendingLockUser.userId ?? pendingLockUser.id
+    toggleActiveState.mutate(
+      { id, isActive: true },
+      { onSuccess: () => setPendingLockUser(null) },
+    )
+  }
+
+  const handleCancelLock = () => {
+    if (toggleActiveState.isPending) return
+    setPendingLockUser(null)
+  }
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex justify-end">
-        <Button size="sm" onClick={() => setIsInviteOpen(true)}>
-          <Plus size={16} /> Invite user
-        </Button>
+      <div className="flex flex-col gap-4 py-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4 w-full">
+          <div className="flex items-center gap-3 w-full max-w-3xl">
+            <SearchBar
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Search by name, email, or company..."
+            />
+            {isFetching ? <Spinner className="text-slate-500" size={18} /> : null}
+          </div>
+          <select
+            value={selectedTenantId}
+            onChange={(event) => setSelectedTenantId(event.target.value)}
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none"
+            disabled={isTenantLoading}
+          >
+            <option value="">All tenants</option>
+            {tenantOptions.map((tenant) => (
+              <option
+                key={tenant.id ?? tenant.tenantId ?? tenant.id}
+                value={tenant.id ?? tenant.tenantId ?? tenant.id}
+              >
+                {tenant.name ||
+                  tenant.companyName ||
+                  tenant.displayName ||
+                  tenant.tenantName ||
+                  tenant.tenant ||
+                  tenant.id ||
+                  tenant.tenantId ||
+                  'Unnamed tenant'}
+              </option>
+            ))}
+          </select>
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm outline-none"
+          >
+            <option value="all">All status</option>
+            <option value="active">Active</option>
+            <option value="locked">Locked</option>
+          </select>
+        </div>
+
+        <div className="flex justify-end">
+          <Button size="sm" onClick={() => setIsInviteOpen(true)}>
+            <Plus size={16} /> Invite user
+          </Button>
+        </div>
       </div>
 
       <Table>
@@ -31,43 +138,92 @@ export default function AdminUserTable() {
           <Table.Row>
             <Table.Cell as="th">Name</Table.Cell>
             <Table.Cell as="th">Email</Table.Cell>
-            <Table.Cell as="th">Role</Table.Cell>
+            <Table.Cell as="th">Tenant/Company</Table.Cell>
             <Table.Cell as="th">Status</Table.Cell>
-            <Table.Cell as="th" className="text-right">Actions</Table.Cell>
+            <Table.Cell as="th" className="text-right">
+              Actions
+            </Table.Cell>
           </Table.Row>
         </Table.Head>
         <tbody>
-          {users.map((user) => (
-            <Table.Row key={user.id}>
-              <Table.Cell className="font-medium">{user.fullName}</Table.Cell>
-              <Table.Cell className="text-slate-500">{user.email}</Table.Cell>
-              <Table.Cell>
-                <select
-                  value={user.role}
-                  onChange={(e) => updateRole.mutate({ id: user.id, role: e.target.value })}
-                  className="rounded border border-slate-200 px-2 py-1 text-xs"
-                >
-                  {Object.values(ADMIN_ROLES).map((role) => (
-                    <option key={role} value={role}>{role}</option>
-                  ))}
-                </select>
-              </Table.Cell>
-              <Table.Cell>
-                <Badge className={user.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}>
-                  {user.isActive ? 'Active' : 'Pending'}
-                </Badge>
-              </Table.Cell>
-              <Table.Cell className="text-right">
-                <button onClick={() => deactivate.mutate(user.id)} aria-label="Deactivate user">
-                  <UserX size={16} className="text-slate-400 hover:text-red-600" />
-                </button>
+          {users.length > 0 ? (
+            users.map((user, idx) => {
+              const id = user.userId ?? user.id
+              const isLocked = Boolean(user.isLocked)
+              const isRowPending = pendingUserId === id
+
+              return (
+                <Table.Row key={id ?? user.email ?? `row-${idx}`}>
+                  <Table.Cell className="font-medium">
+                    {user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim()}
+                  </Table.Cell>
+                  <Table.Cell className="text-slate-500">{user.email}</Table.Cell>
+                  <Table.Cell className="text-slate-500">
+                    {user.companyName || user.tenantName || user.tenant?.name || '—'}
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Badge
+                      className={
+                        !isLocked
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : 'bg-slate-100 text-slate-500'
+                      }
+                    >
+                      {!isLocked ? 'Active' : 'Locked'}
+                    </Badge>
+                  </Table.Cell>
+                  <Table.Cell className="text-right">
+                    <button
+                      onClick={() => (isLocked ? handleUnlock(user) : handleRequestLock(user))}
+                      disabled={isRowPending}
+                      aria-label={isLocked ? 'Unlock user' : 'Lock user'}
+                      title={isLocked ? 'Unlock user' : 'Lock user'}
+                      className="disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {isRowPending ? (
+                        <Loader2 size={16} className="text-slate-400 animate-spin" />
+                      ) : isLocked ? (
+                        <Unlock size={16} className="text-slate-400 hover:text-emerald-600" />
+                      ) : (
+                        <Lock size={16} className="text-slate-400 hover:text-red-600" />
+                      )}
+                    </button>
+                  </Table.Cell>
+                </Table.Row>
+              )
+            })
+          ) : (
+            <Table.Row>
+              <Table.Cell colSpan={5} className="text-center py-10 text-sm text-slate-500">
+                {!isLoading && hasActiveFilters
+                  ? 'No users match the selected search, tenant, or status filter.'
+                  : 'No users found.'}
               </Table.Cell>
             </Table.Row>
-          ))}
+          )}
         </tbody>
       </Table>
 
+      <TablePagination
+        rangeStart={rangeStart}
+        rangeEnd={rangeEnd}
+        totalItems={totalItems}
+        hasNextPage={hasNextPage}
+        hasPreviousPage={hasPreviousPage}
+        onNext={nextPage}
+        onPrevious={prevPage}
+        isLoading={isLoading || isFetching}
+      />
+
       <InviteUserModal isOpen={isInviteOpen} onClose={() => setIsInviteOpen(false)} />
+
+      <LockConfirmModal
+        isOpen={Boolean(pendingLockUser)}
+        email={pendingLockUser?.email}
+        isSubmitting={toggleActiveState.isPending && pendingUserId === (pendingLockUser?.userId ?? pendingLockUser?.id)}
+        onConfirm={handleConfirmLock}
+        onCancel={handleCancelLock}
+      />
     </div>
   )
 }
