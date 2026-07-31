@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import InputField from '../components/InputField'
 import { useRegister } from '../hooks/useRegister.js'
+import { useNavigate } from 'react-router-dom'
 
 const initialFormData = {
   companyName: '',
@@ -11,6 +12,7 @@ const initialFormData = {
 }
 
 export default function RegisterPage() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState(initialFormData)
   const [errors, setErrors] = useState({})
   const { mutate, isPending } = useRegister()
@@ -156,6 +158,16 @@ export default function RegisterPage() {
 
         <div className="text-sm flex justify-center text-[#6B7280]">
           By signing up, you agree to our Terms and Privacy Policy.
+        </div>
+        <div className="text-center text-sm text-[#6B7280]">
+          Already have an account?{' '}
+          <button
+            type="button"
+            onClick={() => navigate('/login')}
+            className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
+          >
+            Sign in
+          </button>
         </div>
       </div>
     </>
