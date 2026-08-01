@@ -18,7 +18,7 @@ export async function testJiraConnection() {
 }
 
 export async function configureJiraIntegration(payload) {
-  const { data } = await axiosClient.post(ENDPOINTS.tenant.configureJiraIntegration, payload)
+  const { data } = await axiosClient.put(ENDPOINTS.tenant.configureJiraIntegration, payload)
   return data
 }
 

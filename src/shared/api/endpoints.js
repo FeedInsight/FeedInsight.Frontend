@@ -49,6 +49,7 @@ export const ENDPOINTS = {
     settings: '/tenant/settings', // GET, PUT
     testJiraConnection: '/tenant/settings/jira/test', // POST
     regenerateWebhookSecret: '/tenant/settings/jira/webhook-secret', // POST
+    configureJiraIntegration: '/Tenants/my-company/jira-config', 
   },
 
   // --- Admin Users ---

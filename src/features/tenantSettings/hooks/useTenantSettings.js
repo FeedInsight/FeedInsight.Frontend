@@ -35,6 +35,7 @@ export function useTestJiraConnection() {
 
 export function useConfigureJiraIntegration() {
   const queryClient = useQueryClient()
+
   return useMutation({
     mutationFn: configureJiraIntegration,
     onSuccess: () => {
@@ -45,6 +46,7 @@ export function useConfigureJiraIntegration() {
       toast.error('Failed to save Jira integration')
     },
   })
+
 }
 
 export function useRegenerateWebhookSecret() {
