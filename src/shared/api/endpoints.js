@@ -49,7 +49,7 @@ export const ENDPOINTS = {
     settings: '/tenant/settings', // GET, PUT
     testJiraConnection: '/tenant/settings/jira/test', // POST
     regenerateWebhookSecret: '/tenant/settings/jira/webhook-secret', // POST
-    configureJiraIntegration: '/Tenants/my-company/jira-config', 
+    configureJiraIntegration: '/Tenants/my-company/jira-config',
   },
 
   // --- Admin Users ---
@@ -71,5 +71,11 @@ export const ENDPOINTS = {
   tenants: {
     lookup: '/Tenants/lookup',
     updateStatus: (id) => `/Tenants/${id}/status`,
+  },
+
+  // --- Tenant API Keys ---
+  apiKeys: {
+    list: '/Tenants/my-company/api-keys',
+    create: '/Tenants/my-company/api-keys',
   },
 }
