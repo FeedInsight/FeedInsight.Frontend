@@ -1,11 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ROUTES } from './routes.js'
 import ProtectedRoute from './ProtectedRoute.jsx'
-import RoleGuard from './RoleGuard.jsx'
 import {
-  CAN_MANAGE_TENANT_SETTINGS,
-  CAN_VIEW_ALL_TENANTS,
-  CAN_MANAGE_ADMIN_USERS,
+  REQUIRE_PRODUCT_OWNER,
+  REQUIRE_SUPER_ADMIN,
 } from '@shared/constants/roles.js'
 import { useAuth } from '@shared/hooks/useAuth.js'
 import { getDashboardRouteForRole } from '@shared/utils/roleUtils.js'
@@ -51,34 +49,25 @@ export default function AppRouter() {
         <Route path={ROUTES.register} element={<RegisterPage />} />
       </Route>
 
-      {/* --- Admin Portal (JWT-protected) --- */}
       <Route element={<ProtectedRoute />}>
         <Route element={<AdminLayout />}>
-          <Route path={ROUTES.adminDashboard} element={<DashboardPage />} />
-          <Route path={ROUTES.workspaceDashboard} element={<DashboardPage />} />
 
-          {/* Super Admin Dashboard Route */}
-          <Route element={<RoleGuard allowedRoles={CAN_VIEW_ALL_TENANTS} />}>
-            <Route path={ROUTES.superAdminDashboard} element={<DashboardPage />} />
+          <Route element={<ProtectedRoute requiredRoles={REQUIRE_PRODUCT_OWNER} />}>
+            <Route path={ROUTES.workspaceDashboard} element={<DashboardPage />} />
+            <Route path={ROUTES.workspaceSettings} element={<TenantSettingsPage />} />
+            <Route path={ROUTES.workspaceJiraIntegration} element={<JiraIntegrationPage />} />
+            <Route path={ROUTES.workspaceApiSettings} element={<ApiSettingsPage />} />
+            <Route path={ROUTES.workspaceCategories} element={<CategoriesPage />} />
+            <Route path={ROUTES.workspaceBacklog} element={<BacklogReviewPage />} />
+            <Route path={ROUTES.workspaceStoryDetail} element={<StoryDetailPage />} />
+            <Route path={ROUTES.workspaceAssistant} element={<AssistantPage />} />
           </Route>
 
-          <Route path={ROUTES.adminCategories} element={<CategoriesPage />} />
-          <Route path={ROUTES.adminBacklog} element={<BacklogReviewPage />} />
-          <Route path={ROUTES.adminStoryDetail} element={<StoryDetailPage />} />
-          <Route path={ROUTES.adminAssistant} element={<AssistantPage />} />
-
-          <Route element={<ProtectedRoute requiredRoles={CAN_MANAGE_ADMIN_USERS} />}>
-            <Route path={ROUTES.adminUsers} element={<AdminUsersPage />} />
-          </Route>
-          <Route element={<ProtectedRoute requiredRoles={CAN_VIEW_ALL_TENANTS} />}>
-            <Route path={ROUTES.tenantsDirectory} element={<TenantsDirectoryPage />} />
+          <Route element={<ProtectedRoute requiredRoles={REQUIRE_SUPER_ADMIN} />}>
+            <Route path={ROUTES.superAdminTenants} element={<TenantsDirectoryPage />} />
+            <Route path={ROUTES.superAdminUsers} element={<AdminUsersPage />} />
           </Route>
 
-          <Route element={<ProtectedRoute requiredRoles={CAN_MANAGE_TENANT_SETTINGS} />}>
-            <Route path={ROUTES.adminSettings} element={<TenantSettingsPage />} />
-            <Route path={ROUTES.jiraIntegrationSettings} element={<JiraIntegrationPage />} />
-            <Route path={ROUTES.apiSettings} element={<ApiSettingsPage />} />
-          </Route>
         </Route>
       </Route>
 

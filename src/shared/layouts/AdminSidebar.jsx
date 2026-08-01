@@ -14,43 +14,46 @@ import { cn } from '@shared/utils/classNames.js'
 import { useUiStore } from '@app/store/uiStore.js'
 import { useAuth } from '@shared/hooks/useAuth.js'
 import {
-  CAN_MANAGE_ADMIN_USERS,
-  CAN_VIEW_ALL_TENANTS,
-  CAN_MANAGE_TENANT_SETTINGS,
+  REQUIRE_PRODUCT_OWNER,
+  REQUIRE_SUPER_ADMIN,
 } from '@shared/constants/roles.js'
 import { ROUTES } from '@router/routes.js'
 import FeedInsightLogo from '@shared/components/ui/FeedInsightLogo'
 import FeedInsightLogoText from '@shared/components/ui/FeedInsightLogoText'
 
 const NAV_ITEMS = [
-  { to: ROUTES.adminDashboard, label: 'Dashboard', icon: LayoutDashboard },
-  { to: ROUTES.adminCategories, label: 'Categories', icon: Tags },
-  { to: ROUTES.adminBacklog, label: 'Backlog Review', icon: ListChecks },
-  { to: ROUTES.adminAssistant, label: 'AI Assistant', icon: MessageSquare },
-  { to: ROUTES.adminUsers, label: 'Admin Users', icon: Users, roles: CAN_MANAGE_ADMIN_USERS },
+  { to: ROUTES.workspaceDashboard, label: 'Dashboard', icon: LayoutDashboard, roles: REQUIRE_PRODUCT_OWNER },
+  { to: ROUTES.workspaceCategories, label: 'Categories', icon: Tags, roles: REQUIRE_PRODUCT_OWNER },
+  { to: ROUTES.workspaceBacklog, label: 'Backlog Review', icon: ListChecks, roles: REQUIRE_PRODUCT_OWNER },
+  { to: ROUTES.workspaceAssistant, label: 'AI Assistant', icon: MessageSquare, roles: REQUIRE_PRODUCT_OWNER },
   {
-    to: ROUTES.tenantsDirectory,
-    label: 'Tenants Directory',
-    icon: Building,
-    roles: CAN_VIEW_ALL_TENANTS,
-  },
-  {
-    to: ROUTES.adminSettings,
+    to: ROUTES.workspaceSettings,
     label: 'Tenant Settings',
     icon: Settings,
-    roles: CAN_MANAGE_TENANT_SETTINGS,
+    roles: REQUIRE_PRODUCT_OWNER,
   },
   {
-    to: ROUTES.jiraIntegrationSettings,
+    to: ROUTES.workspaceJiraIntegration,
     label: 'Jira Integration',
     icon: Plug,
-    roles: CAN_MANAGE_TENANT_SETTINGS,
+    roles: REQUIRE_PRODUCT_OWNER,
   },
   {
-    to: ROUTES.apiSettings,
+    to: ROUTES.workspaceApiSettings,
     label: 'API Settings',
     icon: KeyRound,
-    roles: CAN_MANAGE_TENANT_SETTINGS,
+    roles: REQUIRE_PRODUCT_OWNER,
+  },
+  {
+    to: ROUTES.superAdminTenants,
+    label: 'Tenants Directory',
+    icon: Building,
+    roles: REQUIRE_SUPER_ADMIN,
+  },
+  {
+    to: ROUTES.superAdminUsers,
+    label: 'Admin Users',
+    icon: Users, roles: REQUIRE_SUPER_ADMIN,
   },
 ]
 
