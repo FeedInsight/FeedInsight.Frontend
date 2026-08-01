@@ -70,8 +70,8 @@ export default function AdminSidebar() {
         isSidebarCollapsed ? 'w-16' : 'w-60',
       )}
     >
-      <div className="flex justify-center mb-4">
-        {isSidebarCollapsed ? <FeedInsightLogo size={32} /> : <FeedInsightLogoText />}
+      <div className="flex justify-center mb-2">
+        {isSidebarCollapsed ? <FeedInsightLogo size={42} /> : <FeedInsightLogoText />}
       </div>
 
       {visibleNavItems.map(({ to, label, icon: Icon }) => (

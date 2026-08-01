@@ -8,7 +8,7 @@ export default function LoginPage() {
     <div className="flex flex-col gap-3">
       <div>
         <div className="flex flex-col items-center mb-3">
-          <FeedInsightLogoText size="text-4xl" />
+          <FeedInsightLogoText className="h-12" />
         </div>
         <div className="flex flex-col items-center gap-1">
           <h1 className="text-xl font-bold tracking-tight text-slate-900">Welcome back!</h1>
