@@ -36,5 +36,5 @@ export const QUERY_KEYS = {
 }
 
 export const HTTP_HEADERS = {
-  TENANT_ID: 'X-Tenant-Id',
+  API_KEY: 'X-Api-Key',
 }
