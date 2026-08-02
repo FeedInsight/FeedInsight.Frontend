@@ -35,12 +35,14 @@ export default function JiraConnectionForm() {
       <Input
         label="Jira base URL"
         error={errors.jiraUrl?.message}
+        disabled={isPending}
         {...register('jiraUrl')}
       />
 
       <Input
         label="Username"
         error={errors.username?.message}
+        disabled={isPending}
         {...register('username')}
       />
 
@@ -48,6 +50,7 @@ export default function JiraConnectionForm() {
         label="Jira API Token"
         type="password"
         error={errors.apiKey?.message}
+        disabled={isPending}
         {...register('apiKey')}
       />
 

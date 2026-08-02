@@ -1,9 +1,9 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import InputField from '../components/InputField'
 import Button from '@shared/components/ui/Button.jsx'
 import { useLogin } from '@features/auth/hooks/useLogin.js'
+import Input from '@shared/components/ui/Input'
 
 const schema = z.object({
   email: z.string().email('Enter a valid email address'),
@@ -28,25 +28,27 @@ export default function LoginForm() {
   return (
     <form
       onSubmit={handleSubmit((values) => mutate(values))}
-      className="w-full flex flex-col"
+      className="w-full flex flex-col gap-4"
       noValidate
     >
-      <InputField
+      <Input
         label="Email"
         type="email"
         placeholder="example@company.com"
         autoComplete="email"
         error={errors.email?.message}
+        disabled={isPending}
         required
         {...register('email')}
       />
 
-      <InputField
+      <Input
         label="Password"
         type="password"
         placeholder="••••••••"
         autoComplete="current-password"
         error={errors.password?.message}
+        disabled={isPending}
         required
         {...register('password')}
       />
