@@ -24,7 +24,7 @@ export const ENDPOINTS = {
   categories: {
     list: '/categories', // GET
     create: '/categories', // POST
-    update: (id) => `/categories/${id}`, // PUT
+    update: '/categories', // PUT
     remove: (id) => `/categories/${id}`, // DELETE (soft delete)
   },
 
