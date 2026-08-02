@@ -8,17 +8,24 @@ import {
 } from '@features/categories/api/categoriesApi.js'
 import { QUERY_KEYS } from '@app/config/constants.js'
 
-/** Read hook for CategoryList. */
-export function useCategories() {
-  return useQuery({ queryKey: QUERY_KEYS.categories, queryFn: fetchCategories })
+function getErrorMessage(error, fallback) {
+  return (
+    error?.response?.data?.title ??
+    error?.response?.data?.data?.message ??
+    error?.response?.data?.message ??
+    error?.response?.data?.error ??
+    error?.message ??
+    fallback
+  )
 }
 
-/**
- * Write hooks for CategoryFormModal (create + update share one component,
- * so both mutations are exposed from a single hook keyed by `id`).
- * Each mutation invalidates the categories list on success so CategoryList
- * refetches without manual cache surgery.
- */
+export function useCategories() {
+  return useQuery({
+    queryKey: QUERY_KEYS.categories,
+    queryFn: fetchCategories,
+  })
+}
+
 export function useCategoryMutations() {
   const queryClient = useQueryClient()
   const invalidate = () => queryClient.invalidateQueries({ queryKey: QUERY_KEYS.categories })
@@ -29,6 +36,9 @@ export function useCategoryMutations() {
       invalidate()
       toast.success('Category created')
     },
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to create category'))
+    },
   })
 
   const update = useMutation({
@@ -37,13 +47,19 @@ export function useCategoryMutations() {
       invalidate()
       toast.success('Category updated')
     },
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to update category'))
+    },
   })
 
   const remove = useMutation({
     mutationFn: deleteCategory,
     onSuccess: () => {
       invalidate()
-      toast.success('Category removed')
+      toast.success('Category deleted')
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to delete category'))
     },
   })
 
