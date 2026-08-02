@@ -11,7 +11,7 @@ export const ENDPOINTS = {
     refresh: '/api/Auth/refresh', // POST -> RefreshTokenCommand
     logout: '/api/Auth/logout', // POST -> LogoutCommand
     registerAdmin: '/api/Auth/register-admin', // POST -> RegisterUserCommand
-    me: '/api/Profile/me', // PUT -> UpdateProfileCommand (not GET)
+    me: '/Profile/me', // PUT -> UpdateProfileCommand (not GET)
   },
 
   // --- Dashboard / Analytics ---
