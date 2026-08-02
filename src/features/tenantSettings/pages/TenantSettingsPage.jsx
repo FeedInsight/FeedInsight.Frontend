@@ -1,4 +1,5 @@
 import ProfileNameForm from '@features/tenantSettings/components/ProfileNameForm'
+import UpdatePasswordForm from '../components/UpdatePasswordForm'
 
 export default function TenantSettingsPage() {
   return (
@@ -6,6 +7,7 @@ export default function TenantSettingsPage() {
       <h1 className="text-xl font-semibold text-slate-900">Account Settings</h1>
 
       <ProfileNameForm />
+      <UpdatePasswordForm />
 
 
       {/* <WebhookSecretDisplay webhookUrl={`${env.apiBaseUrl}/webhooks/jira`} /> */}

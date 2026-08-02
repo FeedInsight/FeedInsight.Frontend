@@ -12,6 +12,7 @@ export const ENDPOINTS = {
     logout: '/api/Auth/logout', // POST -> LogoutCommand
     registerAdmin: '/api/Auth/register-admin', // POST -> RegisterUserCommand
     me: '/Profile/me', // PUT -> UpdateProfileCommand (not GET)
+    mePassword: '/Profile/me/password', 
   },
 
   // --- Dashboard / Analytics ---
