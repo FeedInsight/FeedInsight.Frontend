@@ -12,7 +12,7 @@ export const ENDPOINTS = {
     logout: '/api/Auth/logout', // POST -> LogoutCommand
     registerAdmin: '/api/Auth/register-admin', // POST -> RegisterUserCommand
     me: '/Profile/me', // PUT -> UpdateProfileCommand (not GET)
-    mePassword: '/Profile/me/password', 
+    mePassword: '/Profile/me/password',
   },
 
   // --- Dashboard / Analytics ---
@@ -72,6 +72,7 @@ export const ENDPOINTS = {
   tenants: {
     lookup: '/Tenants/lookup',
     updateStatus: (id) => `/Tenants/${id}/status`,
+    updateMyCompany: '/Tenants/my-company',
   },
 
   // --- Tenant API Keys ---
