@@ -21,7 +21,7 @@ import BacklogReviewPage from '@features/backlog/pages/BacklogReviewPage.jsx'
 import StoryDetailPage from '@features/backlog/pages/StoryDetailPage.jsx'
 import AssistantPage from '@features/chat/pages/AssistantPage.jsx'
 import AdminUsersPage from '@features/adminUsers/pages/AdminUsersPage.jsx'
-import TenantSettingsPage from '@features/settings/pages/TenantSettingsPage.jsx'
+import SettingsPage from '@features/settings/pages/SettingsPage.jsx'
 import JiraIntegrationPage from '@features/jira/pages/JiraIntegrationPage.jsx'
 import ApiSettingsPage from '@features/apiSettings/pages/ApiSettingsPage.jsx'
 import TenantsDirectoryPage from '@features/tenantsDirectory/pages/TenantsDirectoryPage.jsx'
@@ -54,7 +54,7 @@ export default function AppRouter() {
 
           <Route element={<ProtectedRoute requiredRoles={REQUIRE_PRODUCT_OWNER} />}>
             <Route path={ROUTES.workspaceDashboard} element={<DashboardPage />} />
-            <Route path={ROUTES.workspaceSettings} element={<TenantSettingsPage />} />
+            <Route path={ROUTES.workspaceSettings} element={<SettingsPage />} />
             <Route path={ROUTES.workspaceJiraIntegration} element={<JiraIntegrationPage />} />
             <Route path={ROUTES.workspaceApiSettings} element={<ApiSettingsPage />} />
             <Route path={ROUTES.workspaceCategories} element={<CategoriesPage />} />
@@ -66,6 +66,7 @@ export default function AppRouter() {
           <Route element={<ProtectedRoute requiredRoles={REQUIRE_SUPER_ADMIN} />}>
             <Route path={ROUTES.superAdminTenants} element={<TenantsDirectoryPage />} />
             <Route path={ROUTES.superAdminUsers} element={<AdminUsersPage />} />
+            <Route path={ROUTES.superAdminSettings} element={<SettingsPage />} />
           </Route>
 
         </Route>

@@ -16,4 +16,5 @@ export const ROUTES = {
 
   superAdminTenants: '/super-admin/tenants',
   superAdminUsers: '/super-admin/users',
+  superAdminSettings: '/super-admin/settings',
 }

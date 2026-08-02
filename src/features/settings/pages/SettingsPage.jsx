@@ -4,7 +4,7 @@ import { useAuth } from '@shared/hooks/useAuth'
 import { ROLES } from '@app/config/constants'
 import TenantNameForm from '../components/TenantNameForm'
 
-export default function TenantSettingsPage() {
+export default function SettingsPage() {
   const { user } = useAuth()
   const isProductOwner = user?.role === ROLES.PRODUCT_OWNER
 

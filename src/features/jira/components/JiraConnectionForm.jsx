@@ -34,6 +34,7 @@ export default function JiraConnectionForm() {
     >
       <Input
         label="Jira base URL"
+        placeholder="https://[company].atlassian.net"
         error={errors.jiraUrl?.message}
         disabled={isPending}
         {...register('jiraUrl')}
@@ -41,6 +42,7 @@ export default function JiraConnectionForm() {
 
       <Input
         label="Username"
+        placeholder="Enter your name"
         error={errors.username?.message}
         disabled={isPending}
         {...register('username')}
@@ -48,6 +50,7 @@ export default function JiraConnectionForm() {
 
       <Input
         label="Jira API Token"
+        placeholder="Enter your API token"
         type="password"
         error={errors.apiKey?.message}
         disabled={isPending}

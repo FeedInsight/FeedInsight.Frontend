@@ -28,7 +28,7 @@ const NAV_ITEMS = [
   { to: ROUTES.workspaceAssistant, label: 'AI Assistant', icon: MessageSquare, roles: REQUIRE_PRODUCT_OWNER },
   {
     to: ROUTES.workspaceSettings,
-    label: 'Tenant Settings',
+    label: 'Settings',
     icon: Settings,
     roles: REQUIRE_PRODUCT_OWNER,
   },
@@ -54,6 +54,12 @@ const NAV_ITEMS = [
     to: ROUTES.superAdminUsers,
     label: 'Admin Users',
     icon: Users, roles: REQUIRE_SUPER_ADMIN,
+  },
+  {
+    to: ROUTES.superAdminSettings,
+    label: 'Settings',
+    icon: Settings,
+    roles: REQUIRE_SUPER_ADMIN,
   },
 ]
 
