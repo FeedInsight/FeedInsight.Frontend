@@ -1,7 +1,6 @@
 import { QUERY_KEYS } from "@app/config/constants"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createApiKey, fetchApiKeys } from "../api/apiKeysApi"
-import toast from "react-hot-toast"
 
 export function useApiKeys() {
   return useQuery({
@@ -17,9 +16,6 @@ export function useCreateApiKey() {
     mutationFn: createApiKey,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.apiSettings })
-    },
-    onError: () => {
-      toast.error('Failed to generate API key')
     },
   })
 }
