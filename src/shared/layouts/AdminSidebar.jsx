@@ -39,8 +39,8 @@ const NAV_ITEMS = [
     roles: REQUIRE_PRODUCT_OWNER,
   },
   {
-    to: ROUTES.workspaceApiSettings,
-    label: 'API Settings',
+    to: ROUTES.workspaceApiKeys,
+    label: 'API Keys',
     icon: KeyRound,
     roles: REQUIRE_PRODUCT_OWNER,
   },

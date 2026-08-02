@@ -5,7 +5,7 @@ import { useState } from 'react'
 import Button from '@shared/components/ui/Button'
 import { Plus } from 'lucide-react'
 
-export default function ApiSettingsPage() {
+export default function ApiKeysPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (

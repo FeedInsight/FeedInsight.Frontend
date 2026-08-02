@@ -12,7 +12,7 @@ export const ROUTES = {
   workspaceAssistant: '/workspace/assistant',
   workspaceSettings: '/workspace/settings',
   workspaceJiraIntegration: '/workspace/integrations',
-  workspaceApiSettings: '/workspace/api-settings',
+  workspaceApiKeys: '/workspace/api-keys',
 
   superAdminTenants: '/super-admin/tenants',
   superAdminUsers: '/super-admin/users',

@@ -11,8 +11,8 @@ const schema = z.object({
     .trim()
     .min(1, 'Jira base URL is required')
     .regex(/^https:\/\/([a-z0-9-]+)\.atlassian\.net$/i, 'Use https://[company].atlassian.net'),
-  username: z.string().min(1, 'Username is required'),
-  apiKey: z.string().min(1, 'API key is required'),
+  personalAccessToken: z.string().min(1, 'Personal access token is required'),
+  webHookSecret: z.string().min(1, 'WebHook secret is required'),
 })
 
 export default function JiraConnectionForm() {
@@ -20,8 +20,8 @@ export default function JiraConnectionForm() {
     resolver: zodResolver(schema),
     defaultValues: {
       jiraUrl: '',
-      username: '',
-      apiKey: '',
+      personalAccessToken: '',
+      webHookSecret: '',
     },
   })
 
@@ -41,20 +41,21 @@ export default function JiraConnectionForm() {
       />
 
       <Input
-        label="Username"
-        placeholder="Enter your name"
-        error={errors.username?.message}
+        label="Personal Access Token"
+        placeholder="Enter your personal access token"
+        type="password"
+        error={errors.personalAccessToken?.message}
         disabled={isPending}
-        {...register('username')}
+        {...register('personalAccessToken')}
       />
 
       <Input
-        label="Jira API Token"
-        placeholder="Enter your API token"
+        label="WebHook Secret"
+        placeholder="Enter your webhook secret"
         type="password"
-        error={errors.apiKey?.message}
+        error={errors.webHookSecret?.message}
         disabled={isPending}
-        {...register('apiKey')}
+        {...register('webHookSecret')}
       />
 
       <Button type="submit" isLoading={isPending}>

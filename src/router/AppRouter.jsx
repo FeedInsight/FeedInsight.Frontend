@@ -23,8 +23,8 @@ import AssistantPage from '@features/chat/pages/AssistantPage.jsx'
 import AdminUsersPage from '@features/adminUsers/pages/AdminUsersPage.jsx'
 import SettingsPage from '@features/settings/pages/SettingsPage.jsx'
 import JiraIntegrationPage from '@features/jira/pages/JiraIntegrationPage.jsx'
-import ApiSettingsPage from '@features/apiSettings/pages/ApiSettingsPage.jsx'
 import TenantsDirectoryPage from '@features/tenantsDirectory/pages/TenantsDirectoryPage.jsx'
+import ApiKeysPage from '@features/apiSettings/pages/ApiKeysPage.jsx'
 
 function HomeRedirect() {
   const { isAuthenticated, user } = useAuth()
@@ -56,7 +56,7 @@ export default function AppRouter() {
             <Route path={ROUTES.workspaceDashboard} element={<DashboardPage />} />
             <Route path={ROUTES.workspaceSettings} element={<SettingsPage />} />
             <Route path={ROUTES.workspaceJiraIntegration} element={<JiraIntegrationPage />} />
-            <Route path={ROUTES.workspaceApiSettings} element={<ApiSettingsPage />} />
+            <Route path={ROUTES.workspaceApiKeys} element={<ApiKeysPage />} />
             <Route path={ROUTES.workspaceCategories} element={<CategoriesPage />} />
             <Route path={ROUTES.workspaceBacklog} element={<BacklogReviewPage />} />
             <Route path={ROUTES.workspaceStoryDetail} element={<StoryDetailPage />} />
