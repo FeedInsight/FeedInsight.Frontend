@@ -30,6 +30,13 @@ export function useUpdatePassword() {
       toast.success('Password updated successfully')
     },
     onError: (err) => {
+      const msg =
+        err?.response?.data?.errors?.['Users.IncorrectPassword']?.[0]
+
+      if (msg) {
+        return
+      }
+
       toast.error('Failed to update password')
     },
   })

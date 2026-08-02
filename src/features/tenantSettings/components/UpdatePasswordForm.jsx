@@ -42,6 +42,16 @@ const UpdatePasswordForm = () => {
       },
       {
         onSuccess: () => reset(),
+        onError: (err) => {
+          const msg =
+            err?.response?.data?.errors?.['Users.IncorrectPassword']?.[0]
+
+          if (msg) {
+            setError('currentPassword', {
+              message: msg,
+            })
+          }
+        },
       },
     )
   }
