@@ -43,16 +43,18 @@ export default function KeyManagementPanel() {
   return (
     <div className="flex flex-col gap-4">
       <Table>
-        <Table.Head>
-          <Table.Row>
-            <Table.Cell as="th">Name</Table.Cell>
-            <Table.Cell as="th">Key</Table.Cell>
-            <Table.Cell as="th">Status</Table.Cell>
-            <Table.Cell as="th">Created At</Table.Cell>
-            <Table.Cell as="th">Expires At</Table.Cell>
-            <Table.Cell as="th" className="text-right">Actions</Table.Cell>
-          </Table.Row>
-        </Table.Head>
+        {keys.length > 0 && (
+          <Table.Head>
+            <Table.Row>
+              <Table.Cell as="th">Name</Table.Cell>
+              <Table.Cell as="th">Key</Table.Cell>
+              <Table.Cell as="th">Status</Table.Cell>
+              <Table.Cell as="th">Created At</Table.Cell>
+              <Table.Cell as="th">Expires At</Table.Cell>
+              <Table.Cell as="th" className="text-right">Actions</Table.Cell>
+            </Table.Row>
+          </Table.Head>
+        )}
         <tbody>
           {keys.length > 0 ? (
             keys.map((key) => (
