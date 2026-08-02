@@ -18,7 +18,8 @@ const ProfileNameForm = () => {
   const { user } = useAuth()
   const { mutate: save, isPending } = useUpdateProfile()
 
-  const [oldFirstName = '', oldLastName = ''] = (user?.fullName ?? '').split(' ')
+  const oldFirstName = user?.firstName ?? ''
+  const oldLastName = user?.lastName ?? ''
 
   const {
     register,
@@ -34,9 +35,11 @@ const ProfileNameForm = () => {
   })
 
   useEffect(() => {
-    const [firstName = '', lastName = ''] = (user?.fullName ?? '').split(' ')
-    reset({ firstName: firstName, lastName: lastName })
-  }, [user?.fullName, reset])
+    reset({
+      firstName: user?.firstName ?? '',
+      lastName: user?.lastName ?? '',
+    })
+  }, [user?.firstName, user?.lastName, reset])
 
   return (
     <Card className="flex flex-col gap-5">

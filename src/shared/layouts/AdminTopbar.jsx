@@ -27,7 +27,8 @@ export default function AdminTopbar() {
         <Menu size={20} />
       </button>
       <div className="flex items-center gap-4">
-        <span className="text-sm text-slate-600">{user?.fullName}</span>
+        <span className="text-sm text-slate-600">{user?.firstName}
+        </span>
         <button
           onClick={handleLogout}
           aria-label="Log out"

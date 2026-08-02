@@ -9,11 +9,11 @@ export function useUpdateProfile() {
   return useMutation({
     mutationFn: updateProfile,
     onSuccess: (_, variables) => {
-      const updatedFullName = [variables.firstName, variables.lastName]
-        .filter(Boolean)
-        .join(' ')
-
-      setSession(token, { ...user, fullName: updatedFullName })
+      setSession(token, {
+        ...user,
+        firstName: variables.firstName,
+        lastName: variables.lastName,
+      })
 
       toast.success('Profile updated successfully')
     },
