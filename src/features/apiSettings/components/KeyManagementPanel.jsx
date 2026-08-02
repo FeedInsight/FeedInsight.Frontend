@@ -1,9 +1,12 @@
 import Spinner from "@shared/components/ui/Spinner"
 import { useApiKeys } from "../hooks/useAPIKeys"
-import { AlertCircle, KeyRound } from "lucide-react"
+import { AlertCircle, Ban, KeyRound } from "lucide-react"
 import Table from "@shared/components/ui/Table"
 import Badge from "@shared/components/ui/Badge"
 import EmptyState from "@shared/components/ui/EmptyState"
+import Button from "@shared/components/ui/Button"
+import RevokeApiKeyModal from "./RevokeApiKeyModal"
+import { useState } from "react"
 
 function formatDate(dateString) {
   if (!dateString) {
@@ -15,6 +18,8 @@ function formatDate(dateString) {
 
 export default function KeyManagementPanel() {
   const { data, isLoading, isError, error } = useApiKeys()
+  const [selectedKey, setSelectedKey] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const keys = data?.data ?? []
 
@@ -45,6 +50,7 @@ export default function KeyManagementPanel() {
             <Table.Cell as="th">Status</Table.Cell>
             <Table.Cell as="th">Created At</Table.Cell>
             <Table.Cell as="th">Expires At</Table.Cell>
+            <Table.Cell as="th" className="text-right">Actions</Table.Cell>
           </Table.Row>
         </Table.Head>
         <tbody>
@@ -80,11 +86,28 @@ export default function KeyManagementPanel() {
                 <Table.Cell className="text-sm text-slate-500">
                   {formatDate(key.expiresAt)}
                 </Table.Cell>
+
+                <Table.Cell className="text-right">
+                  {key.isActive && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-1.5 text-slate-400 hover:text-red-600"
+                      title="Revoke key"
+                      onClick={() => {
+                        setSelectedKey(key)
+                        setIsModalOpen(true)
+                      }}
+                    >
+                      <Ban size={16} />
+                    </Button>
+                  )}
+                </Table.Cell>
               </Table.Row>
             ))
           ) : (
             <Table.Row>
-              <Table.Cell colSpan={5} className="py-2">
+              <Table.Cell colSpan={6} className="py-2">
                 <EmptyState
                   icon={KeyRound}
                   title="No API keys yet"
@@ -95,6 +118,15 @@ export default function KeyManagementPanel() {
           )}
         </tbody>
       </Table>
+
+      <RevokeApiKeyModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false)
+          setSelectedKey(null)
+        }}
+        apiKey={selectedKey}
+      />
     </div>
   )
 }

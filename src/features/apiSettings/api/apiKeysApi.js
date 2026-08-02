@@ -10,3 +10,8 @@ export async function createApiKey(payload) {
   const { data } = await axiosClient.post(ENDPOINTS.apiKeys.create, payload)
   return data
 }
+
+export async function revokeApiKey(id) {
+  const { data } = await axiosClient.delete(ENDPOINTS.apiKeys.revoke(id))
+  return data
+}

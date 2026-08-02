@@ -77,5 +77,6 @@ export const ENDPOINTS = {
   apiKeys: {
     list: '/Tenants/my-company/api-keys',
     create: '/Tenants/my-company/api-keys',
+    revoke: (id) => `/Tenants/my-company/api-keys/${id}`,
   },
 }
