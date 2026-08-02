@@ -11,6 +11,9 @@ const schema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
   newPassword: z.string().min(8, 'New password must be at least 8 characters'),
   confirmPassword: z.string().min(1, 'Please confirm your new password'),
+}).refine((data) => data.newPassword !== data.currentPassword, {
+  message: 'New password must be different from the current password',
+  path: ['newPassword'],
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: "Passwords don't match",
   path: ['confirmPassword'],
@@ -43,12 +46,19 @@ const UpdatePasswordForm = () => {
       {
         onSuccess: () => reset(),
         onError: (err) => {
-          const msg =
-            err?.response?.data?.errors?.['Users.IncorrectPassword']?.[0]
+          const res = err?.response?.data
+          const incorrectPasswordMsg = res?.errors?.['Users.IncorrectPassword']?.[0]
+          const newPasswordMsg = res?.errors?.['NewPassword']?.[0]
 
-          if (msg) {
+          if (incorrectPasswordMsg) {
             setError('currentPassword', {
-              message: msg,
+              message: incorrectPasswordMsg,
+            })
+          }
+
+          if (newPasswordMsg) {
+            setError('newPassword', {
+              message: newPasswordMsg,
             })
           }
         },
@@ -64,9 +74,7 @@ const UpdatePasswordForm = () => {
         </div>
         <div>
           <h2 className="text-base font-semibold text-slate-900">Change Password</h2>
-          <p className="text-sm text-slate-500">
-            Update your password to keep your account secure
-          </p>
+          <p className="text-sm text-slate-500">Update your password to keep your account secure</p>
         </div>
       </div>
 
