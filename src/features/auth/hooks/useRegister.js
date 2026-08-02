@@ -27,7 +27,7 @@ export function useRegister() {
       }
 
       toast.success('Account created successfully!')
-      navigate(ROUTES.adminDashboard)
+      navigate(ROUTES.workspaceDashboard)
     },
     onError: (error) => {
       const responseData = error?.response?.data

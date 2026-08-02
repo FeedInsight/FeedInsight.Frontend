@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import Card from '@shared/components/ui/Card.jsx'
 import Button from '@shared/components/ui/Button.jsx'
-import { useRegenerateWebhookSecret } from '@features/tenantSettings/hooks/useTenantSettings.js'
+import { useRegenerateWebhookSecret } from '../hooks/useJira.js'
 
 /**
  * Displays the Jira webhook URL to configure on Atlassian's side, plus a
  * "Regenerate secret" action. The plaintext JiraWebhookSecret is shown
- * ONLY immediately after regeneration (per api/tenantApi.js's contract) --
+ * ONLY immediately after regeneration (per api/jiraApi.js's contract) --
  * never persisted in component state beyond this session, and never
  * fetched back in plaintext on page reload.
  */

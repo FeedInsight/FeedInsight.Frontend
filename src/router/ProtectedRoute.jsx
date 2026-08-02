@@ -2,14 +2,6 @@ import { Navigate, Outlet } from 'react-router-dom'
 import { useAuth } from '@shared/hooks/useAuth.js'
 import { getDashboardRouteForRole } from '@shared/utils/roleUtils.js'
 
-/**
- * Route guard for every /admin/*, /workspace/*, and /super-admin/* screen.
- * Redirects to /login when there is no valid session.
- *
- * `requiredRoles` is an optional escape hatch for pages (Tenant Settings,
- * Admin Users, Super Admin Tenants Directory) that should be inaccessible outright
- * for unauthorized roles.
- */
 export default function ProtectedRoute({ requiredRoles }) {
   const { isAuthenticated, user } = useAuth()
 

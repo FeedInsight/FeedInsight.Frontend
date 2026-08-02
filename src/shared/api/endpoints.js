@@ -11,7 +11,8 @@ export const ENDPOINTS = {
     refresh: '/api/Auth/refresh', // POST -> RefreshTokenCommand
     logout: '/api/Auth/logout', // POST -> LogoutCommand
     registerAdmin: '/api/Auth/register-admin', // POST -> RegisterUserCommand
-    me: '/api/Profile/me', // PUT -> UpdateProfileCommand (not GET)
+    me: '/Profile/me', // PUT -> UpdateProfileCommand (not GET)
+    mePassword: '/Profile/me/password',
   },
 
   // --- Dashboard / Analytics ---
@@ -49,6 +50,7 @@ export const ENDPOINTS = {
     settings: '/tenant/settings', // GET, PUT
     testJiraConnection: '/tenant/settings/jira/test', // POST
     regenerateWebhookSecret: '/tenant/settings/jira/webhook-secret', // POST
+    configureJiraIntegration: '/Tenants/my-company/jira-config',
   },
 
   // --- Admin Users ---
@@ -70,5 +72,13 @@ export const ENDPOINTS = {
   tenants: {
     lookup: '/Tenants/lookup',
     updateStatus: (id) => `/Tenants/${id}/status`,
+    updateMyCompany: '/Tenants/my-company',
+  },
+
+  // --- Tenant API Keys ---
+  apiKeys: {
+    list: '/Tenants/my-company/api-keys',
+    create: '/Tenants/my-company/api-keys',
+    revoke: (id) => `/Tenants/my-company/api-keys/${id}`,
   },
 }

@@ -4,20 +4,20 @@ import { z } from 'zod'
 import Modal from '@shared/components/ui/Modal.jsx'
 import Input from '@shared/components/ui/Input.jsx'
 import Button from '@shared/components/ui/Button.jsx'
-import { ADMIN_ROLES } from '@app/config/constants.js'
+import { ROLES } from '@app/config/constants.js'
 import { useAdminUserMutations } from '@features/adminUsers/hooks/useAdminUsers.js'
 
 const schema = z.object({
   fullName: z.string().min(1, 'Name is required'),
   email: z.string().email('Enter a valid email'),
-  role: z.enum(Object.values(ADMIN_ROLES)),
+  role: z.enum(Object.values(ROLES)),
 })
 
 export default function InviteUserModal({ isOpen, onClose }) {
   const { invite } = useAdminUserMutations()
   const { register, handleSubmit, reset, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
-    defaultValues: { role: ADMIN_ROLES.VIEWER },
+    defaultValues: { role: ROLES.VIEWER },
   })
 
   const onSubmit = async (values) => {
@@ -34,7 +34,7 @@ export default function InviteUserModal({ isOpen, onClose }) {
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-slate-700">Role</label>
           <select {...register('role')} className="rounded-lg border border-slate-300 px-3 py-2 text-sm">
-            {Object.values(ADMIN_ROLES).map((role) => (
+            {Object.values(ROLES).map((role) => (
               <option key={role} value={role}>{role}</option>
             ))}
           </select>

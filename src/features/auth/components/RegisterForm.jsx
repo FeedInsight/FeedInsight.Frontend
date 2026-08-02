@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import InputField from '../components/InputField'
 import Button from '@shared/components/ui/Button.jsx'
 import { useRegister } from '../hooks/useRegister.js'
+import Input from '@shared/components/ui/Input.jsx'
 
 const initialFormData = {
   companyName: '',
@@ -80,63 +80,68 @@ export default function RegisterForm() {
   }
 
   return (
-    <form className="w-full flex flex-col" onSubmit={handleSubmit} noValidate>
-      <InputField
+    <form className="w-full flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+      <Input
         label="Company Name"
         type="text"
         name="companyName"
         placeholder="Enter Company Name"
         value={formData.companyName}
         onChange={handleChange}
+        disabled={isPending}
         error={errors.companyName}
         required
       />
 
       <div className="flex w-full flex-col gap-2 sm:flex-row">
         <div className="min-w-0 flex-1">
-          <InputField
+          <Input
             label="First Name"
             type="text"
             name="firstName"
             placeholder="Admin First Name"
             value={formData.firstName}
             onChange={handleChange}
+            disabled={isPending}
             error={errors.firstName}
             required
           />
         </div>
         <div className="min-w-0 flex-1">
-          <InputField
+          <Input
             label="Last Name"
             type="text"
             name="lastName"
             placeholder="Admin Last Name"
             value={formData.lastName}
             onChange={handleChange}
+            disabled={isPending}
             error={errors.lastName}
             required
           />
         </div>
       </div>
 
-      <InputField
+      <Input
         label="Work Email"
         type="email"
         name="workEmail"
         placeholder="example@company.com"
         value={formData.workEmail}
         onChange={handleChange}
+        disabled={isPending}
         error={errors.workEmail}
         required
       />
 
-      <InputField
+      <Input
         label="Password"
         type="password"
         name="password"
         placeholder="••••••••"
         value={formData.password}
         onChange={handleChange}
+        disabled={isPending}
         error={errors.password}
         required
       />

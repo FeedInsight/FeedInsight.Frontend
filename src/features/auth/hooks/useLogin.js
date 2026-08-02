@@ -43,7 +43,8 @@ export function useLogin() {
         user = {
           id: response.userId ?? response.id,
           email: response.email,
-          fullName: [response.firstName, response.lastName].filter(Boolean).join(' '),
+          firstName: response.firstName,
+          lastName: response.lastName,
           role,
           tenantId: response.tenantId,
         }
@@ -60,9 +61,8 @@ export function useLogin() {
         user = {
           id: user?.id ?? jwtPayload?.sub,
           email: user?.email ?? jwtPayload?.email,
-          fullName:
-            user?.fullName ||
-            [jwtPayload?.given_name, jwtPayload?.family_name].filter(Boolean).join(' '),
+          firstName: user?.firstName ?? jwtPayload?.given_name,
+          lastName: user?.lastName ?? jwtPayload?.family_name,
           role:
             user?.role ||
             jwtPayload?.role ||

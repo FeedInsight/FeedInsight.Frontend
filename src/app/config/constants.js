@@ -1,6 +1,6 @@
-export const ADMIN_ROLES = {
-  OWNER: 'SuperAdmin',
-  PRODUCT_MANAGER: 'ProductManager',
+export const ROLES = {
+  SUPER_ADMIN: 'SuperAdmin',
+  PRODUCT_OWNER: 'ProductOwner',
   VIEWER: 'Viewer',
 }
 
@@ -30,11 +30,11 @@ export const QUERY_KEYS = {
   chatSessions: ['chat', 'sessions'],
   chatMessages: (sessionId) => ['chat', 'sessions', sessionId, 'messages'],
   tenantSettings: ['tenant', 'settings'],
-  apiSettings: ['api', 'settings'],
+  apiKeys: ['api', 'keys'],
   adminUsers: ['admin-users'],
   tenantsLookup: ['tenants', 'lookup'],
 }
 
 export const HTTP_HEADERS = {
-  TENANT_ID: 'X-Tenant-Id',
+  API_KEY: 'X-Api-Key',
 }
