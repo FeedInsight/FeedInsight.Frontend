@@ -1,12 +1,3 @@
-/**
- * Single source of truth for every backend route this frontend calls.
- * Feature `api/*.js` files MUST import paths from here instead of hardcoding
- * strings, so a backend route rename touches exactly one file.
- *
- * Paths are relative to env.apiBaseUrl (see app/config/env.js) and grouped
- * to match FeedInsight.WebApi/Controllers and the Features/ CQRS slices
- * described in the README's directory structure.
- */
 export const ENDPOINTS = {
   // --- Public / Customer Portal (no auth, requires X-Tenant-Id) ---
   feedback: {
@@ -32,7 +23,7 @@ export const ENDPOINTS = {
   categories: {
     list: '/categories', // GET
     create: '/categories', // POST
-    update: (id) => `/categories/${id}`, // PUT
+    update: '/categories', // PUT
     remove: (id) => `/categories/${id}`, // DELETE (soft delete)
   },
 
