@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Input from '@shared/components/ui/Input.jsx'
 import Button from '@shared/components/ui/Button.jsx'
-import { useConfigureJiraIntegration } from '@features/tenantSettings/hooks/useTenantSettings.js'
+import { useConfigureJiraIntegration } from '../hooks/useJira.js'
 
 const schema = z.object({
   jiraUrl: z

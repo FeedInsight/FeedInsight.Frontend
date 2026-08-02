@@ -1,4 +1,4 @@
-import ProfileNameForm from '@features/tenantSettings/components/ProfileNameForm'
+import ProfileNameForm from '../components/ProfileNameForm'
 import UpdatePasswordForm from '../components/UpdatePasswordForm'
 import { useAuth } from '@shared/hooks/useAuth'
 import { ROLES } from '@app/config/constants'
