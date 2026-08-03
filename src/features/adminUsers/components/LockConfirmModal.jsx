@@ -1,59 +1,49 @@
-import { Loader2 } from 'lucide-react'
+import Modal from '@shared/components/ui/Modal.jsx'
+import Button from '@shared/components/ui/Button.jsx'
+import { AlertTriangle, Lock } from 'lucide-react'
 
-/**
- * Confirmation modal shown before locking a Product Owner account.
- * NOTE: built as a self-contained overlay since I don't have your shared
- * Modal component (if one exists, e.g. used by InviteUserModal.jsx, send it
- * over and I'll refactor this to reuse it instead).
- */
 export default function LockConfirmModal({ isOpen, email, isSubmitting, onConfirm, onCancel }) {
   if (!isOpen) return null
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="lock-confirm-title"
-      onClick={onCancel}
-    >
-      <div
-        className="w-full max-w-sm rounded-xl bg-white p-6 shadow-lg"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <h2 id="lock-confirm-title" className="text-base font-semibold text-slate-800">
-          Lock account?
-        </h2>
-        <p className="mt-2 text-sm text-slate-500">
-          Are you sure you want to lock access for <span className="font-medium text-slate-700">{email}</span>?
-          They won&apos;t be able to sign in until unlocked.
+    <Modal isOpen={isOpen} onClose={onCancel} title="Lock Account Access?" size="sm">
+      <div className="flex flex-col gap-4 pt-1">
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-900 text-xs">
+          <AlertTriangle size={18} className="text-amber-600 shrink-0" />
+          <span>
+            Locking this user will instantly revoke their login access across all workspace tools.
+          </span>
+        </div>
+
+        <p className="text-sm text-slate-600">
+          Are you sure you want to lock access for{' '}
+          <span className="font-semibold text-slate-900">{email}</span>?
         </p>
 
-        <div className="mt-6 flex justify-end gap-2">
-          <button
+        <div className="mt-3 flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+          <Button
             type="button"
+            variant="secondary"
+            size="md"
             onClick={onCancel}
             disabled={isSubmitting}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Cancel
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="danger"
+            size="md"
             onClick={onConfirm}
-            disabled={isSubmitting}
-            className="rounded-lg bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            isLoading={isSubmitting}
+            loadingText="Locking Account..."
+            className="shadow-md shadow-red-500/20"
           >
-            {isSubmitting ? (
-              <span className="flex items-center gap-2">
-                <Loader2 size={14} className="animate-spin" /> Locking...
-              </span>
-            ) : (
-              'Lock account'
-            )}
-          </button>
+            <Lock size={15} />
+            <span>Lock Account</span>
+          </Button>
         </div>
       </div>
-    </div>
+    </Modal>
   )
 }
