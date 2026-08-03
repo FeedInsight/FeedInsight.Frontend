@@ -12,9 +12,19 @@ export async function fetchFeedbacks(params = {}) {
 
 /**
  * Fetch detailed view for a single customer feedback item, including its extracted AI tasks.
+ * Returns null gracefully if backend returns 404 so UI can fallback to list cache.
  * @param {string} id
  */
 export async function fetchFeedbackDetail(id) {
-  const { data } = await axiosClient.get(ENDPOINTS.feedback.detail(id))
-  return data
+  if (!id) return null
+  try {
+    const { data } = await axiosClient.get(ENDPOINTS.feedback.detail(id))
+    return data
+  } catch (error) {
+    if (error.response?.status === 404) {
+      console.warn(`[triageApi] GET feedback detail for ID "${id}" returned 404. Falling back to cached list data.`)
+      return null
+    }
+    throw error
+  }
 }
