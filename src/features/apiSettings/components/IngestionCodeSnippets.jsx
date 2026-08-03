@@ -5,7 +5,7 @@ import Badge from '@shared/components/ui/Badge.jsx'
 import { HTTP_HEADERS } from '@app/config/constants.js'
 import toast from 'react-hot-toast'
 
-const INGESTION_ENDPOINT = 'https://feedinsight.runasp.net/api/Ingestion/feedback'
+const INGESTION_ENDPOINT = 'https://feedinsight.runasp.net/Ingestion/feedback'
 
 const EXAMPLE_BODY = {
   rawContent: 'Your feedback text here',
