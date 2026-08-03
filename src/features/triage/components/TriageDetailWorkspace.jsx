@@ -5,22 +5,23 @@ import EmptyState from '@shared/components/ui/EmptyState.jsx'
 import ExtractedTaskCard from './ExtractedTaskCard.jsx'
 import { useFeedbackDetail } from '@features/triage/hooks/useFeedbacks.js'
 import { formatDateTime } from '@shared/utils/formatDate.js'
-import { MessageSquareText, Layers, Mail, Calendar } from 'lucide-react'
+import { MessageSquareText, Layers, Mail, Calendar, Sparkles, ExternalLink, ShieldCheck, Quote } from 'lucide-react'
 
 /**
- * Read-only detail workspace for selected feedback item in the AI Triage Inbox.
+ * Advanced read-only detail workspace for selected feedback item in the AI Triage Inbox.
  * Displays the original customer feedback content alongside all extracted AI tasks.
+ * Satisfies Task #96, Task #98, Task #101.
  */
 export default function TriageDetailWorkspace({ feedbackId }) {
   const { data: feedback, isLoading, isError } = useFeedbackDetail(feedbackId)
 
   if (!feedbackId) {
     return (
-      <Card className="flex h-full flex-col items-center justify-center p-8 text-center">
+      <Card className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center border-dashed border-slate-200 bg-slate-50/40">
         <EmptyState
           icon={MessageSquareText}
-          title="Select a feedback item"
-          description="Choose a customer feedback submission from the triage inbox to inspect its extracted AI tasks."
+          title="Select a feedback submission"
+          description="Choose a feedback item from the inbox list on the left to inspect its raw text and AI-extracted product tasks."
         />
       </Card>
     )
@@ -28,18 +29,21 @@ export default function TriageDetailWorkspace({ feedbackId }) {
 
   if (isLoading) {
     return (
-      <Card className="flex h-full min-h-[300px] items-center justify-center">
-        <Spinner size={32} />
+      <Card className="flex h-full min-h-[400px] items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-xs text-slate-500">
+          <Spinner size={32} />
+          <span>Loading feedback details & AI tasks...</span>
+        </div>
       </Card>
     )
   }
 
   if (isError || !feedback) {
     return (
-      <Card className="flex h-full flex-col items-center justify-center p-8 text-center">
+      <Card className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center border-dashed border-rose-200 bg-rose-50/20">
         <EmptyState
           icon={MessageSquareText}
-          title="Feedback not found"
+          title="Feedback details unavailable"
           description="Could not load details for the selected feedback item."
         />
       </Card>
@@ -52,76 +56,107 @@ export default function TriageDetailWorkspace({ feedbackId }) {
     : Array.isArray(rawTasks?.items)
     ? rawTasks.items
     : []
-  const submitterEmail = feedback.submitterEmail || feedback.email || 'Anonymous'
+
+  const submitterEmail = feedback.submitterEmail || feedback.email || ''
   const dateStr = formatDateTime(feedback.createdAt || feedback.submissionDate)
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Original Customer Feedback Panel */}
-      <Card className="flex flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+      {/* Top Card: Original Raw Customer Feedback Panel */}
+      <Card className="flex flex-col gap-4 border border-slate-200/90 shadow-sm bg-white p-5">
+        {/* Panel Header */}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5">
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-semibold text-slate-900">Original Feedback</h2>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white">
+              <MessageSquareText size={16} />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-slate-900">Original Customer Feedback</h2>
+              <p className="text-[11px] text-slate-500">Submitted directly via Customer Portal</p>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+            {submitterEmail && (
+              <div className="flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 border border-slate-200/60 font-medium">
+                <Mail size={13} className="text-slate-400" />
+                <span>{submitterEmail}</span>
+              </div>
+            )}
+            <div className="flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 border border-slate-200/60 font-medium">
+              <Calendar size={13} className="text-slate-400" />
+              <span>{dateStr}</span>
+            </div>
             {feedback.status && (
-              <Badge className="bg-brand-50 text-brand-700">
+              <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-semibold">
                 {feedback.status}
               </Badge>
             )}
           </div>
-
-          <div className="flex items-center gap-4 text-xs text-slate-500">
-            <div className="flex items-center gap-1">
-              <Mail size={13} />
-              <span>{submitterEmail}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Calendar size={13} />
-              <span>{dateStr}</span>
-            </div>
-          </div>
         </div>
 
-        <div className="rounded-lg bg-slate-50 p-4 text-sm text-slate-800 leading-relaxed font-sans whitespace-pre-wrap border border-slate-200/60">
-          {feedback.rawContent || feedback.content || 'No content available'}
+        {/* Raw Customer Text Block */}
+        <div className="relative rounded-xl bg-slate-900 p-4 text-sm text-slate-100 leading-relaxed font-sans border border-slate-800 shadow-inner">
+          <Quote size={24} className="absolute right-3 top-3 text-slate-800 pointer-events-none" />
+          <p className="whitespace-pre-wrap relative z-10 text-xs sm:text-sm">
+            {feedback.rawContent || feedback.content || 'No text content available'}
+          </p>
         </div>
 
+        {/* Attachment preview if present */}
         {feedback.screenshotUrl && (
-          <div className="mt-2 flex flex-col gap-1">
-            <span className="text-xs font-medium text-slate-500">Attachment</span>
+          <div className="flex items-center gap-2 rounded-lg bg-indigo-50/50 p-2.5 border border-indigo-100 text-xs">
+            <span className="font-semibold text-indigo-900">Attached Media:</span>
             <a
               href={feedback.screenshotUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-medium text-brand-600 hover:underline"
+              className="inline-flex items-center gap-1 font-semibold text-indigo-600 hover:underline"
             >
-              View attached screenshot
+              <span>View attached screenshot</span>
+              <ExternalLink size={12} />
             </a>
           </div>
         )}
       </Card>
 
-      {/* Extracted AI Tasks Section */}
+      {/* Extracted AI Tasks Section Header (#96 Requirement) */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Layers size={18} className="text-brand-600" />
-            <h3 className="text-sm font-semibold text-slate-900">
-              Extracted AI Tasks ({extractedTasks.length})
-            </h3>
+        <div className="flex items-center justify-between rounded-xl bg-white p-4 border border-slate-200/90 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700 font-bold shadow-2xs">
+              <Sparkles size={20} />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-slate-900">Extracted AI Tasks</h3>
+                <span className="inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 font-mono text-xs font-bold text-indigo-800">
+                  {extractedTasks.length} {extractedTasks.length === 1 ? 'Task' : 'Tasks'}
+                </span>
+              </div>
+              <p className="text-xs text-slate-500">
+                AI decomposed customer feedback into actionable tasks with assigned categories & technical keywords.
+              </p>
+            </div>
           </div>
-          <Badge className="bg-slate-100 text-slate-600">Read-only view</Badge>
+
+          <div className="flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700">
+            <ShieldCheck size={14} className="text-emerald-600" />
+            <span>Read-only PO Workspace</span>
+          </div>
         </div>
 
+        {/* Task Cards List */}
         {extractedTasks.length === 0 ? (
-          <Card className="py-8">
+          <Card className="py-12 border-dashed border-slate-200 bg-slate-50/50 text-center">
             <EmptyState
               icon={Layers}
               title="No tasks extracted"
-              description="No AI tasks were extracted from this feedback submission."
+              description="The AI did not extract any distinct task items from this feedback submission."
             />
           </Card>
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3.5">
             {extractedTasks.map((task, index) => (
               <ExtractedTaskCard key={task.id || index} task={task} index={index} />
             ))}
