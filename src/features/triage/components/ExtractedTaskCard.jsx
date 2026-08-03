@@ -4,12 +4,13 @@ import Badge from '@shared/components/ui/Badge.jsx'
 import UrgencyBadge from '@features/backlog/components/UrgencyBadge.jsx'
 import TaskDetailModal from './TaskDetailModal.jsx'
 import { getCategoryTheme } from '@shared/utils/categoryColors.js'
-import { Tag, Code2, ArrowRight, Sparkles } from 'lucide-react'
+import { Tag, Code2, ArrowRight } from 'lucide-react'
 
 /**
- * Advanced read-only display card for an ExtractedTask generated from customer feedback.
- * Features a standalone highlighted Task Counter badge right beside the Category badge (#101).
- * Tapping/clicking the card opens TaskDetailModal with complete AI extraction breakdown.
+ * Display card for an ExtractedTask generated from customer feedback.
+ * Features a standalone circular highlighted Task Counter badge right beside the Category badge (#101).
+ * Clicking the card opens TaskDetailModal for read-only inspection.
+ * Strictly Read-Only PO Review interface.
  */
 export default function ExtractedTaskCard({ task, index }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -37,19 +38,21 @@ export default function ExtractedTaskCard({ task, index }) {
     <>
       <Card
         onClick={() => setIsModalOpen(true)}
-        className="group relative flex flex-col gap-3.5 border border-slate-200/90 bg-white p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-400 hover:shadow-md cursor-pointer"
+        className="group relative flex flex-col gap-3.5 border border-slate-200/90 bg-white p-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md cursor-pointer"
       >
         {/* Accent Bar on hover */}
-        <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl bg-transparent transition-all group-hover:bg-brand-500" />
+        <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl bg-transparent transition-all group-hover:bg-indigo-600" />
 
-        {/* Header Row: Highlighted Task Counter, Category Badge (#101), Urgency/Sentiment */}
+        {/* Header Row: Highlighted Circular Task Counter, Category Badge (#101), Urgency/Sentiment */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2.5">
           <div className="flex items-center gap-2">
-            {/* Standalone Highlighted Task Counter Badge */}
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-2.5 py-0.5 text-xs font-extrabold text-white shadow-xs">
-              <Sparkles size={11} className="text-amber-300" />
-              Task #{index + 1}
-            </span>
+            {/* Standalone Circular Highlighted Task Counter Badge */}
+            <div
+              title={`Task #${index + 1}`}
+              className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-indigo-700 font-mono text-[11px] font-black text-white shadow-xs shrink-0"
+            >
+              {index + 1}
+            </div>
 
             {/* Task #101: Dynamic Category Badge beside the counter */}
             <span
@@ -76,11 +79,11 @@ export default function ExtractedTaskCard({ task, index }) {
         {/* Task Title & Description */}
         <div>
           <div className="flex items-start justify-between gap-2">
-            <h4 className="text-sm font-bold text-slate-900 group-hover:text-brand-700 transition-colors leading-snug">
+            <h4 className="text-sm font-bold text-slate-900 group-hover:text-indigo-700 transition-colors leading-snug">
               {title}
             </h4>
             <span className="text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">
-              <ArrowRight size={14} className="text-brand-600" />
+              <ArrowRight size={14} className="text-indigo-600" />
             </span>
           </div>
           {task.description && (
@@ -94,11 +97,11 @@ export default function ExtractedTaskCard({ task, index }) {
         <div className="flex flex-col gap-1.5 border-t border-slate-100 pt-2.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
-              <Code2 size={13} className="text-brand-600" />
+              <Code2 size={13} className="text-indigo-600" />
               <span>Technical Keywords</span>
             </div>
-            <span className="text-[10px] font-medium text-brand-600 opacity-0 group-hover:opacity-100 transition-opacity">
-              Click to expand →
+            <span className="text-[10px] font-medium text-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity">
+              Click to view details →
             </span>
           </div>
 
@@ -120,7 +123,7 @@ export default function ExtractedTaskCard({ task, index }) {
         </div>
       </Card>
 
-      {/* Interactive Detail Modal when card is tapped */}
+      {/* Detail Modal when card is tapped */}
       <TaskDetailModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -130,3 +133,4 @@ export default function ExtractedTaskCard({ task, index }) {
     </>
   )
 }
+

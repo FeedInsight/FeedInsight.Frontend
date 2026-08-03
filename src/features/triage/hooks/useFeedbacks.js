@@ -15,7 +15,7 @@ export function useFeedbacks(filters = {}) {
 
 /**
  * Hook to retrieve detailed feedback information and extracted AI tasks.
- * Falls back to finding the item in the cached feedbacks list if the API returns 404.
+ * Prioritizes checking the cached feedbacks list first to avoid unnecessary 404/400 network calls.
  * @param {string} feedbackId
  */
 export function useFeedbackDetail(feedbackId) {
@@ -24,11 +24,9 @@ export function useFeedbackDetail(feedbackId) {
   return useQuery({
     queryKey: QUERY_KEYS.feedbackDetail(feedbackId),
     queryFn: async () => {
-      // 1. Try backend detail endpoint
-      const detailData = await fetchFeedbackDetail(feedbackId)
-      if (detailData) return detailData
+      if (!feedbackId) return null
 
-      // 2. Fallback: Search in active feedbacks list queries in cache
+      // 1. Prioritize finding the item in active feedbacks list queries in cache
       const cachedQueries = queryClient.getQueriesData({ queryKey: QUERY_KEYS.feedbacks })
       for (const [, listData] of cachedQueries) {
         if (!listData) continue
@@ -39,8 +37,13 @@ export function useFeedbackDetail(feedbackId) {
         if (match) return match
       }
 
+      // 2. If not found in cached list, try fetching from backend detail endpoint
+      const detailData = await fetchFeedbackDetail(feedbackId)
+      if (detailData) return detailData
+
       return null
     },
     enabled: Boolean(feedbackId),
   })
 }
+
