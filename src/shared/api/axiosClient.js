@@ -11,7 +11,7 @@ export const axiosClient = axios.create({
 
 axiosClient.interceptors.request.use((config) => {
   const requestUrl = (config.url ?? '').toLowerCase()
-  const isAuthRoute = requestUrl.startsWith('/auth/') || requestUrl.startsWith('/api/auth/')
+  const isAuthRoute = requestUrl.startsWith('/auth/')
   const isIngestionRoute = requestUrl.includes('/ingestion/')
 
   const tenantId = useTenantStore.getState().tenantId || env.devTenantId
