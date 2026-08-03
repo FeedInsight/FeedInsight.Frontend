@@ -5,31 +5,24 @@ import EmptyState from '@shared/components/ui/EmptyState.jsx'
 import ExtractedTaskCard from './ExtractedTaskCard.jsx'
 import { useFeedbackDetail } from '@features/triage/hooks/useFeedbacks.js'
 import { formatDateTime } from '@shared/utils/formatDate.js'
-import { MessageSquareText, Layers, Mail, Calendar, Sparkles, ExternalLink, ShieldCheck, Quote } from 'lucide-react'
+import { MessageSquareText, Layers, Mail, Calendar, Sparkles, ExternalLink, ShieldCheck, Quote, ArrowLeft } from 'lucide-react'
 
 /**
- * Advanced read-only detail workspace for selected feedback item in the AI Triage Inbox.
+ * Read-only detail workspace for selected feedback item in the AI Triage Inbox.
  * Displays the original customer feedback content alongside all extracted AI tasks.
+ * Strictly Read-Only PO Review interface.
  * Satisfies Task #96, Task #98, Task #101.
  */
-export default function TriageDetailWorkspace({ feedbackId }) {
+export default function TriageDetailWorkspace({ feedbackId, onBack }) {
   const { data: feedback, isLoading, isError } = useFeedbackDetail(feedbackId)
 
   if (!feedbackId) {
-    return (
-      <Card className="flex h-full min-h-[400px] flex-col items-center justify-center p-8 text-center border-dashed border-slate-200 bg-slate-50/40">
-        <EmptyState
-          icon={MessageSquareText}
-          title="Select a feedback submission"
-          description="Choose a feedback item from the inbox list on the left to inspect its raw text and AI-extracted product tasks."
-        />
-      </Card>
-    )
+    return null
   }
 
   if (isLoading) {
     return (
-      <Card className="flex h-full min-h-[400px] items-center justify-center">
+      <Card className="flex h-full min-h-[400px] items-center justify-center border border-slate-200/90 shadow-2xs">
         <div className="flex flex-col items-center gap-3 text-xs text-slate-500">
           <Spinner size={32} />
           <span>Loading feedback details & AI tasks...</span>
@@ -46,6 +39,15 @@ export default function TriageDetailWorkspace({ feedbackId }) {
           title="Feedback details unavailable"
           description="Could not load details for the selected feedback item."
         />
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3.5 py-2 text-xs font-semibold text-white hover:bg-slate-800 transition-colors"
+          >
+            <ArrowLeft size={14} />
+            <span>Back to Inbox List</span>
+          </button>
+        )}
       </Card>
     )
   }
@@ -62,13 +64,31 @@ export default function TriageDetailWorkspace({ feedbackId }) {
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Top Header Controls (Back Button & Read-Only Badge) */}
+      <div className="flex items-center justify-between gap-3">
+        {onBack ? (
+          <button
+            onClick={onBack}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-white px-3.5 py-2 text-xs font-bold text-slate-700 border border-slate-200 shadow-2xs hover:bg-slate-50 hover:text-slate-900 transition-colors"
+          >
+            <ArrowLeft size={14} className="text-slate-500" />
+            <span>Back to All Feedbacks</span>
+          </button>
+        ) : <div />}
+
+        <div className="flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-100 shadow-xs">
+          <ShieldCheck size={14} className="text-emerald-400" />
+          <span>Read-Only PO Review</span>
+        </div>
+      </div>
+
       {/* Top Card: Original Raw Customer Feedback Panel */}
       <Card className="flex flex-col gap-4 border border-slate-200/90 shadow-sm bg-white p-5">
         {/* Panel Header */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-900 text-white">
-              <MessageSquareText size={16} />
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white shadow-xs">
+              <MessageSquareText size={18} />
             </div>
             <div>
               <h2 className="text-base font-bold text-slate-900">Original Customer Feedback</h2>
@@ -76,7 +96,7 @@ export default function TriageDetailWorkspace({ feedbackId }) {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+          <div className="flex flex-wrap items-center gap-2.5 text-xs text-slate-500">
             {submitterEmail && (
               <div className="flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 border border-slate-200/60 font-medium">
                 <Mail size={13} className="text-slate-400" />
@@ -122,7 +142,7 @@ export default function TriageDetailWorkspace({ feedbackId }) {
 
       {/* Extracted AI Tasks Section Header (#96 Requirement) */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between rounded-xl bg-white p-4 border border-slate-200/90 shadow-xs">
+        <div className="flex items-center justify-between rounded-xl bg-white p-4 border border-slate-200/90 shadow-2xs">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700 font-bold shadow-2xs">
               <Sparkles size={20} />
@@ -140,9 +160,9 @@ export default function TriageDetailWorkspace({ feedbackId }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700">
+          <div className="hidden sm:flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 border border-slate-200">
             <ShieldCheck size={14} className="text-emerald-600" />
-            <span>Read-only PO Workspace</span>
+            <span>Strictly View-Only</span>
           </div>
         </div>
 
@@ -166,3 +186,4 @@ export default function TriageDetailWorkspace({ feedbackId }) {
     </div>
   )
 }
+

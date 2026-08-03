@@ -10,7 +10,19 @@ export const useAuthStore = create(
       isAuthenticated: false,
 
       setSession: (token, user, refreshToken = null) =>
-        set({ token, refreshToken, user, isAuthenticated: true }),
+        set((state) => ({
+          token,
+          refreshToken: refreshToken || state.refreshToken,
+          user,
+          isAuthenticated: true,
+        })),
+
+      updateToken: (token, refreshToken = null) =>
+        set((state) => ({
+          token,
+          refreshToken: refreshToken || state.refreshToken,
+          isAuthenticated: true,
+        })),
 
       clearSession: () =>
         set({ token: null, refreshToken: null, user: null, isAuthenticated: false }),
@@ -18,3 +30,4 @@ export const useAuthStore = create(
     { name: 'feedinsight-auth' },
   ),
 )
+

@@ -2,11 +2,11 @@ import Modal from '@shared/components/ui/Modal.jsx'
 import Badge from '@shared/components/ui/Badge.jsx'
 import UrgencyBadge from '@features/backlog/components/UrgencyBadge.jsx'
 import { getCategoryTheme } from '@shared/utils/categoryColors.js'
-import { Tag, Code2, Sparkles, Layers, CheckCircle2 } from 'lucide-react'
+import { Tag, Code2, Sparkles, Layers, ShieldCheck } from 'lucide-react'
 
 /**
- * Interactive Modal for inspecting an ExtractedTask in detail when tapped by Product Owner.
- * Displays highlighted Task Counter badge right beside Category badge (#101).
+ * Modal for inspecting an ExtractedTask in detail when selected by Product Owner.
+ * Strictly Read-Only PO Review interface.
  */
 export default function TaskDetailModal({ isOpen, onClose, task, index }) {
   if (!task) return null
@@ -35,12 +35,14 @@ export default function TaskDetailModal({ isOpen, onClose, task, index }) {
       <div className="flex flex-col gap-5 text-sm text-slate-700">
         {/* Header Badges Bar */}
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-slate-50 p-3 border border-slate-200/80">
-          <div className="flex items-center gap-2">
-            {/* Standalone Highlighted Task Counter Badge */}
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-1 text-xs font-black text-white shadow-xs">
-              <Sparkles size={12} className="text-amber-300" />
-              Task #{index + 1}
-            </span>
+          <div className="flex items-center gap-2.5">
+            {/* Standalone Circular Highlighted Task Counter Badge */}
+            <div
+              title={`Task #${index + 1}`}
+              className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-indigo-700 font-mono text-xs font-black text-white shadow-xs shrink-0"
+            >
+              {index + 1}
+            </div>
 
             {/* Category Badge (#101) right beside the counter */}
             <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border ${categoryTheme.badgeClass}`}>
@@ -73,7 +75,7 @@ export default function TaskDetailModal({ isOpen, onClose, task, index }) {
         {/* Technical Keywords (#98) */}
         <div className="flex flex-col gap-2 rounded-lg border border-slate-200/70 bg-slate-50/40 p-3.5">
           <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-            <Code2 size={15} className="text-brand-600" />
+            <Code2 size={15} className="text-indigo-600" />
             <span>Extracted Technical Keywords</span>
           </div>
           {keywords.length > 0 ? (
@@ -83,7 +85,7 @@ export default function TaskDetailModal({ isOpen, onClose, task, index }) {
                   key={i}
                   className="inline-flex items-center gap-1 rounded-md bg-slate-900 px-2.5 py-1 text-xs font-mono font-medium text-slate-100 shadow-xs"
                 >
-                  <Code2 size={11} className="text-brand-400" />
+                  <Code2 size={11} className="text-indigo-400" />
                   {kw}
                 </span>
               ))}
@@ -107,17 +109,17 @@ export default function TaskDetailModal({ isOpen, onClose, task, index }) {
 
           <div className="rounded-lg border border-slate-200/80 p-3 bg-white">
             <div className="flex items-center gap-1.5 text-slate-500 font-medium mb-1">
-              <CheckCircle2 size={13} className="text-emerald-500" />
+              <ShieldCheck size={13} className="text-emerald-500" />
               <span>Review Mode</span>
             </div>
-            <p className="font-semibold text-slate-900">Strictly Read-Only (PO Review)</p>
+            <p className="font-semibold text-slate-900">Strictly Read-Only PO Review</p>
           </div>
         </div>
 
         {/* Modal Footer */}
         <div className="flex items-center justify-between border-t border-slate-100 pt-3">
           <span className="text-xs text-slate-400 flex items-center gap-1">
-            <Sparkles size={13} className="text-brand-500" /> AI-generated extracted task item
+            <Sparkles size={13} className="text-indigo-500" /> AI-generated extracted task item (Read-Only)
           </span>
           <button
             onClick={onClose}
@@ -130,3 +132,4 @@ export default function TaskDetailModal({ isOpen, onClose, task, index }) {
     </Modal>
   )
 }
+

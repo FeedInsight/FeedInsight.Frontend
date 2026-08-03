@@ -3,11 +3,12 @@ import Badge from '@shared/components/ui/Badge.jsx'
 import { formatRelative } from '@shared/utils/formatDate.js'
 import { getCategoryTheme } from '@shared/utils/categoryColors.js'
 import { cn } from '@shared/utils/classNames.js'
-import { Sparkles, User, Tag } from 'lucide-react'
+import { User, Tag } from 'lucide-react'
 
 /**
- * Enhanced single feedback item rendered in the AI Triage Inbox list panel.
- * Prominently highlights split task counter (#96) as a standalone badge even if 1, beside categories (#101).
+ * Single feedback item rendered in the AI Triage Inbox list panel.
+ * Prominently highlights the standalone circular task counter badge with ONLY the counter number.
+ * Strictly Read-Only PO Review item.
  */
 export default function FeedbackListItem({ item, isSelected, onClick }) {
   const rawTasks = item.extractedTasks ?? item.tasks ?? item.$values
@@ -40,17 +41,17 @@ export default function FeedbackListItem({ item, isSelected, onClick }) {
       className={cn(
         'group relative cursor-pointer transition-all duration-200 p-4 border',
         isSelected
-          ? 'border-brand-500 bg-brand-50/40 shadow-sm ring-2 ring-brand-500/20'
-          : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-xs',
+          ? 'border-indigo-500 bg-indigo-50/40 shadow-sm ring-2 ring-indigo-500/20'
+          : 'border-slate-200 bg-white hover:border-indigo-300 hover:shadow-xs',
       )}
     >
       {/* Active Indicator Bar */}
       {isSelected && (
-        <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-xl bg-brand-600" />
+        <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-xl bg-indigo-600" />
       )}
 
       <div className="flex flex-col gap-2.5">
-        {/* Top Header: Submitter Email (if present) + Standalone Highlighted Task Counter Badge */}
+        {/* Top Header: Submitter Email + Standalone Highlighted Circular Task Counter */}
         <div className="flex items-center justify-between gap-2">
           {submitterEmail ? (
             <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 truncate">
@@ -61,17 +62,17 @@ export default function FeedbackListItem({ item, isSelected, onClick }) {
             <div />
           )}
 
-          {/* Standalone Highlighted Task Counter Badge (Always highlighted, even if count is 1) */}
-          <span
-            className="inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-0.5 text-xs font-black text-white shadow-xs border border-indigo-500/50 shrink-0"
+          {/* Standalone Highlighted Circular Task Counter Badge (Only the counter number inside a circle) */}
+          <div
+            title={`${taskCount} extracted tasks`}
+            className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-indigo-700 font-mono text-xs font-black text-white shadow-sm ring-2 ring-indigo-400/30 shrink-0"
           >
-            <Sparkles size={11} className="text-amber-300" />
-            <span>{taskCount} {taskCount === 1 ? 'Task' : 'Tasks'}</span>
-          </span>
+            {taskCount}
+          </div>
         </div>
 
         {/* Feedback Raw Content Preview */}
-        <p className="line-clamp-2 text-sm font-semibold text-slate-900 group-hover:text-brand-700 transition-colors leading-snug">
+        <p className="line-clamp-2 text-sm font-semibold text-slate-900 group-hover:text-indigo-700 transition-colors leading-snug">
           {previewText}
         </p>
 
@@ -108,3 +109,4 @@ export default function FeedbackListItem({ item, isSelected, onClick }) {
     </Card>
   )
 }
+
