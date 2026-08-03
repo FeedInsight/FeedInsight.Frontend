@@ -9,14 +9,19 @@ import { logout as apiLogout } from '@features/auth/api/authApi.js'
  * change later without touching every consumer).
  */
 export function useAuth() {
-  const { user, token, isAuthenticated, setSession, clearSession } = useAuthStore()
+  const { user, token, refreshToken, isAuthenticated, setSession, clearSession } = useAuthStore()
   const clearTenant = useTenantStore((s) => s.clearTenant)
 
   const logout = async () => {
-    await apiLogout()
-    clearSession()
-    clearTenant()
+    try {
+      await apiLogout({ refreshToken, token })
+    } catch {
+      // Ignore network errors
+    } finally {
+      clearSession()
+      clearTenant()
+    }
   }
 
-  return { user, token, isAuthenticated, setSession, clearSession, logout }
+  return { user, token, refreshToken, isAuthenticated, setSession, clearSession, logout }
 }

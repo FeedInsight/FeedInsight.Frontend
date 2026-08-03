@@ -15,8 +15,20 @@ import { useUiStore } from '@app/store/uiStore.js'
  */
 export default function ChatWindow() {
   const { activeChatSessionId } = useUiStore()
-  const { data: messages = [], isLoading } = useChatMessages(activeChatSessionId)
+  const { data: rawMessages, isLoading } = useChatMessages(activeChatSessionId)
   const { mutate: sendMessage, isPending } = useSendMessage(activeChatSessionId)
+
+  const messages = Array.isArray(rawMessages)
+    ? rawMessages
+    : Array.isArray(rawMessages?.items)
+    ? rawMessages.items
+    : Array.isArray(rawMessages?.data)
+    ? rawMessages.data
+    : Array.isArray(rawMessages?.messages)
+    ? rawMessages.messages
+    : Array.isArray(rawMessages?.$values)
+    ? rawMessages.$values
+    : []
 
   if (!activeChatSessionId) {
     return (

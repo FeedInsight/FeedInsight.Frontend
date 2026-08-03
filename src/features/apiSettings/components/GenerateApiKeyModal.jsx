@@ -72,7 +72,7 @@ const GenerateApiKeyModal = ({ isOpen, onClose }) => {
           <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3">
             <AlertTriangle size={18} className="mt-0.5 text-amber-600" />
             <p className="text-sm text-amber-800">
-              <strong>Copy this key now</strong>, it won't be shown again after you close this dialog
+              <strong>Copy this key now</strong>, it won&apos;t be shown again after you close this dialog
             </p>
           </div>
 

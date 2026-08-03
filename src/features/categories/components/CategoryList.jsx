@@ -8,7 +8,16 @@ import CategoryFormModal from './CategoryFormModal.jsx'
 import DeleteCategoryModal from './DeleteCategoryModal.jsx'
 
 export default function CategoryList() {
-  const { data: categories = [], isLoading } = useCategories()
+  const { data: rawCategories, isLoading } = useCategories()
+  const categories = Array.isArray(rawCategories)
+    ? rawCategories
+    : Array.isArray(rawCategories?.items)
+    ? rawCategories.items
+    : Array.isArray(rawCategories?.data)
+    ? rawCategories.data
+    : Array.isArray(rawCategories?.$values)
+    ? rawCategories.$values
+    : []
   const { remove } = useCategoryMutations()
   const [editingCategory, setEditingCategory] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)

@@ -5,12 +5,15 @@ export const useAuthStore = create(
   persist(
     (set) => ({
       token: null,
+      refreshToken: null,
       user: null,
       isAuthenticated: false,
 
-      setSession: (token, user) => set({ token, user, isAuthenticated: true }),
+      setSession: (token, user, refreshToken = null) =>
+        set({ token, refreshToken, user, isAuthenticated: true }),
 
-      clearSession: () => set({ token: null, user: null, isAuthenticated: false }),
+      clearSession: () =>
+        set({ token: null, refreshToken: null, user: null, isAuthenticated: false }),
     }),
     { name: 'feedinsight-auth' },
   ),

@@ -23,15 +23,17 @@ import { useTenant } from '@shared/hooks/useTenant.js'
  */
 export default function TenantResolver({ children }) {
   const { tenantKey } = useParams()
-  const { setTenant } = useTenant()
+  const { setTenant, setApiKey } = useTenant()
 
   useEffect(() => {
-    // TODO: replace with real lookup call once backend endpoint exists.
     if (tenantKey) {
-      // Placeholder: assumes tenantKey IS the tenant GUID for now.
-      setTenant(tenantKey, null)
+      if (tenantKey.startsWith('fi_')) {
+        setApiKey(tenantKey)
+      } else {
+        setTenant(tenantKey, null)
+      }
     }
-  }, [tenantKey, setTenant])
+  }, [tenantKey, setTenant, setApiKey])
 
   return children
 }

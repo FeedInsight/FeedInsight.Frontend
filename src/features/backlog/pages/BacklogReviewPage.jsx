@@ -16,7 +16,17 @@ import { ListChecks } from 'lucide-react'
 export default function BacklogReviewPage() {
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebounce(search)
-  const { data: stories = [], isLoading } = useDraftStories({ search: debouncedSearch })
+  const { data: rawStories, isLoading } = useDraftStories({ search: debouncedSearch })
+
+  const stories = Array.isArray(rawStories)
+    ? rawStories
+    : Array.isArray(rawStories?.items)
+    ? rawStories.items
+    : Array.isArray(rawStories?.data)
+    ? rawStories.data
+    : Array.isArray(rawStories?.$values)
+    ? rawStories.$values
+    : []
 
   return (
     <div className="flex flex-col gap-6">

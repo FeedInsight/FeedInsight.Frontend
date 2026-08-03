@@ -12,14 +12,21 @@ export const axiosClient = axios.create({
 axiosClient.interceptors.request.use((config) => {
   const requestUrl = (config.url ?? '').toLowerCase()
   const isAuthRoute = requestUrl.startsWith('/auth/') || requestUrl.startsWith('/api/auth/')
+  const isIngestionRoute = requestUrl.includes('/ingestion/')
+
   const tenantId = useTenantStore.getState().tenantId || env.devTenantId
+  const apiKey = useTenantStore.getState().apiKey || env.ingestionApiKey
 
   if (!isAuthRoute && tenantId) {
     config.headers[HTTP_HEADERS.TENANT_ID] = tenantId
   }
 
+  if (apiKey) {
+    config.headers[HTTP_HEADERS.API_KEY] = apiKey
+  }
+
   const token = useAuthStore.getState().token
-  if (token) {
+  if (token && !isIngestionRoute) {
     config.headers.Authorization = `Bearer ${token}`
   }
 
@@ -30,7 +37,10 @@ axiosClient.interceptors.request.use((config) => {
 axiosClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const requestUrl = (error.config?.url ?? '').toLowerCase()
+    const isIngestionRoute = requestUrl.includes('/ingestion/')
+
+    if (error.response?.status === 401 && !isIngestionRoute) {
       useAuthStore.getState().clearSession()
       useTenantStore.getState().clearTenant()
     }

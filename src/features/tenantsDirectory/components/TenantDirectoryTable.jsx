@@ -33,7 +33,8 @@ const TenantDirectoryTable = () => {
     setPage(1)
   }, [debouncedSearchTerm, statusFilter, setPage])
 
-  const allTenants = data?.data ?? []
+  const rawTenants = data?.data ?? data?.items ?? data?.$values
+  const allTenants = Array.isArray(rawTenants) ? rawTenants : Array.isArray(data) ? data : []
 
   const tenants =
     statusFilter === 'all'
@@ -105,7 +106,7 @@ const TenantDirectoryTable = () => {
             {tenants.length > 0 ? (
               tenants.map((tenant, index) => (
                 <Table.Row key={tenant.id}>
-                  <Table.Cell className="text-slate-400">{rangeStart + index ?? 0}</Table.Cell>
+                  <Table.Cell className="text-slate-400">{rangeStart + index}</Table.Cell>
                   <Table.Cell className="font-medium text-slate-900">
                     {tenant.companyName ?? 'Unknown Company'}
                   </Table.Cell>

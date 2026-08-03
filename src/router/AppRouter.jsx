@@ -16,6 +16,7 @@ import CustomerFeedbackPage from '@features/customerPortal/pages/CustomerFeedbac
 import LoginPage from '@features/auth/pages/LoginPage.jsx'
 import RegisterPage from '@features/auth/pages/RegisterPage.jsx'
 import DashboardPage from '@features/dashboard/pages/DashboardPage.jsx'
+import TriageInboxPage from '@features/triage/pages/TriageInboxPage.jsx'
 import CategoriesPage from '@features/categories/pages/CategoriesPage.jsx'
 import BacklogReviewPage from '@features/backlog/pages/BacklogReviewPage.jsx'
 import StoryDetailPage from '@features/backlog/pages/StoryDetailPage.jsx'
@@ -54,6 +55,8 @@ export default function AppRouter() {
 
           <Route element={<ProtectedRoute requiredRoles={REQUIRE_PRODUCT_OWNER} />}>
             <Route path={ROUTES.workspaceDashboard} element={<DashboardPage />} />
+            <Route path={ROUTES.workspaceTriage} element={<TriageInboxPage />} />
+            <Route path={ROUTES.workspaceTriageDetail} element={<TriageInboxPage />} />
             <Route path={ROUTES.workspaceSettings} element={<SettingsPage />} />
             <Route path={ROUTES.workspaceJiraIntegration} element={<JiraIntegrationPage />} />
             <Route path={ROUTES.workspaceApiKeys} element={<ApiKeysPage />} />
