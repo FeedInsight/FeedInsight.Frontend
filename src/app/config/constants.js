@@ -23,6 +23,8 @@ export const CHAT_SENDER_ROLE = {
 }
 
 export const QUERY_KEYS = {
+  feedbacks: ['feedbacks'],
+  feedbackDetail: (id) => ['feedbacks', id],
   categories: ['categories'],
   draftStories: ['stories', 'draft'],
   story: (id) => ['stories', id],
@@ -37,4 +39,5 @@ export const QUERY_KEYS = {
 
 export const HTTP_HEADERS = {
   API_KEY: 'X-Api-Key',
+  TENANT_ID: 'X-Tenant-Id',
 }

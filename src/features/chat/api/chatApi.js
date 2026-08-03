@@ -30,6 +30,6 @@ export async function sendChatMessage(sessionId, content) {
 }
 
 export async function clearChatSession(sessionId) {
-  const { data } = await axiosClient.delete(ENDPOINTS.chat.clearSession(sessionId))
+  const { data } = await axiosClient.delete(ENDPOINTS.chat.sessionDetail(sessionId))
   return data
 }

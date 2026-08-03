@@ -12,9 +12,19 @@ import { useUiStore } from '@app/store/uiStore.js'
  * so ChatWindow (a sibling component) can react to it.
  */
 export default function ChatSessionList() {
-  const { data: sessions = [] } = useChatSessions()
+  const { data: rawSessions } = useChatSessions()
   const { activeChatSessionId, setActiveChatSessionId } = useUiStore()
   const { mutate: createSession, isPending } = useCreateChatSession()
+
+  const sessions = Array.isArray(rawSessions)
+    ? rawSessions
+    : Array.isArray(rawSessions?.items)
+    ? rawSessions.items
+    : Array.isArray(rawSessions?.data)
+    ? rawSessions.data
+    : Array.isArray(rawSessions?.$values)
+    ? rawSessions.$values
+    : []
 
   return (
     <div className="flex w-64 flex-col gap-2 border-r border-slate-200 p-3">

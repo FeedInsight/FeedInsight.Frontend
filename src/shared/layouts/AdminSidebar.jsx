@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,
+  Inbox,
   Tags,
   ListChecks,
   MessageSquare,
@@ -23,6 +24,7 @@ import FeedInsightLogoText from '@shared/components/ui/FeedInsightLogoText'
 
 const NAV_ITEMS = [
   { to: ROUTES.workspaceDashboard, label: 'Dashboard', icon: LayoutDashboard, roles: REQUIRE_PRODUCT_OWNER },
+  { to: ROUTES.workspaceTriage, label: 'Triage Inbox', icon: Inbox, roles: REQUIRE_PRODUCT_OWNER },
   { to: ROUTES.workspaceCategories, label: 'Categories', icon: Tags, roles: REQUIRE_PRODUCT_OWNER },
   { to: ROUTES.workspaceBacklog, label: 'Backlog Review', icon: ListChecks, roles: REQUIRE_PRODUCT_OWNER },
   { to: ROUTES.workspaceAssistant, label: 'AI Assistant', icon: MessageSquare, roles: REQUIRE_PRODUCT_OWNER },

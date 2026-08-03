@@ -15,13 +15,39 @@ import { ENDPOINTS } from '@shared/api/endpoints.js'
  * waiting for classification results.
  */
 export async function submitFeedback({ rawContent, submitterEmail, screenshot }) {
-  const formData = new FormData()
-  formData.append('rawContent', rawContent)
-  if (submitterEmail) formData.append('submitterEmail', submitterEmail)
-  if (screenshot) formData.append('screenshot', screenshot)
+  const payload = {
+    rawContent,
+    submitterEmail: submitterEmail || undefined,
+  }
 
-  const { data } = await axiosClient.post(ENDPOINTS.feedback.submit, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
-  return data
+  if (screenshot) {
+    const formData = new FormData()
+    formData.append('rawContent', rawContent)
+    if (submitterEmail) formData.append('submitterEmail', submitterEmail)
+    formData.append('screenshot', screenshot)
+    try {
+      const { data } = await axiosClient.post(ENDPOINTS.feedback.submit, formData)
+      return data
+    } catch (err) {
+      if (err?.response?.status === 415) {
+        const { data } = await axiosClient.post(ENDPOINTS.feedback.submit, payload)
+        return data
+      }
+      throw err
+    }
+  }
+
+  try {
+    const { data } = await axiosClient.post(ENDPOINTS.feedback.submit, payload)
+    return data
+  } catch (err) {
+    if (err?.response?.status === 415) {
+      const formData = new FormData()
+      formData.append('rawContent', rawContent)
+      if (submitterEmail) formData.append('submitterEmail', submitterEmail)
+      const { data } = await axiosClient.post(ENDPOINTS.feedback.submit, formData)
+      return data
+    }
+    throw err
+  }
 }

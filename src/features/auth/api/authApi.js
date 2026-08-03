@@ -12,11 +12,18 @@ export async function register(registrationData) {
   return data
 }
 
-export async function logout() {
+export async function logout(tokens = {}) {
   try {
-    await axiosClient.post(ENDPOINTS.auth.logout)
-  } catch (error) {
-    console.warn('Backend logout call failed or endpoint unavailable:', error)
+    const payload = tokens?.refreshToken
+      ? { refreshToken: tokens.refreshToken }
+      : tokens?.token
+      ? { token: tokens.token }
+      : {}
+    await axiosClient.post(ENDPOINTS.auth.logout, payload, {
+      headers: { 'Content-Type': 'application/json' },
+    })
+  } catch {
+    // Silent catch so client-side logout completes smoothly without console errors
   }
 }
 

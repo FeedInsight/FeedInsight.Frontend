@@ -6,6 +6,8 @@ import { useAuthStore } from '@app/store/authStore.js'
 import { useTenantStore } from '@app/store/tenantStore.js'
 import { getDashboardRouteForRole } from '@shared/utils/roleUtils.js'
 
+import { env } from '@app/config/env.js'
+
 export function useLogin() {
   const navigate = useNavigate()
   const setSession = useAuthStore((s) => s.setSession)
@@ -33,6 +35,7 @@ export function useLogin() {
     onSuccess: (result) => {
       const response = result?.data ?? result
       const token = response?.accessToken ?? response?.token
+      const refreshToken = response?.refreshToken
       let user = response?.user
 
       if (!user && response) {
@@ -46,7 +49,7 @@ export function useLogin() {
           firstName: response.firstName,
           lastName: response.lastName,
           role,
-          tenantId: response.tenantId,
+          tenantId: response.tenantId || response.tenant_id || response.TenantId,
         }
       }
 
@@ -56,10 +59,10 @@ export function useLogin() {
         return
       }
 
+      const jwtPayload = decodeJwtPayload(token)
       if (!user || !user.id) {
-        const jwtPayload = decodeJwtPayload(token)
         user = {
-          id: user?.id ?? jwtPayload?.sub,
+          id: user?.id ?? jwtPayload?.sub ?? jwtPayload?.nameid,
           email: user?.email ?? jwtPayload?.email,
           firstName: user?.firstName ?? jwtPayload?.given_name,
           lastName: user?.lastName ?? jwtPayload?.family_name,
@@ -70,8 +73,27 @@ export function useLogin() {
           tenantId:
             user?.tenantId ||
             jwtPayload?.tenantId ||
+            jwtPayload?.tenant_id ||
+            jwtPayload?.TenantId ||
             jwtPayload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/tenantid'],
         }
+      }
+
+      const effectiveTenantId =
+        user?.tenantId ||
+        response?.tenantId ||
+        response?.tenant_id ||
+        jwtPayload?.tenantId ||
+        jwtPayload?.tenant_id ||
+        jwtPayload?.TenantId ||
+        jwtPayload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/tenantid'] ||
+        env.devTenantId
+
+      if (effectiveTenantId) {
+        user.tenantId = effectiveTenantId
+        setTenant(effectiveTenantId)
+      } else {
+        console.warn('Login response has no tenantId; tenant header will not be set.')
       }
 
       if (!user || !user.id) {
@@ -80,12 +102,7 @@ export function useLogin() {
         return
       }
 
-      setSession(token, user)
-      if (user.tenantId) {
-        setTenant(user.tenantId)
-      } else {
-        console.warn('Login response has no tenantId; tenant header will not be set.')
-      }
+      setSession(token, user, refreshToken)
 
       const targetRoute = getDashboardRouteForRole(user.role)
       toast.success('Logged in successfully!')

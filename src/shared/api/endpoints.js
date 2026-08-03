@@ -1,84 +1,110 @@
 export const ENDPOINTS = {
-  // --- Public / Customer Portal (no auth, requires X-Tenant-Id) ---
+  // --- Public Ingestion / Customer Portal ---
   feedback: {
-    submit: '/public/feedback', // POST multipart/form-data -> SubmitFeedbackCommand
+    submit: '/api/Ingestion/feedback', // POST multipart/form-data -> SubmitFeedbackCommand
+    list: '/api/feedbacks', // GET feedback list
+    detail: (id) => `/api/feedbacks/${id}`,
   },
 
   // --- Auth (Admin Portal) ---
   auth: {
-    login: '/Auth/login', // POST { email, password } -> { token, user }
-    register: '/Auth/register',
-    refresh: '/api/Auth/refresh', // POST -> RefreshTokenCommand
-    logout: '/api/Auth/logout', // POST -> LogoutCommand
-    registerAdmin: '/api/Auth/register-admin', // POST -> RegisterUserCommand
-    me: '/Profile/me', // PUT -> UpdateProfileCommand (not GET)
-    mePassword: '/Profile/me/password',
+    login: '/api/Auth/login', // POST { email, password }
+    register: '/api/Auth/register', // POST { name, email, password }
+    refresh: '/api/Auth/refresh', // POST
+    logout: '/api/Auth/logout', // POST
+    registerAdmin: '/api/Auth/register-admin', // POST
+    me: '/api/Profile/me',
+    mePassword: '/api/Profile/me/password',
+  },
+
+  // --- Profile ---
+  profile: {
+    update: '/api/Profile/me', // PUT
+    updatePassword: '/api/Profile/me/password', // PUT
   },
 
   // --- Dashboard / Analytics ---
   analytics: {
-    dailySnapshots: '/analytics/daily-snapshots', // GET ?from=&to=
+    dailySnapshots: '/api/analytics/daily-snapshots', // GET ?from=&to=
   },
 
   // --- Categories ---
   categories: {
-    list: '/categories', // GET
-    create: '/categories', // POST
-    update: '/categories', // PUT
-    remove: (id) => `/categories/${id}`, // DELETE (soft delete)
+    list: '/api/Categories', // GET
+    create: '/api/Categories', // POST
+    update: '/api/Categories', // PUT
+    remove: (id) => `/api/Categories/${id}`, // DELETE
   },
 
   // --- Backlog Review Workspace ---
   stories: {
-    listDrafts: '/stories/draft', // GET -> GetDraftStoriesQuery
-    detail: (id) => `/stories/${id}`, // GET
-    approve: (id) => `/stories/${id}/approve`, // POST -> ApproveStoryCommandHandler
-    reject: (id) => `/stories/${id}/reject`, // POST
-    publishToJira: (id) => `/stories/${id}/publish`, // POST -> triggers Jira issue creation
-    duplicates: (id) => `/stories/${id}/duplicates`, // GET -> Qdrant K-NN matches
+    listDrafts: '/api/stories/draft', // GET
+    detail: (id) => `/api/stories/${id}`, // GET
+    approve: (id) => `/api/stories/${id}/approve`, // POST
+    reject: (id) => `/api/stories/${id}/reject`, // POST
+    publishToJira: (id) => `/api/stories/${id}/publish`, // POST
+    duplicates: (id) => `/api/stories/${id}/duplicates`, // GET
   },
 
   // --- AI Product Assistant (Chat) ---
   chat: {
-    sessions: '/chat/sessions', // GET (list), POST (create)
-    sessionMessages: (sessionId) => `/chat/sessions/${sessionId}/messages`, // GET, POST -> SendAssistantMessageCommand
-    clearSession: (sessionId) => `/chat/sessions/${sessionId}`, // DELETE -> ClearHistoryCommandHandler
+    sessions: '/api/ChatSessions', // GET, POST
+    sessionDetail: (sessionId) => `/api/ChatSessions/${sessionId}`, // GET, PATCH, DELETE
+    sessionMessages: (sessionId) => `/api/ChatSessions/${sessionId}/messages`, // GET, POST
   },
 
-  // --- Tenant Settings (Jira connection) ---
+  // --- Tenant Settings & Management ---
   tenant: {
-    settings: '/tenant/settings', // GET, PUT
-    testJiraConnection: '/tenant/settings/jira/test', // POST
-    regenerateWebhookSecret: '/tenant/settings/jira/webhook-secret', // POST
-    configureJiraIntegration: '/Tenants/my-company/jira-config',
+    updateMyCompany: '/api/Tenants/my-company', // PUT
+    configureJiraIntegration: '/api/Tenants/my-company/jira-config', // PUT
+    addOwner: '/api/Tenants/my-company/owners', // POST
+    lookup: '/api/Tenants/lookup', // GET
+    updateStatus: (id) => `/api/Tenants/${id}/status`, // PATCH
+    testJiraCreate: (tenantId) => `/api/TestJira/${tenantId}/create`, // POST
+    testJiraUpdate: (tenantId, issueKey) => `/api/TestJira/${tenantId}/update/${issueKey}`, // PUT
+    jiraWebhook: (tenantId) => `/api/webhooks/jira/${tenantId}`, // POST
+    testJiraConnection: '/api/Tenants/my-company/jira-config/test',
+    regenerateWebhookSecret: '/api/Tenants/my-company/jira-config/webhook-secret',
+    settings: '/api/Tenants/my-company',
   },
-
-  // --- Admin Users ---
-  adminUsers: {
-    list: '/admin-users', // GET
-    invite: '/admin-users/invite', // POST
-    updateRole: (id) => `/admin-users/${id}/role`, // PUT
-    deactivate: (id) => `/admin-users/${id}/deactivate`, // POST
-  },
-
-  // --- Users (Product Owners) ---
-  users: {
-    productOwners: '/Users/product-owners',
-    lock: (id) => `/Users/${id}/lock`,
-    unlock: (id) => `/Users/${id}/unlock`,
-  },
-
-  // --- Tenants ---
   tenants: {
-    lookup: '/Tenants/lookup',
-    updateStatus: (id) => `/Tenants/${id}/status`,
-    updateMyCompany: '/Tenants/my-company',
+    updateMyCompany: '/api/Tenants/my-company',
+    configureJiraIntegration: '/api/Tenants/my-company/jira-config',
+    addOwner: '/api/Tenants/my-company/owners',
+    lookup: '/api/Tenants/lookup',
+    updateStatus: (id) => `/api/Tenants/${id}/status`,
+    testJiraCreate: (tenantId) => `/api/TestJira/${tenantId}/create`,
+    testJiraUpdate: (tenantId, issueKey) => `/api/TestJira/${tenantId}/update/${issueKey}`,
+    jiraWebhook: (tenantId) => `/api/webhooks/jira/${tenantId}`,
+    testJiraConnection: '/api/Tenants/my-company/jira-config/test',
+    regenerateWebhookSecret: '/api/Tenants/my-company/jira-config/webhook-secret',
+    settings: '/api/Tenants/my-company',
   },
 
   // --- Tenant API Keys ---
   apiKeys: {
-    list: '/Tenants/my-company/api-keys',
-    create: '/Tenants/my-company/api-keys',
-    revoke: (id) => `/Tenants/my-company/api-keys/${id}`,
+    list: '/api/Tenants/my-company/api-keys', // GET
+    create: '/api/Tenants/my-company/api-keys', // POST
+    revoke: (id) => `/api/Tenants/my-company/api-keys/${id}`, // DELETE
+  },
+
+  // --- Users ---
+  users: {
+    productOwners: '/api/Users/product-owners', // GET
+    lock: (id) => `/api/Users/${id}/lock`, // POST
+    unlock: (id) => `/api/Users/${id}/unlock`, // POST
+  },
+
+  // --- Admin Users (Legacy alias mapping) ---
+  adminUsers: {
+    list: '/api/admin-users',
+    invite: '/api/admin-users/invite',
+    updateRole: (id) => `/api/admin-users/${id}/role`,
+    deactivate: (id) => `/api/admin-users/${id}/deactivate`,
+  },
+
+  // --- Test & Search ---
+  testSearch: {
+    search: '/api/TestSearch/search', // GET
   },
 }
