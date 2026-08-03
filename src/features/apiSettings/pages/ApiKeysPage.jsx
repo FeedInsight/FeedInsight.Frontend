@@ -3,22 +3,27 @@ import IngestionCodeSnippets from '@features/apiSettings/components/IngestionCod
 import GenerateApiKeyModal from '../components/GenerateApiKeyModal'
 import { useState } from 'react'
 import Button from '@shared/components/ui/Button'
-import { Plus } from 'lucide-react'
+import { Plus, KeyRound } from 'lucide-react'
 
 export default function ApiKeysPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 pb-5">
         <div>
-          <h1 className="text-xl font-semibold text-slate-900">API Keys</h1>
-          <p className="text-sm text-slate-500">Use these values to publish feedback into the ingestion endpoint.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
+            <KeyRound className="w-6 h-6 text-brand-600" />
+            API Keys & Ingestion
+          </h1>
+          <p className="text-sm text-slate-500 mt-0.5">
+            Manage authorization keys used to securely transmit customer feedback from external apps to the ingestion pipeline.
+          </p>
         </div>
 
-        <Button onClick={() => setIsModalOpen(true)}>
+        <Button variant="primary" size="md" onClick={() => setIsModalOpen(true)} className="shadow-md shadow-brand-500/20">
           <Plus size={16} />
-          Generate new key
+          <span>Generate New Key</span>
         </Button>
       </div>
 
@@ -28,7 +33,7 @@ export default function ApiKeysPage() {
       </div>
 
       <GenerateApiKeyModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-
     </div>
   )
 }
+
