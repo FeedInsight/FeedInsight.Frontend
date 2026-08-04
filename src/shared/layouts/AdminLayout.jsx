@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom'
 import AdminSidebar from './AdminSidebar.jsx'
 import AdminTopbar from './AdminTopbar.jsx'
+import ChatDrawer from '@features/chat/components/ChatDrawer.jsx'
 import ErrorBoundary from '@shared/components/ErrorBoundary.jsx'
 
 /**
@@ -23,7 +24,7 @@ export default function AdminLayout() {
           </ErrorBoundary>
         </main>
       </div>
+      <ChatDrawer />
     </div>
   )
 }
-
