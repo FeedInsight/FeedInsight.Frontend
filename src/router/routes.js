@@ -1,6 +1,5 @@
 export const ROUTES = {
-  customerFeedback: '/feedback/:tenantKey',
-  customerFeedbackDefault: '/feedback',
+  notFound: '/404',
 
   login: '/login',
   register: '/register',
@@ -15,8 +14,10 @@ export const ROUTES = {
   workspaceSettings: '/workspace/settings',
   workspaceJiraIntegration: '/workspace/integrations',
   workspaceApiKeys: '/workspace/api-keys',
+  workspaceAddProductOwner: '/workspace/add-product-owner',
 
   superAdminTenants: '/super-admin/tenants',
-  superAdminUsers: '/super-admin/users',
+  superAdminUsers: '/super-admin/product-owners',
+  superAdminAddAdmin: '/super-admin/add-super-admin',
   superAdminSettings: '/super-admin/settings',
 }

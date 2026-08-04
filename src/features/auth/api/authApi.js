@@ -12,6 +12,11 @@ export async function register(registrationData) {
   return data
 }
 
+export async function registerAdmin(adminData) {
+  const { data } = await axiosClient.post(ENDPOINTS.auth.registerAdmin, adminData)
+  return data
+}
+
 export async function logout(tokens = {}) {
   try {
     const payload = tokens?.refreshToken

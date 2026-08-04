@@ -7,6 +7,7 @@ import {
   MessageSquare,
   Settings,
   Users,
+  UserPlus,
   Plug,
   KeyRound,
   Building,
@@ -47,6 +48,12 @@ const NAV_ITEMS = [
     roles: REQUIRE_PRODUCT_OWNER,
   },
   {
+    to: ROUTES.workspaceAddProductOwner,
+    label: 'Add Product Owner',
+    icon: UserPlus,
+    roles: REQUIRE_PRODUCT_OWNER,
+  },
+  {
     to: ROUTES.superAdminTenants,
     label: 'Tenants Directory',
     icon: Building,
@@ -54,8 +61,15 @@ const NAV_ITEMS = [
   },
   {
     to: ROUTES.superAdminUsers,
-    label: 'Admin Users',
-    icon: Users, roles: REQUIRE_SUPER_ADMIN,
+    label: 'Product Owners',
+    icon: Users,
+    roles: REQUIRE_SUPER_ADMIN,
+  },
+  {
+    to: ROUTES.superAdminAddAdmin,
+    label: 'Add Super Admin',
+    icon: UserPlus,
+    roles: REQUIRE_SUPER_ADMIN,
   },
   {
     to: ROUTES.superAdminSettings,

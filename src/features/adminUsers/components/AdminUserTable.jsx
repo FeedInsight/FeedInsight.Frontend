@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Lock, Unlock, UserPlus, Loader2, Filter, Building2, UserCheck, UserX, Users } from 'lucide-react'
+import { Lock, Unlock, Building2, Users } from 'lucide-react'
 import Table from '@shared/components/ui/Table.jsx'
 import Button from '@shared/components/ui/Button.jsx'
 import Badge from '@shared/components/ui/Badge.jsx'
@@ -11,13 +11,11 @@ import {
   useTenantLookup,
   useAdminUserMutations,
 } from '@features/adminUsers/hooks/useAdminUsers.js'
-import InviteUserModal from './InviteUserModal.jsx'
 import LockConfirmModal from './LockConfirmModal.jsx'
 import SearchBar from '@shared/components/ui/SearchBar.jsx'
 import TablePagination from '@shared/components/ui/TablePagination.jsx'
 
 export default function AdminUserTable() {
-  const [isInviteOpen, setIsInviteOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTenantId, setSelectedTenantId] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -137,18 +135,6 @@ export default function AdminUserTable() {
                 <option value="locked">Locked</option>
               </select>
             </div>
-          </div>
-
-          <div className="flex justify-end shrink-0">
-            <Button
-              variant="primary"
-              size="md"
-              onClick={() => setIsInviteOpen(true)}
-              className="shadow-md shadow-brand-500/20"
-            >
-              <UserPlus size={16} />
-              <span>Invite Admin User</span>
-            </Button>
           </div>
         </div>
       </div>
@@ -279,8 +265,6 @@ export default function AdminUserTable() {
           />
         </div>
       </div>
-
-      <InviteUserModal isOpen={isInviteOpen} onClose={() => setIsInviteOpen(false)} />
 
       <LockConfirmModal
         isOpen={Boolean(pendingLockUser)}

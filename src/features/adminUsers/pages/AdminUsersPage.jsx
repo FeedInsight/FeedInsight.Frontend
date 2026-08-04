@@ -14,10 +14,10 @@ export default function AdminUsersPage() {
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
             <Users className="w-6 h-6 text-brand-600" />
-            Admin Users Directory
+            Product Owners
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            Manage product owners, platform administrators, and user security permissions across all tenant accounts.
+            Manage product owners, platform tenant accounts, and user security permissions across all tenants.
           </p>
         </div>
       </div>

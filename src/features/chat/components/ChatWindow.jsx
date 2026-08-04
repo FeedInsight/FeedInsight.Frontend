@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from 'react'
 import EmptyState from '@shared/components/ui/EmptyState.jsx'
 import Spinner from '@shared/components/ui/Spinner.jsx'
-import { MessageSquare, Sparkles, RefreshCw, Trash2 } from 'lucide-react'
+import { MessageSquare, Sparkles } from 'lucide-react'
 import MessageBubble from './MessageBubble.jsx'
 import ChatInput from './ChatInput.jsx'
 import TypingIndicator from './TypingIndicator.jsx'
@@ -22,7 +22,7 @@ import Button from '@shared/components/ui/Button.jsx'
  */
 export default function ChatWindow({ className }) {
   const { activeChatSessionId, setActiveChatSessionId } = useUiStore()
-  const { data: rawMessages, isLoading, refetch } = useChatMessages(activeChatSessionId)
+  const { data: rawMessages, isLoading } = useChatMessages(activeChatSessionId)
   const {
     mutate: sendMessage,
     isPending,
@@ -74,7 +74,7 @@ export default function ChatWindow({ className }) {
       createSession(
         {},
         {
-          onSuccess: (newSession) => {
+          onSuccess: () => {
             setLocalPendingMessage(text)
             sendMessage(text)
           },

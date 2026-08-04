@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Pencil, Trash2, Plus, Check, X, Tags } from 'lucide-react'
+import { Pencil, Trash2, Plus, Check, Tags } from 'lucide-react'
 import Table from '@shared/components/ui/Table.jsx'
 import Button from '@shared/components/ui/Button.jsx'
 import EmptyState from '@shared/components/ui/EmptyState.jsx'
