@@ -11,6 +11,21 @@ export async function createChatSession(payload = {}) {
   return data
 }
 
+export async function updateChatSession(sessionId, payload) {
+  try {
+    const { data } = await axiosClient.patch(ENDPOINTS.chat.sessionDetail(sessionId), payload)
+    return data
+  } catch {
+    // Retry with PUT if PATCH is not handled on endpoint
+    try {
+      const { data } = await axiosClient.put(ENDPOINTS.chat.sessionDetail(sessionId), payload)
+      return data
+    } catch {
+      return null
+    }
+  }
+}
+
 export async function fetchChatMessages(sessionId) {
   const { data } = await axiosClient.get(ENDPOINTS.chat.sessionMessages(sessionId))
   return data
