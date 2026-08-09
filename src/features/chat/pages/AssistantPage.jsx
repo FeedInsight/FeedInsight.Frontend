@@ -16,10 +16,6 @@ export default function AssistantPage() {
             <h1 className="text-2xl font-black tracking-tight text-slate-900">
               AI Product Assistant
             </h1>
-            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-brand-50 to-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-brand-700 border border-brand-200/80 shadow-2xs">
-              <Sparkles size={12} className="text-brand-600 animate-pulse" />
-              GPT-4o mini via Semantic Kernel
-            </span>
           </div>
           <p className="mt-1 text-xs text-slate-500 font-medium">
             Query conversational intelligence across Qdrant vector embeddings and SQL databases to

@@ -83,24 +83,17 @@ export default function AddProductOwnerPage() {
 
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
-      {/* Header */}
       <div className="flex flex-col gap-1 border-b border-slate-200/80 pb-5">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="inline-flex items-center gap-1 rounded-md bg-brand-50 px-2 py-0.5 text-xs font-semibold text-brand-700 ring-1 ring-inset ring-brand-600/20">
-            <Building2 size={12} className="text-brand-600" />
-            Tenant Management
-          </span>
-        </div>
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
           <UserPlus className="w-6 h-6 text-brand-600" />
           Add Product Owner
         </h1>
         <p className="text-sm text-slate-500 mt-0.5">
-          Add a new Product Owner to your organization (tenant) with administrative access to workspace features.
+          Add a new Product Owner to your organization (tenant) with administrative access to
+          workspace features.
         </p>
       </div>
 
-      {/* Success Alert Banner */}
       {successMessage && (
         <div className="flex items-start gap-3 rounded-xl bg-emerald-50 p-4 text-emerald-800 border border-emerald-200 shadow-2xs">
           <CheckCircle2 size={20} className="text-emerald-600 shrink-0 mt-0.5" />
@@ -111,7 +104,6 @@ export default function AddProductOwnerPage() {
         </div>
       )}
 
-      {/* Form Card */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6">
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
