@@ -21,6 +21,7 @@ const Input = forwardRef(({ label, error, rightElement, className, id, ...props 
           ref={ref}
           aria-invalid={Boolean(error)}
           aria-describedby={errorId}
+          {...props}
           type={isPassword && showPassword ? 'text' : props.type}
           className={cn(
             'w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 disabled:bg-slate-100 disabled:text-slate-500',
@@ -28,7 +29,6 @@ const Input = forwardRef(({ label, error, rightElement, className, id, ...props 
             error && 'border-red-400 focus:border-red-500 focus:ring-red-100',
             className,
           )}
-          {...props}
         />
         {isPassword ? (
           <button
