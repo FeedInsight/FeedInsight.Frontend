@@ -9,5 +9,8 @@ export function getDashboardRouteForRole(role) {
   if (role === ROLES.SUPER_ADMIN) {
     return ROUTES.superAdminTenants
   }
+  if (role === ROLES.COMPANY_CUSTOMER) {
+    return ROUTES.workspaceCustomerFeedback
+  }
   return ROUTES.workspaceDashboard
 }
