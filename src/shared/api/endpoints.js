@@ -6,6 +6,11 @@ export const ENDPOINTS = {
     detail: (id) => `/feedbacks/${id}`,
   },
 
+  customerFeedback: {
+    submit: '/customer/feedback', // POST submit new feedback ticket
+    history: '/customer/feedback', // GET all feedback submitted by authenticated user
+  },
+
   // --- Auth (Admin Portal) ---
   auth: {
     login: '/Auth/login', // POST { email, password }

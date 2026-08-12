@@ -1,6 +1,7 @@
 export const ROLES = {
   SUPER_ADMIN: 'SuperAdmin',
   PRODUCT_OWNER: 'ProductOwner',
+  COMPANY_CUSTOMER: 'CompanyCustomer',
 }
 
 export const STORY_STATUS = {
@@ -24,6 +25,7 @@ export const CHAT_SENDER_ROLE = {
 export const QUERY_KEYS = {
   feedbacks: ['feedbacks'],
   feedbackDetail: (id) => ['feedbacks', id],
+  customerFeedbackHistory: ['customer-feedback-history'],
   categories: ['categories'],
   draftStories: ['stories', 'draft'],
   story: (id) => ['stories', id],

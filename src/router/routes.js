@@ -5,6 +5,7 @@ export const ROUTES = {
   register: '/register',
 
   workspaceDashboard: '/workspace/dashboard',
+  workspaceCustomerFeedback: '/workspace/customer-feedback',
   workspaceTriage: '/workspace/triage',
   workspaceTriageDetail: '/workspace/triage/:feedbackId',
   workspaceCategories: '/workspace/categories',

@@ -4,16 +4,19 @@ import ProtectedRoute from './ProtectedRoute.jsx'
 import {
   REQUIRE_PRODUCT_OWNER,
   REQUIRE_SUPER_ADMIN,
+  REQUIRE_COMPANY_CUSTOMER,
 } from '@shared/constants/roles.js'
 import { useAuth } from '@shared/hooks/useAuth.js'
 import { getDashboardRouteForRole } from '@shared/utils/roleUtils.js'
 
 import AuthLayout from '@shared/layouts/AuthLayout.jsx'
 import AdminLayout from '@shared/layouts/AdminLayout.jsx'
+import CustomerLayout from '@shared/layouts/CustomerLayout.jsx'
 
 import LoginPage from '@features/auth/pages/LoginPage.jsx'
 import RegisterPage from '@features/auth/pages/RegisterPage.jsx'
 import DashboardPage from '@features/dashboard/pages/DashboardPage.jsx'
+import CustomerFeedbackPage from '@features/customerFeedback/pages/CustomerFeedbackPage.jsx'
 import TriageInboxPage from '@features/triage/pages/TriageInboxPage.jsx'
 import CategoriesPage from '@features/categories/pages/CategoriesPage.jsx'
 import BacklogReviewPage from '@features/backlog/pages/BacklogReviewPage.jsx'
@@ -47,7 +50,6 @@ export default function AppRouter() {
 
       <Route element={<ProtectedRoute />}>
         <Route element={<AdminLayout />}>
-
           <Route element={<ProtectedRoute requiredRoles={REQUIRE_PRODUCT_OWNER} />}>
             <Route path={ROUTES.workspaceDashboard} element={<DashboardPage />} />
             <Route path={ROUTES.workspaceTriage} element={<TriageInboxPage />} />
@@ -62,13 +64,18 @@ export default function AppRouter() {
             <Route path={ROUTES.workspaceAssistant} element={<AssistantPage />} />
           </Route>
 
+          <Route element={<ProtectedRoute requiredRoles={REQUIRE_COMPANY_CUSTOMER} />}>
+            <Route element={<CustomerLayout />}>
+              <Route path={ROUTES.workspaceCustomerFeedback} element={<CustomerFeedbackPage />} />
+            </Route>
+          </Route>
+
           <Route element={<ProtectedRoute requiredRoles={REQUIRE_SUPER_ADMIN} />}>
             <Route path={ROUTES.superAdminTenants} element={<TenantsDirectoryPage />} />
             <Route path={ROUTES.superAdminUsers} element={<AdminUsersPage />} />
             <Route path={ROUTES.superAdminAddAdmin} element={<AddSuperAdminPage />} />
             <Route path={ROUTES.superAdminSettings} element={<SettingsPage />} />
           </Route>
-
         </Route>
       </Route>
 
