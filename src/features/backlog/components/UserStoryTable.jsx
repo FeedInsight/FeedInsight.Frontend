@@ -38,7 +38,7 @@ export default function UserStoryTable({
               as="th"
               className="py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-500"
             >
-              Title
+              Story
             </Table.Cell>
             <Table.Cell
               as="th"
@@ -84,6 +84,7 @@ export default function UserStoryTable({
             paginatedRows.map((story) => {
               const statusMeta = STORY_STATUS_META[story.status]
               const canEdit = story.source === 'FeedInsight' && story.status !== 'Synced'
+              const canSync = story.source === 'FeedInsight' && story.status !== 'Synced'
 
               return (
                 <Table.Row
@@ -136,13 +137,22 @@ export default function UserStoryTable({
                       </Button>
 
                       <Button
-                        variant="primary"
+                        variant={canSync ? 'primary' : 'secondary'}
                         size="xs"
                         onClick={() => onSync(story.id)}
-                        disabled={isSyncingId === story.id}
+                        disabled={!canSync || isSyncingId === story.id}
                         isLoading={isSyncingId === story.id}
                         loadingText="Syncing..."
-                        title="Sync to Jira"
+                        title={
+                          !canSync
+                            ? 'Sync is only allowed for FeedInsight stories that are not synced'
+                            : 'Sync to Jira'
+                        }
+                        className={
+                          !canSync
+                            ? 'bg-slate-100 text-slate-400 border-slate-200 hover:bg-slate-100 hover:text-slate-400'
+                            : ''
+                        }
                       >
                         <RefreshCw size={14} />
                         <span>Sync</span>
