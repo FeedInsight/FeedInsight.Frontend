@@ -8,6 +8,7 @@ const initialFormData = {
   firstName: '',
   lastName: '',
   workEmail: '',
+  companyType: 'Production',
   password: '',
 }
 
@@ -48,6 +49,10 @@ export default function RegisterForm() {
       newErrors.workEmail = 'Enter a valid email address'
     }
 
+    if (!formData.companyType) {
+      newErrors.companyType = 'Company type is required'
+    }
+
     if (!formData.password) {
       newErrors.password = 'Password is required'
     } else if (formData.password.length < 8) {
@@ -73,6 +78,7 @@ export default function RegisterForm() {
       firstName: formData.firstName.trim(),
       lastName: formData.lastName.trim(),
       email: formData.workEmail.trim().toLowerCase(),
+      companyType: formData.companyType,
       password: formData.password,
     }
 
@@ -133,6 +139,24 @@ export default function RegisterForm() {
         error={errors.workEmail}
         required
       />
+
+      <div className="flex flex-col gap-1">
+        <label htmlFor="companyType" className="text-sm font-medium text-slate-700">
+          Company Type
+        </label>
+        <select
+          id="companyType"
+          name="companyType"
+          value={formData.companyType}
+          onChange={handleChange}
+          disabled={isPending}
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 disabled:bg-slate-100 disabled:text-slate-500"
+        >
+          <option value="Production">Production</option>
+          <option value="Development">Development</option>
+        </select>
+        {errors.companyType && <span className="text-xs text-red-600">{errors.companyType}</span>}
+      </div>
 
       <Input
         label="Password"
