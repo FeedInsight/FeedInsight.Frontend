@@ -7,13 +7,6 @@ import DuplicateMatchPanel from '@features/backlog/components/DuplicateMatchPane
 import ApprovalActions from '@features/backlog/components/ApprovalActions.jsx'
 import { useStoryDetail } from '@features/backlog/hooks/useStoryDetail.js'
 
-/**
- * Detail/review screen for a single draft UserStory. Holds the "edited
- * fields" state that AcceptanceCriteriaEditor writes into and
- * ApprovalActions reads from on Approve, so a reviewer's edits are included
- * in the approval payload without a controller-level form library (the
- * editor is simple enough not to need react-hook-form here).
- */
 export default function StoryDetailPage() {
   const { storyId } = useParams()
   const { data: story, isLoading } = useStoryDetail(storyId)
