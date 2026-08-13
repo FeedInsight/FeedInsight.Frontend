@@ -3,11 +3,6 @@ import Button from '@shared/components/ui/Button.jsx'
 import { useApproveStory } from '@features/backlog/hooks/useApproveStory.js'
 import { CheckCircle, XCircle, Send } from 'lucide-react'
 
-/**
- * Terminal action bar for StoryDetailPage: Approve / Reject / Publish to
- * Jira. `getEditedFields` is a callback returning whatever the reviewer
- * changed in AcceptanceCriteriaEditor, sent as the approve payload.
- */
 export default function ApprovalActions({ storyId, status, getEditedFields }) {
   const { approve, reject, publish } = useApproveStory(storyId)
   const [rejectReason, setRejectReason] = useState('')

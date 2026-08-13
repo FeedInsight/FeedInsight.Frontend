@@ -2,17 +2,6 @@ import { useState } from 'react'
 import Textarea from '@shared/components/ui/Textarea.jsx'
 import Input from '@shared/components/ui/Input.jsx'
 
-/**
- * Editable view of the AI-drafted title + Given-When-Then
- * AcceptanceCriteria before a reviewer approves. Lifts its edited values up
- * via onChange so the parent (StoryDetailPage) can pass them into
- * approveStory's payload -- this component holds no mutation logic itself.
- *
- * `criteria` is expected as a single formatted string (Given/When/Then
- * lines) matching UserStories.AcceptanceCriteria's NVARCHAR column; if the
- * backend later structures this as an array of clauses, update the parsing
- * here rather than changing the DB contract assumption elsewhere.
- */
 export default function AcceptanceCriteriaEditor({ title, criteria, onChange }) {
   const [localTitle, setLocalTitle] = useState(title)
   const [localCriteria, setLocalCriteria] = useState(criteria)

@@ -43,8 +43,10 @@ export const ENDPOINTS = {
 
   // --- Backlog Review Workspace ---
   stories: {
-    listDrafts: '/stories/draft', // GET
-    detail: (id) => `/stories/${id}`, // GET
+    listUserStories: '/user-stories', // GET
+    detail: (id) => `/api/user-stories/${id}`, // GET
+    update: (id) => `/user-stories/${id}`, // PUT
+    syncToJira: (id) => `/user-stories/${id}/sync-to-jira`, // POST
     approve: (id) => `/stories/${id}/approve`, // POST
     reject: (id) => `/stories/${id}/reject`, // POST
     publishToJira: (id) => `/stories/${id}/publish`, // POST

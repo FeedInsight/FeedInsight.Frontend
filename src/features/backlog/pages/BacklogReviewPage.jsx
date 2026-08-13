@@ -1,44 +1,57 @@
 import { useState } from 'react'
 import Input from '@shared/components/ui/Input.jsx'
-import Spinner from '@shared/components/ui/Spinner.jsx'
-import EmptyState from '@shared/components/ui/EmptyState.jsx'
-import UserStoryCard from '@features/backlog/components/UserStoryCard.jsx'
-import TablePagination from '@shared/components/ui/TablePagination.jsx'
-import { useDraftStories } from '@features/backlog/hooks/useDraftStories.js'
-import { useDebounce } from '@shared/hooks/useDebounce.js'
+import { useUserStories, useUserStoryMutations } from '@features/backlog/hooks/useUserStories.js'
+import UserStoryTable from '@features/backlog/components/UserStoryTable.jsx'
 import { ListChecks, Search } from 'lucide-react'
 
-/**
- * "Backlog Review Workspace" list view. Search box
- * is debounced client-side before hitting useDraftStories.
- */
+const initialFilters = {
+  source: '',
+  isSynced: '',
+  searchTerm: '',
+  pageNumber: 1,
+  pageSize: 10,
+}
+
+const normalizeStories = (response) => {
+  const payload = response?.data ?? response
+  if (Array.isArray(payload)) return payload
+  if (Array.isArray(payload?.data)) return payload.data
+  if (Array.isArray(payload?.items)) return payload.items
+  if (Array.isArray(payload?.$values)) return payload.$values
+  return []
+}
+
 export default function BacklogReviewPage() {
-  const [search, setSearch] = useState('')
-  const [page, setPage] = useState(1)
-  const pageSize = 10
-  const debouncedSearch = useDebounce(search, 300)
-  const { data: rawStories, isLoading } = useDraftStories({ search: debouncedSearch })
+  const [filters, setFilters] = useState(initialFilters)
+  const { data: rawStories, isLoading } = useUserStories(filters)
+  const { update, sync } = useUserStoryMutations()
 
-  const stories = Array.isArray(rawStories)
-    ? rawStories
-    : Array.isArray(rawStories?.items)
-    ? rawStories.items
-    : Array.isArray(rawStories?.data)
-    ? rawStories.data
-    : Array.isArray(rawStories?.$values)
-    ? rawStories.$values
-    : []
+  const stories = normalizeStories(rawStories)
+  const totalItems = rawStories?.pagination?.totalItems ?? rawStories?.totalItems ?? stories.length
+  const page = Number(filters.pageNumber || 1)
+  const pageSize = Number(filters.pageSize || 10)
 
-  const totalItems = stories.length
-  const paginatedStories = stories.slice((page - 1) * pageSize, page * pageSize)
-  const rangeStart = totalItems > 0 ? (page - 1) * pageSize + 1 : 0
-  const rangeEnd = Math.min(page * pageSize, totalItems)
-  const hasNextPage = page * pageSize < totalItems
-  const hasPreviousPage = page > 1
+  const updateFilter = (field, value) => {
+    setFilters((current) => ({
+      ...current,
+      [field]: value,
+      ...(field !== 'pageNumber' && field !== 'pageSize' ? { pageNumber: 1 } : {}),
+    }))
+  }
+
+  const handleEdit = ({ id, payload }) => {
+    update.mutate(
+      { id, payload },
+      {
+        onSuccess: () => {
+          setFilters((current) => ({ ...current, pageNumber: 1 }))
+        },
+      },
+    )
+  }
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Executive Page Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 pb-5">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
@@ -46,55 +59,69 @@ export default function BacklogReviewPage() {
             Backlog Review
           </h1>
           <p className="text-sm text-slate-500 mt-0.5">
-            Inspect, refine, approve, or reject draft user stories generated from customer feedback triage.
+            Review user stories, filter by source and sync state, and trigger Jira synchronization.
           </p>
-        </div>
-
-        <div className="relative w-full sm:w-72">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-          <Input
-            placeholder="Search draft stories..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value)
-              setPage(1)
-            }}
-            className="w-full pl-8 text-xs bg-white border-slate-200 shadow-xs focus:bg-white rounded-xl"
-          />
         </div>
       </div>
 
-      {isLoading ? (
-        <div className="flex justify-center items-center py-20 bg-white rounded-2xl border border-slate-200/80">
-          <Spinner size={24} className="text-brand-600" />
-        </div>
-      ) : stories.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-12 text-center shadow-xs">
-          <EmptyState icon={ListChecks} title="No draft stories" description="Newly triaged feedback will appear here for review." />
-        </div>
-      ) : (
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-3.5">
-            {paginatedStories.map((story) => (
-              <UserStoryCard key={story.id} story={story} />
-            ))}
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-slate-600">Source</label>
+            <select
+              value={filters.source}
+              onChange={(e) => updateFilter('source', e.target.value)}
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+            >
+              <option value="">All</option>
+              <option value="FeedInsight">FeedInsight</option>
+              <option value="Jira">Jira</option>
+            </select>
           </div>
 
-          <div className="px-5 py-1 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
-            <TablePagination
-              rangeStart={rangeStart}
-              rangeEnd={rangeEnd}
-              totalItems={totalItems}
-              hasNextPage={hasNextPage}
-              hasPreviousPage={hasPreviousPage}
-              onNext={() => setPage((p) => p + 1)}
-              onPrevious={() => setPage((p) => Math.max(p - 1, 1))}
-              isLoading={isLoading}
-            />
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-slate-600">Sync State</label>
+            <select
+              value={filters.isSynced}
+              onChange={(e) => updateFilter('isSynced', e.target.value)}
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+            >
+              <option value="">All</option>
+              <option value="true">Synced</option>
+              <option value="false">Not synced</option>
+            </select>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-slate-600">Search</label>
+            <div className="relative">
+              <Search
+                size={14}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <Input
+                value={filters.searchTerm}
+                onChange={(e) => updateFilter('searchTerm', e.target.value)}
+                placeholder="Search title or acceptance criteria"
+                className="w-full pl-8"
+              />
+            </div>
           </div>
         </div>
-      )}
+      </div>
+
+      <UserStoryTable
+        rows={stories}
+        isLoading={isLoading}
+        page={page}
+        pageSize={pageSize}
+        totalItems={totalItems}
+        onPageChange={(nextPage) => setFilters((current) => ({ ...current, pageNumber: nextPage }))}
+        onEdit={handleEdit}
+        onSync={(storyId) => sync.mutate(storyId)}
+        isSyncingId={sync.isPending ? sync.variables : null}
+        isEditingId={update.isPending ? update.variables?.id : null}
+      />
     </div>
   )
 }
-

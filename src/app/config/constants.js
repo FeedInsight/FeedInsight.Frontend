@@ -28,6 +28,7 @@ export const QUERY_KEYS = {
   customerFeedbackHistory: ['customer-feedback-history'],
   categories: ['categories'],
   draftStories: ['stories', 'draft'],
+  userStories: ['stories', 'user-stories'],
   story: (id) => ['stories', id],
   dailySnapshots: (range) => ['analytics', 'daily-snapshots', range],
   chatSessions: ['chat', 'sessions'],
