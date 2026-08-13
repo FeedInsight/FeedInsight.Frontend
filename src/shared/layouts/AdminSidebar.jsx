@@ -22,6 +22,7 @@ import {
 import { ROUTES } from '@router/routes.js'
 import FeedInsightLogo from '@shared/components/ui/FeedInsightLogo'
 import FeedInsightLogoText from '@shared/components/ui/FeedInsightLogoText'
+import { canAccessApiKeys } from '@shared/utils/roleUtils.js'
 
 const NAV_ITEMS = [
   { to: ROUTES.workspaceDashboard, label: 'Dashboard', icon: LayoutDashboard, roles: REQUIRE_PRODUCT_OWNER },
@@ -84,6 +85,10 @@ export default function AdminSidebar() {
   const { user } = useAuth()
 
   const visibleNavItems = NAV_ITEMS.filter((item) => {
+    if (item.to === ROUTES.workspaceApiKeys && !canAccessApiKeys(user?.companyType)) {
+      return false
+    }
+
     if (!item.roles) return true
     return item.roles.includes(user?.role)
   })

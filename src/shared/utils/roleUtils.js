@@ -14,3 +14,11 @@ export function getDashboardRouteForRole(role) {
   }
   return ROUTES.workspaceDashboard
 }
+
+export function isDevelopmentCompanyType(companyType) {
+  return companyType === 'Development'
+}
+
+export function canAccessApiKeys(companyType) {
+  return !isDevelopmentCompanyType(companyType)
+}

@@ -49,6 +49,7 @@ export function useLogin() {
           firstName: response.firstName,
           lastName: response.lastName,
           role,
+          companyType: response.companyType,
           tenantId: response.tenantId || response.tenant_id || response.TenantId,
         }
       }
@@ -70,6 +71,7 @@ export function useLogin() {
             user?.role ||
             jwtPayload?.role ||
             jwtPayload?.['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'],
+          companyType: user?.companyType || response?.companyType || jwtPayload?.companyType,
           tenantId:
             user?.tenantId ||
             jwtPayload?.tenantId ||
