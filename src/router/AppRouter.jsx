@@ -11,7 +11,6 @@ import { getDashboardRouteForRole } from '@shared/utils/roleUtils.js'
 
 import AuthLayout from '@shared/layouts/AuthLayout.jsx'
 import AdminLayout from '@shared/layouts/AdminLayout.jsx'
-import CustomerLayout from '@shared/layouts/CustomerLayout.jsx'
 
 import LoginPage from '@features/auth/pages/LoginPage.jsx'
 import RegisterPage from '@features/auth/pages/RegisterPage.jsx'
@@ -65,9 +64,8 @@ export default function AppRouter() {
           </Route>
 
           <Route element={<ProtectedRoute requiredRoles={REQUIRE_COMPANY_CUSTOMER} />}>
-            <Route element={<CustomerLayout />}>
-              <Route path={ROUTES.workspaceCustomerFeedback} element={<CustomerFeedbackPage />} />
-            </Route>
+            <Route path={ROUTES.customerFeedback} element={<CustomerFeedbackPage />} />
+            <Route path={ROUTES.customerSettings} element={<SettingsPage />} />
           </Route>
 
           <Route element={<ProtectedRoute requiredRoles={REQUIRE_SUPER_ADMIN} />}>
