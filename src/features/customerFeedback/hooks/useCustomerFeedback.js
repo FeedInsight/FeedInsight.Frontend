@@ -1,9 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import {
-  submitCustomerFeedback,
-  fetchCustomerFeedbackHistory,
-} from '@features/customerFeedback/api/customerFeedbackApi.js'
+  submitDevelopmentCustomerFeedback,
+  fetchDevelopmentCustomerFeedbacks,
+  fetchDevelopmentCompanyFeedbacks,
+  addDevelopmentCompanyComment,
+} from '../api/customerFeedbackApi.js'
 import { QUERY_KEYS } from '@app/config/constants.js'
 
 function getErrorMessage(error, fallback) {
@@ -17,25 +19,73 @@ function getErrorMessage(error, fallback) {
   )
 }
 
-export function useCustomerFeedbackHistory() {
+/**
+ * Hook to retrieve feedbacks submitted by the logged-in customer (Company Customer).
+ * @param {{ page?: number, pageSize?: number }} params
+ */
+export function useDevelopmentCustomerFeedbacks(params = {}) {
   return useQuery({
-    queryKey: QUERY_KEYS.customerFeedbackHistory,
-    queryFn: fetchCustomerFeedbackHistory,
-    staleTime: 1000 * 60,
+    queryKey: QUERY_KEYS.developmentCustomerFeedbacks(params),
+    queryFn: () => fetchDevelopmentCustomerFeedbacks(params),
   })
 }
 
-export function useSubmitCustomerFeedback() {
+/**
+ * Hook to submit feedback as a Company Customer.
+ */
+export function useSubmitDevelopmentCustomerFeedback() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: submitCustomerFeedback,
+    mutationFn: submitDevelopmentCustomerFeedback,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['development-feedbacks'] })
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.customerFeedbackHistory })
-      toast.success('Feedback submitted successfully')
+      toast.success('Feedback submitted successfully!')
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, 'Failed to submit feedback'))
+      toast.error(getErrorMessage(error, 'Failed to submit feedback.'))
     },
   })
+}
+
+/**
+ * Hook to retrieve all customer feedbacks for the tenant (Development Product Owner).
+ * @param {{ page?: number, pageSize?: number }} params
+ */
+export function useDevelopmentCompanyFeedbacks(params = {}) {
+  return useQuery({
+    queryKey: QUERY_KEYS.developmentCompanyFeedbacks(params),
+    queryFn: () => fetchDevelopmentCompanyFeedbacks(params),
+  })
+}
+
+/**
+ * Hook for Development Product Owner to post a comment under a customer feedback.
+ */
+export function useAddDevelopmentCompanyComment() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ feedbackId, content }) =>
+      addDevelopmentCompanyComment(feedbackId, { content }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['development-feedbacks'] })
+      toast.success('Comment posted successfully!')
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error, 'Failed to post comment.'))
+    },
+  })
+}
+
+/**
+ * Backward compatibility aliases
+ */
+export function useCustomerFeedbackHistory(params = {}) {
+  return useDevelopmentCustomerFeedbacks(params)
+}
+
+export function useSubmitCustomerFeedback() {
+  return useSubmitDevelopmentCustomerFeedback()
 }

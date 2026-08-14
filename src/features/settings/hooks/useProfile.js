@@ -11,14 +11,22 @@ export function useUpdateProfile() {
     onSuccess: (_, variables) => {
       setSession(token, {
         ...user,
-        firstName: variables.firstName,
-        lastName: variables.lastName,
+        firstName: variables.firstName ?? user?.firstName,
+        lastName: variables.lastName ?? user?.lastName,
+        email: variables.email ?? user?.email,
       })
 
       toast.success('Profile updated successfully')
     },
-    onError: () => {
-      toast.error('Failed to update profile')
+    onError: (err) => {
+      const res = err?.response?.data
+      const message =
+        res?.title ||
+        res?.message ||
+        res?.detail ||
+        (typeof res === 'string' ? res : null) ||
+        'Failed to update profile'
+      toast.error(message)
     },
   })
 }
@@ -38,7 +46,14 @@ export function useUpdatePassword() {
         return
       }
 
-      toast.error('Failed to update password')
+      const message =
+        res?.title ||
+        res?.message ||
+        res?.detail ||
+        (typeof res === 'string' ? res : null) ||
+        'Failed to update password'
+
+      toast.error(message)
     },
   })
 }

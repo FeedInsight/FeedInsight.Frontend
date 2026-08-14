@@ -16,6 +16,7 @@ import LoginPage from '@features/auth/pages/LoginPage.jsx'
 import RegisterPage from '@features/auth/pages/RegisterPage.jsx'
 import DashboardPage from '@features/dashboard/pages/DashboardPage.jsx'
 import CustomerFeedbackPage from '@features/customerFeedback/pages/CustomerFeedbackPage.jsx'
+import SubmitCustomerFeedbackPage from '@features/customerFeedback/pages/SubmitCustomerFeedbackPage.jsx'
 import TriageInboxPage from '@features/triage/pages/TriageInboxPage.jsx'
 import CategoriesPage from '@features/categories/pages/CategoriesPage.jsx'
 import BacklogReviewPage from '@features/backlog/pages/BacklogReviewPage.jsx'
@@ -28,6 +29,10 @@ import JiraIntegrationPage from '@features/jira/pages/JiraIntegrationPage.jsx'
 import TenantsDirectoryPage from '@features/tenantsDirectory/pages/TenantsDirectoryPage.jsx'
 import ApiKeysPage from '@features/apiSettings/pages/ApiKeysPage.jsx'
 import AddProductOwnerPage from '@features/settings/pages/AddProductOwnerPage.jsx'
+import CustomersPage from '@features/customers/pages/CustomersPage.jsx'
+import AddCustomerPage from '@features/customers/pages/AddCustomerPage.jsx'
+import CustomerDetailPage from '@features/customers/pages/CustomerDetailPage.jsx'
+import CompanyFeedbackDashboardPage from '@features/customerFeedback/pages/CompanyFeedbackDashboardPage.jsx'
 import NotFoundPage from '@shared/pages/NotFoundPage.jsx'
 
 function HomeRedirect() {
@@ -53,10 +58,14 @@ export default function AppRouter() {
             <Route path={ROUTES.workspaceDashboard} element={<DashboardPage />} />
             <Route path={ROUTES.workspaceTriage} element={<TriageInboxPage />} />
             <Route path={ROUTES.workspaceTriageDetail} element={<TriageInboxPage />} />
+            <Route path={ROUTES.workspaceCustomerFeedbacks} element={<CompanyFeedbackDashboardPage />} />
             <Route path={ROUTES.workspaceSettings} element={<SettingsPage />} />
             <Route path={ROUTES.workspaceJiraIntegration} element={<JiraIntegrationPage />} />
             <Route path={ROUTES.workspaceApiKeys} element={<ApiKeysPage />} />
             <Route path={ROUTES.workspaceAddProductOwner} element={<AddProductOwnerPage />} />
+            <Route path={ROUTES.workspaceCustomers} element={<CustomersPage />} />
+            <Route path={ROUTES.workspaceAddCustomer} element={<AddCustomerPage />} />
+            <Route path={ROUTES.workspaceCustomerDetail} element={<CustomerDetailPage />} />
             <Route path={ROUTES.workspaceCategories} element={<CategoriesPage />} />
             <Route path={ROUTES.workspaceBacklog} element={<BacklogReviewPage />} />
             <Route path={ROUTES.workspaceStoryDetail} element={<StoryDetailPage />} />
@@ -65,6 +74,9 @@ export default function AppRouter() {
 
           <Route element={<ProtectedRoute requiredRoles={REQUIRE_COMPANY_CUSTOMER} />}>
             <Route path={ROUTES.customerFeedback} element={<CustomerFeedbackPage />} />
+            <Route path={ROUTES.customerFeedbackHistory} element={<CustomerFeedbackPage />} />
+            <Route path={ROUTES.customerSubmitFeedback} element={<SubmitCustomerFeedbackPage />} />
+            <Route path="/customer/feedback/new" element={<SubmitCustomerFeedbackPage />} />
             <Route path={ROUTES.customerSettings} element={<SettingsPage />} />
           </Route>
 

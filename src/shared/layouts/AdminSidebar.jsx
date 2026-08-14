@@ -5,6 +5,8 @@ import {
   Tags,
   ListChecks,
   MessageSquare,
+  MessageSquarePlus,
+  MessagesSquare,
   Settings,
   Users,
   UserPlus,
@@ -23,14 +25,26 @@ import {
 import { ROUTES } from '@router/routes.js'
 import FeedInsightLogo from '@shared/components/ui/FeedInsightLogo'
 import FeedInsightLogoText from '@shared/components/ui/FeedInsightLogoText'
-import { canAccessApiKeys } from '@shared/utils/roleUtils.js'
+import { canAccessApiKeys, canAccessCustomers } from '@shared/utils/roleUtils.js'
 
 const NAV_ITEMS = [
   { to: ROUTES.workspaceDashboard, label: 'Dashboard', icon: LayoutDashboard, roles: REQUIRE_PRODUCT_OWNER },
   { to: ROUTES.workspaceTriage, label: 'Triage Inbox', icon: Inbox, roles: REQUIRE_PRODUCT_OWNER },
+  {
+    to: ROUTES.workspaceCustomerFeedbacks,
+    label: 'Customer Feedbacks',
+    icon: MessagesSquare,
+    roles: REQUIRE_PRODUCT_OWNER,
+  },
   { to: ROUTES.workspaceCategories, label: 'Categories', icon: Tags, roles: REQUIRE_PRODUCT_OWNER },
   { to: ROUTES.workspaceBacklog, label: 'Backlog Review', icon: ListChecks, roles: REQUIRE_PRODUCT_OWNER },
   { to: ROUTES.workspaceAssistant, label: 'AI Assistant', icon: MessageSquare, roles: REQUIRE_PRODUCT_OWNER },
+  {
+    to: ROUTES.workspaceCustomers,
+    label: 'Customers',
+    icon: Users,
+    roles: REQUIRE_PRODUCT_OWNER,
+  },
   {
     to: ROUTES.workspaceSettings,
     label: 'Settings',
@@ -80,9 +94,15 @@ const NAV_ITEMS = [
     roles: REQUIRE_SUPER_ADMIN,
   },
   {
+    to: ROUTES.customerSubmitFeedback,
+    label: 'Submit Feedback',
+    icon: MessageSquarePlus,
+    roles: REQUIRE_COMPANY_CUSTOMER,
+  },
+  {
     to: ROUTES.customerFeedback,
-    label: 'Feedback',
-    icon: MessageSquare,
+    label: 'My Feedbacks',
+    icon: MessagesSquare,
     roles: REQUIRE_COMPANY_CUSTOMER,
   },
   {
@@ -98,12 +118,19 @@ export default function AdminSidebar() {
   const { user } = useAuth()
 
   const visibleNavItems = NAV_ITEMS.filter((item) => {
+    if (
+      (item.to === ROUTES.workspaceCustomers || item.to === ROUTES.workspaceCustomerFeedbacks) &&
+      !canAccessCustomers(user?.role, user?.companyType)
+    ) {
+      return false
+    }
+
     if (item.to === ROUTES.workspaceApiKeys && !canAccessApiKeys(user?.companyType)) {
       return false
     }
 
     if (!item.roles) return true
-    return item.roles.includes(user?.role)
+    return item.roles.some((r) => String(r).toLowerCase() === String(user?.role || '').toLowerCase())
   })
 
   return (

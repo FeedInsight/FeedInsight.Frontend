@@ -2,6 +2,7 @@ export const ROLES = {
   SUPER_ADMIN: 'SuperAdmin',
   PRODUCT_OWNER: 'ProductOwner',
   COMPANY_CUSTOMER: 'CompanyCustomer',
+  CUSTOMER_COMPANY: 'CustomerCompany',
 }
 
 export const STORY_STATUS = {
@@ -37,6 +38,12 @@ export const QUERY_KEYS = {
   apiKeys: ['api', 'keys'],
   adminUsers: ['admin-users'],
   tenantsLookup: ['tenants', 'lookup'],
+  customers: (params) => (params ? ['customers', params] : ['customers']),
+  customerDetail: (id) => ['customers', id],
+  developmentCustomerFeedbacks: (params) =>
+    params ? ['development-feedbacks', 'customer', params] : ['development-feedbacks', 'customer'],
+  developmentCompanyFeedbacks: (params) =>
+    params ? ['development-feedbacks', 'company', params] : ['development-feedbacks', 'company'],
 }
 
 export const HTTP_HEADERS = {

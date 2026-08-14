@@ -3,7 +3,7 @@ import Card from '@shared/components/ui/Card.jsx'
 import Badge from '@shared/components/ui/Badge.jsx'
 import UrgencyBadge from '@features/backlog/components/UrgencyBadge.jsx'
 import TaskDetailModal from './TaskDetailModal.jsx'
-import { getCategoryTheme } from '@shared/utils/categoryColors.js'
+import { getCategoryTheme, resolveCategoryName } from '@shared/utils/categoryColors.js'
 import { formatDateTime } from '@shared/utils/formatDate.js'
 import { Tag, Code2, ArrowRight, Calendar, Sparkles, Layers, Link2 } from 'lucide-react'
 
@@ -12,18 +12,14 @@ import { Tag, Code2, ArrowRight, Calendar, Sparkles, Layers, Link2 } from 'lucid
  * Features:
  * - "Extracted Task #{index + 1}" as a small subtitle / header tag
  * - Main Title set to the extracted task content itself / extractedIntent
+ * - Category badge resolved using tenant categories map and dynamic theme
  * - Full support for backend fields: extractedIntent, technicalKeywords, syncStatus, jiraSubtaskKey, userStoryId, createdAt
  * Strictly Read-Only PO Review interface.
  */
-export default function ExtractedTaskCard({ task, index }) {
+export default function ExtractedTaskCard({ task, index, categoriesMap = {} }) {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const categoryName =
-    task.categoryName ||
-    task.category?.name ||
-    (typeof task.category === 'string' ? task.category : null) ||
-    'Uncategorized'
-
+  const categoryName = resolveCategoryName(task, categoriesMap)
   const categoryTheme = getCategoryTheme(categoryName)
 
   // Technical keywords string ("ui, design, responsiveness") or array
@@ -37,7 +33,12 @@ export default function ExtractedTaskCard({ task, index }) {
     : []
 
   // Main task content / title prioritization
-  const mainTitle = task.extractedIntent || task.title || task.summary || task.description || `Extracted Sub-Task #${index + 1}`
+  const mainTitle =
+    task.extractedIntent ||
+    task.title ||
+    task.summary ||
+    task.description ||
+    `Extracted Sub-Task #${index + 1}`
   const createdDateStr = task.createdAt ? formatDateTime(task.createdAt) : null
 
   return (
@@ -64,7 +65,7 @@ export default function ExtractedTaskCard({ task, index }) {
             >
               <span className={`h-1.5 w-1.5 rounded-full ${categoryTheme.dot}`} />
               <Tag size={11} />
-              {categoryName}
+              <span>{categoryName}</span>
             </span>
           </div>
 
@@ -169,6 +170,7 @@ export default function ExtractedTaskCard({ task, index }) {
         onClose={() => setIsModalOpen(false)}
         task={task}
         index={index}
+        categoryName={categoryName}
       />
     </>
   )

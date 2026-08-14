@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Card from '@shared/components/ui/Card.jsx'
 import Badge from '@shared/components/ui/Badge.jsx'
 import Spinner from '@shared/components/ui/Spinner.jsx'
@@ -6,19 +6,54 @@ import EmptyState from '@shared/components/ui/EmptyState.jsx'
 import TablePagination from '@shared/components/ui/TablePagination.jsx'
 import ExtractedTaskCard from './ExtractedTaskCard.jsx'
 import { useFeedbackDetail } from '@features/triage/hooks/useFeedbacks.js'
+import { useCategories } from '@features/categories/hooks/useCategories.js'
 import { formatDateTime } from '@shared/utils/formatDate.js'
-import { MessageSquareText, Layers, Mail, Calendar, Sparkles, ExternalLink, ShieldCheck, Quote, ArrowLeft } from 'lucide-react'
+import { getCategoryTheme, resolveCategoryName } from '@shared/utils/categoryColors.js'
+import {
+  MessageSquareText,
+  Layers,
+  Mail,
+  Calendar,
+  Sparkles,
+  ExternalLink,
+  ShieldCheck,
+  Quote,
+  ArrowLeft,
+  Tag,
+} from 'lucide-react'
 
 /**
  * Read-only detail workspace for selected feedback item in the AI Triage Inbox.
  * Displays the original customer feedback content alongside all extracted AI tasks.
+ * Ensures categories added by any Product Owner are properly resolved and styled for both
+ * the original customer feedback and all extracted tasks.
  * Strictly Read-Only PO Review interface.
- * Satisfies Task #96, Task #98, Task #101.
  */
 export default function TriageDetailWorkspace({ feedbackId, onBack }) {
   const { data: feedback, isLoading, isError } = useFeedbackDetail(feedbackId)
+  const { data: rawCategories } = useCategories()
   const [subTaskPage, setSubTaskPage] = useState(1)
   const subTaskPageSize = 5
+
+  const categoriesMap = useMemo(() => {
+    const map = {}
+    const cats = Array.isArray(rawCategories)
+      ? rawCategories
+      : Array.isArray(rawCategories?.data)
+      ? rawCategories.data
+      : Array.isArray(rawCategories?.items)
+      ? rawCategories.items
+      : Array.isArray(rawCategories?.$values)
+      ? rawCategories.$values
+      : []
+
+    cats.forEach((c) => {
+      if (c && c.id && c.name) {
+        map[c.id] = c.name
+      }
+    })
+    return map
+  }, [rawCategories])
 
   useEffect(() => {
     setSubTaskPage(1)
@@ -68,7 +103,11 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
     : []
 
   const submitterEmail = feedback.submitterEmail || feedback.email || ''
-  const dateStr = formatDateTime(feedback.createdAt || feedback.submissionDate)
+  const dateStr = formatDateTime(feedback.createdAt || feedback.submissionDate || feedback.submittedAt)
+
+  // Resolve category for the original customer feedback
+  const feedbackCategory = resolveCategoryName(feedback, categoriesMap)
+  const categoryTheme = getCategoryTheme(feedbackCategory)
 
   // Sub-task pagination calculations
   const totalSubTasks = extractedTasks.length
@@ -112,17 +151,28 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 text-xs text-slate-500">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-slate-500">
+            {/* Category Badge */}
+            <span
+              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold border ${categoryTheme.badgeClass}`}
+            >
+              <span className={`h-1.5 w-1.5 rounded-full ${categoryTheme.dot}`} />
+              <Tag size={11} />
+              <span>{feedbackCategory}</span>
+            </span>
+
             {submitterEmail && (
               <div className="flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 border border-slate-200/60 font-medium">
                 <Mail size={13} className="text-slate-400" />
                 <span>{submitterEmail}</span>
               </div>
             )}
-            <div className="flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 border border-slate-200/60 font-medium">
-              <Calendar size={13} className="text-slate-400" />
-              <span>{dateStr}</span>
-            </div>
+            {dateStr && (
+              <div className="flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 border border-slate-200/60 font-medium">
+                <Calendar size={13} className="text-slate-400" />
+                <span>{dateStr}</span>
+              </div>
+            )}
             {feedback.status && (
               <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-semibold">
                 {feedback.status}
@@ -156,7 +206,7 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
         )}
       </Card>
 
-      {/* Extracted AI Tasks Section Header (#96 Requirement) */}
+      {/* Extracted AI Tasks Section Header */}
       <div className="flex flex-col gap-4">
         <div className="flex items-center justify-between rounded-2xl bg-white p-4 border border-slate-200/80 shadow-xs">
           <div className="flex items-center gap-3">
@@ -196,7 +246,12 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
             {paginatedTasks.map((task, index) => {
               const globalIndex = (subTaskPage - 1) * subTaskPageSize + index
               return (
-                <ExtractedTaskCard key={task.id || globalIndex} task={task} index={globalIndex} />
+                <ExtractedTaskCard
+                  key={task.id || globalIndex}
+                  task={task}
+                  index={globalIndex}
+                  categoriesMap={categoriesMap}
+                />
               )
             })}
 
@@ -219,5 +274,3 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
     </div>
   )
 }
-
-

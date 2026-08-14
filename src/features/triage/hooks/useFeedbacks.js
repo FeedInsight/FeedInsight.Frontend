@@ -26,7 +26,17 @@ export function useFeedbackDetail(feedbackId) {
     queryFn: async () => {
       if (!feedbackId) return null
 
-      // 1. Prioritize finding the item in active feedbacks list queries in cache
+      // 1. Try fetching from backend detail endpoint first for complete fresh data & extracted tasks
+      try {
+        const detailData = await fetchFeedbackDetail(feedbackId)
+        if (detailData) {
+          return detailData?.data ?? detailData
+        }
+      } catch (err) {
+        console.warn(`[useFeedbackDetail] Detail request failed for ${feedbackId}, checking cache...`, err)
+      }
+
+      // 2. Fallback to cached feedbacks list if detail call returned null or 404
       const cachedQueries = queryClient.getQueriesData({ queryKey: QUERY_KEYS.feedbacks })
       for (const [, listData] of cachedQueries) {
         if (!listData) continue
@@ -36,10 +46,6 @@ export function useFeedbackDetail(feedbackId) {
         const match = items.find((item) => String(item.id) === String(feedbackId))
         if (match) return match
       }
-
-      // 2. If not found in cached list, try fetching from backend detail endpoint
-      const detailData = await fetchFeedbackDetail(feedbackId)
-      if (detailData) return detailData
 
       return null
     },

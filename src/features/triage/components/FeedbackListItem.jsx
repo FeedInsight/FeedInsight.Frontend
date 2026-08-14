@@ -1,16 +1,17 @@
 import Card from '@shared/components/ui/Card.jsx'
 import Badge from '@shared/components/ui/Badge.jsx'
 import { formatRelative } from '@shared/utils/formatDate.js'
-import { getCategoryTheme } from '@shared/utils/categoryColors.js'
+import { getCategoryTheme, extractAllCategoryNames } from '@shared/utils/categoryColors.js'
 import { cn } from '@shared/utils/classNames.js'
 import { User, Tag } from 'lucide-react'
 
 /**
  * Single feedback item rendered in the AI Triage Inbox list panel.
- * Prominently highlights the standalone circular task counter badge with ONLY the counter number.
+ * Displays category badges for both original customer feedback and all extracted tasks.
+ * Highlights the circular task counter badge with only the counter number.
  * Strictly Read-Only PO Review item.
  */
-export default function FeedbackListItem({ item, isSelected, onClick }) {
+export default function FeedbackListItem({ item, isSelected, onClick, categoriesMap = {} }) {
   const rawTasks = item.extractedTasks ?? item.tasks ?? item.$values
   const extractedList = Array.isArray(rawTasks)
     ? rawTasks
@@ -23,17 +24,12 @@ export default function FeedbackListItem({ item, isSelected, onClick }) {
     item.extractedTasksCount ??
     extractedList.length
 
-  const previewText = item.rawContent || item.title || item.preview || item.content || 'No content provided'
+  const previewText =
+    item.rawContent || item.content || item.title || item.preview || 'No content provided'
   const submitterEmail = item.submitterEmail || item.email || ''
 
-  // Extract unique category names across tasks for list item badge preview (#101)
-  const categoryNames = Array.from(
-    new Set(
-      extractedList
-        .map((t) => t.categoryName || t.category?.name || (typeof t.category === 'string' ? t.category : null))
-        .filter(Boolean)
-    )
-  )
+  // Extract all categories associated with this feedback item and its extracted tasks
+  const categoryNames = extractAllCategoryNames(item, categoriesMap)
 
   return (
     <Card
@@ -62,7 +58,7 @@ export default function FeedbackListItem({ item, isSelected, onClick }) {
             <div />
           )}
 
-          {/* Standalone Highlighted Circular Task Counter Badge (Only the counter number inside a circle) */}
+          {/* Standalone Highlighted Circular Task Counter Badge */}
           <div
             title={`${taskCount} extracted tasks`}
             className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-indigo-600 to-indigo-700 font-mono text-xs font-black text-white shadow-sm ring-2 ring-indigo-400/30 shrink-0"
@@ -76,26 +72,28 @@ export default function FeedbackListItem({ item, isSelected, onClick }) {
           {previewText}
         </p>
 
-        {/* Bottom Row: Date, Category Badges Preview (#101), Status */}
+        {/* Bottom Row: Date, Category Badges Preview, Status */}
         <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-100 text-xs text-slate-500">
-          <span>{formatRelative(item.createdAt || item.submissionDate)}</span>
+          <span>{formatRelative(item.createdAt || item.submissionDate || item.submittedAt)}</span>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap justify-end">
             {/* Category Badges Preview */}
             {categoryNames.slice(0, 2).map((cat, idx) => {
               const theme = getCategoryTheme(cat)
               return (
                 <span
                   key={idx}
-                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold border ${theme.badgeClass}`}
+                  className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-semibold border ${theme.badgeClass}`}
                 >
                   <Tag size={9} />
-                  {cat}
+                  <span>{cat}</span>
                 </span>
               )
             })}
             {categoryNames.length > 2 && (
-              <span className="text-[10px] text-slate-400 font-medium">+{categoryNames.length - 2}</span>
+              <span className="text-[10px] text-slate-400 font-medium">
+                +{categoryNames.length - 2}
+              </span>
             )}
 
             {item.status && (
@@ -109,4 +107,3 @@ export default function FeedbackListItem({ item, isSelected, onClick }) {
     </Card>
   )
 }
-

@@ -15,6 +15,10 @@ export const ROUTES = {
   workspaceJiraIntegration: '/workspace/integrations',
   workspaceApiKeys: '/workspace/api-keys',
   workspaceAddProductOwner: '/workspace/add-product-owner',
+  workspaceCustomers: '/workspace/customers',
+  workspaceAddCustomer: '/workspace/customers/new',
+  workspaceCustomerDetail: '/workspace/customers/:customerId',
+  workspaceCustomerFeedbacks: '/workspace/customer-feedbacks',
 
   superAdminTenants: '/super-admin/tenants',
   superAdminUsers: '/super-admin/product-owners',
@@ -22,6 +26,7 @@ export const ROUTES = {
   superAdminSettings: '/super-admin/settings',
 
   customerFeedback: '/customer/feedback',
+  customerSubmitFeedback: '/customer/submit-feedback',
   customerFeedbackHistory: '/customer/feedback-history',
   customerSettings: '/customer/settings',
 }

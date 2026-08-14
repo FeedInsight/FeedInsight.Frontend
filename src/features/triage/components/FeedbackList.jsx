@@ -5,6 +5,7 @@ import EmptyState from '@shared/components/ui/EmptyState.jsx'
 import FeedbackListItem from './FeedbackListItem.jsx'
 import TablePagination from '@shared/components/ui/TablePagination.jsx'
 import { useFeedbacks } from '@features/triage/hooks/useFeedbacks.js'
+import { useCategories } from '@features/categories/hooks/useCategories.js'
 import { useDebounce } from '@shared/hooks/useDebounce.js'
 import { Inbox, ArrowDownNarrowWide, Search } from 'lucide-react'
 
@@ -29,6 +30,28 @@ export default function FeedbackList({ selectedId, onSelectFeedback, isCompact =
     page,
     pageSize,
   })
+
+  // Load tenant categories to map categoryId -> categoryName
+  const { data: rawCategories } = useCategories()
+  const categoriesMap = useMemo(() => {
+    const map = {}
+    const cats = Array.isArray(rawCategories)
+      ? rawCategories
+      : Array.isArray(rawCategories?.data)
+      ? rawCategories.data
+      : Array.isArray(rawCategories?.items)
+      ? rawCategories.items
+      : Array.isArray(rawCategories?.$values)
+      ? rawCategories.$values
+      : []
+
+    cats.forEach((c) => {
+      if (c && c.id && c.name) {
+        map[c.id] = c.name
+      }
+    })
+    return map
+  }, [rawCategories])
 
   // Normalize array and pagination metrics from API payload
   const { rawItems, totalItems, hasNextPage, hasPreviousPage } = useMemo(() => {
@@ -138,6 +161,7 @@ export default function FeedbackList({ selectedId, onSelectFeedback, isCompact =
               <FeedbackListItem
                 key={item.id}
                 item={item}
+                categoriesMap={categoriesMap}
                 isSelected={String(item.id) === String(selectedId)}
                 onClick={() => onSelectFeedback(item.id)}
               />

@@ -114,4 +114,21 @@ export const ENDPOINTS = {
   testSearch: {
     search: '/TestSearch/search', // GET
   },
+
+  // --- Customers (Company Customers for Development Tenants) ---
+  customers: {
+    list: '/Customers/company-customers', // GET ?Page=&PageSize=
+    create: '/Customers/company-customers', // POST { firstName, lastName, email, password }
+    getById: (id) => `/Customers/company-customers/${id}`, // GET
+    update: (id) => `/Customers/${id}`, // PUT { firstName, lastName, email }
+    remove: (id) => `/Customers/${id}`, // DELETE
+  },
+
+  // --- Development Feedback & Comments ---
+  developmentFeedback: {
+    customerSubmit: '/feedbacks/development/customer', // POST { rawContent, metadataJson }
+    customerList: '/feedbacks/development/customer', // GET ?Page=&PageSize=
+    companyList: '/feedbacks/development/company', // GET ?Page=&PageSize=
+    addCompanyComment: (feedbackId) => `/feedbacks/development/company/${feedbackId}/comments`, // POST { content }
+  },
 }

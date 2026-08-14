@@ -1,7 +1,7 @@
 import Modal from '@shared/components/ui/Modal.jsx'
 import Badge from '@shared/components/ui/Badge.jsx'
 import UrgencyBadge from '@features/backlog/components/UrgencyBadge.jsx'
-import { getCategoryTheme } from '@shared/utils/categoryColors.js'
+import { getCategoryTheme, resolveCategoryName } from '@shared/utils/categoryColors.js'
 import { formatDateTime } from '@shared/utils/formatDate.js'
 import { Tag, Code2, Sparkles, Layers, ShieldCheck, Calendar, Link2 } from 'lucide-react'
 
@@ -10,15 +10,17 @@ import { Tag, Code2, Sparkles, Layers, ShieldCheck, Calendar, Link2 } from 'luci
  * Strictly Read-Only PO Review interface.
  * Uses all backend fields: extractedIntent, technicalKeywords, syncStatus, jiraSubtaskKey, userStoryId, createdAt.
  */
-export default function TaskDetailModal({ isOpen, onClose, task, index }) {
+export default function TaskDetailModal({
+  isOpen,
+  onClose,
+  task,
+  index,
+  categoryName: passedCategory,
+  categoriesMap = {},
+}) {
   if (!task) return null
 
-  const categoryName =
-    task.categoryName ||
-    task.category?.name ||
-    (typeof task.category === 'string' ? task.category : null) ||
-    'Uncategorized'
-
+  const categoryName = passedCategory || resolveCategoryName(task, categoriesMap)
   const categoryTheme = getCategoryTheme(categoryName)
 
   const rawKeywords = task.technicalKeywords ?? task.keywords ?? task.tags
@@ -30,7 +32,12 @@ export default function TaskDetailModal({ isOpen, onClose, task, index }) {
     ? rawKeywords.split(',').map((k) => k.trim()).filter(Boolean)
     : []
 
-  const mainTitle = task.extractedIntent || task.title || task.summary || task.description || `Extracted Task #${index + 1}`
+  const mainTitle =
+    task.extractedIntent ||
+    task.title ||
+    task.summary ||
+    task.description ||
+    `Extracted Task #${index + 1}`
   const createdDateStr = task.createdAt ? formatDateTime(task.createdAt) : null
 
   return (
@@ -45,10 +52,12 @@ export default function TaskDetailModal({ isOpen, onClose, task, index }) {
             </span>
 
             {/* Dynamic Category Badge */}
-            <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border ${categoryTheme.badgeClass}`}>
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border ${categoryTheme.badgeClass}`}
+            >
               <span className={`h-2 w-2 rounded-full ${categoryTheme.dot}`} />
               <Tag size={12} />
-              {categoryName}
+              <span>{categoryName}</span>
             </span>
           </div>
 
@@ -83,7 +92,7 @@ export default function TaskDetailModal({ isOpen, onClose, task, index }) {
             Task Main Title / Extracted Content
           </span>
           <h3 className="text-lg font-extrabold text-slate-900 leading-snug">{mainTitle}</h3>
-          
+
           {task.description && task.description !== task.extractedIntent && (
             <div className="mt-1 rounded-xl bg-slate-50/80 p-3.5 border border-slate-200/60 leading-relaxed text-slate-700 font-sans text-xs">
               <span className="font-bold text-slate-900 block mb-1">Detailed Description:</span>
@@ -124,7 +133,9 @@ export default function TaskDetailModal({ isOpen, onClose, task, index }) {
               ))}
             </div>
           ) : (
-            <p className="text-xs italic text-slate-400">No technical keywords extracted for this task.</p>
+            <p className="text-xs italic text-slate-400">
+              No technical keywords extracted for this task.
+            </p>
           )}
         </div>
 
