@@ -16,6 +16,7 @@ import { cn } from '@shared/utils/classNames.js'
 import { useUiStore } from '@app/store/uiStore.js'
 import { useAuth } from '@shared/hooks/useAuth.js'
 import {
+  REQUIRE_COMPANY_CUSTOMER,
   REQUIRE_PRODUCT_OWNER,
   REQUIRE_SUPER_ADMIN,
 } from '@shared/constants/roles.js'
@@ -77,6 +78,18 @@ const NAV_ITEMS = [
     label: 'Settings',
     icon: Settings,
     roles: REQUIRE_SUPER_ADMIN,
+  },
+  {
+    to: ROUTES.customerFeedback,
+    label: 'Feedback',
+    icon: MessageSquare,
+    roles: REQUIRE_COMPANY_CUSTOMER,
+  },
+  {
+    to: ROUTES.customerSettings,
+    label: 'Settings',
+    icon: Settings,
+    roles: REQUIRE_COMPANY_CUSTOMER,
   },
 ]
 

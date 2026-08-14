@@ -5,18 +5,11 @@ import { useAuth } from '@shared/hooks/useAuth.js'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '@router/routes.js'
 
-/**
- * Top bar shown on every Admin Portal screen: sidebar toggle, current
- * tenant/company name (read from the authenticated user), and logout.
- * Keep this component free of feature-specific actions -- per-page actions
- * (e.g. "New Category" button) belong inside that page's own header, not
- * here.
- */
 export default function AdminTopbar() {
   const { toggleSidebar, toggleChatDrawer } = useUiStore()
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const isSuperAdmin = user?.role === ROLES.SUPER_ADMIN
+  const isProductOwner = user?.role === ROLES.PRODUCT_OWNER
 
   const handleLogout = async () => {
     await logout()
@@ -36,9 +29,8 @@ export default function AdminTopbar() {
       </div>
 
       <div className="flex items-center gap-3">
-        {!isSuperAdmin && (
+        {isProductOwner && (
           <>
-            {/* Quick Launch AI Assistant Drawer Toggle */}
             <button
               type="button"
               onClick={toggleChatDrawer}

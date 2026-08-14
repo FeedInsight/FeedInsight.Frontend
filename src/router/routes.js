@@ -5,7 +5,6 @@ export const ROUTES = {
   register: '/register',
 
   workspaceDashboard: '/workspace/dashboard',
-  workspaceCustomerFeedback: '/workspace/customer-feedback',
   workspaceTriage: '/workspace/triage',
   workspaceTriageDetail: '/workspace/triage/:feedbackId',
   workspaceCategories: '/workspace/categories',
@@ -21,4 +20,8 @@ export const ROUTES = {
   superAdminUsers: '/super-admin/product-owners',
   superAdminAddAdmin: '/super-admin/add-super-admin',
   superAdminSettings: '/super-admin/settings',
+
+  customerFeedback: '/customer/feedback',
+  customerFeedbackHistory: '/customer/feedback-history',
+  customerSettings: '/customer/settings',
 }
