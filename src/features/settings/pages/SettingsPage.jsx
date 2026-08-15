@@ -1,4 +1,5 @@
 import ProfileNameForm from '../components/ProfileNameForm.jsx'
+import TenantNameForm from '../components/TenantNameForm.jsx'
 import UpdatePasswordForm from '../components/UpdatePasswordForm.jsx'
 import { useAuth } from '@shared/hooks/useAuth.js'
 import { isCompanyCustomer } from '@shared/utils/roleUtils.js'
@@ -7,6 +8,9 @@ import { Settings, ShieldCheck } from 'lucide-react'
 export default function SettingsPage() {
   const { user } = useAuth()
   const isCustomer = isCompanyCustomer(user?.role)
+  const isProductOwner =
+    !isCustomer &&
+    (user?.role === 'ProductOwner' || String(user?.role || '').toLowerCase() === 'productowner')
 
   const roleLabel = isCustomer
     ? 'Company Customer'
@@ -21,10 +25,10 @@ export default function SettingsPage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
             <Settings className="w-6 h-6 text-brand-600" />
-            <span>{isCustomer ? 'Customer Account Settings' : 'Account Settings'}</span>
+            <span>{isCustomer ? 'Customer Account Settings' : 'Account & Organization Settings'}</span>
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Manage your personal profile details and change your account password.
+            Manage your personal profile details, organization name, and account security.
           </p>
         </div>
 
@@ -34,9 +38,14 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      {/* User Personal Profile Information */}
       <ProfileNameForm />
+
+      {/* Organization / Tenant Information for Product Owners */}
+      {isProductOwner && <TenantNameForm companyName={user?.companyName || user?.tenantName} />}
+
+      {/* Account Security / Password Update */}
       <UpdatePasswordForm />
     </div>
   )
 }
-
