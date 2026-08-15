@@ -3,7 +3,7 @@ import Badge from '@shared/components/ui/Badge.jsx'
 import { formatRelative } from '@shared/utils/formatDate.js'
 import { getCategoryTheme, extractAllCategoryNames } from '@shared/utils/categoryColors.js'
 import { cn } from '@shared/utils/classNames.js'
-import { User, Tag } from 'lucide-react'
+import { User, Tag, Bell } from 'lucide-react'
 
 /**
  * Single feedback item rendered in the AI Triage Inbox list panel.
@@ -11,7 +11,7 @@ import { User, Tag } from 'lucide-react'
  * Highlights the circular task counter badge with only the counter number.
  * Strictly Read-Only PO Review item.
  */
-export default function FeedbackListItem({ item, isSelected, onClick, categoriesMap = {} }) {
+export default function FeedbackListItem({ item, isSelected, isUnseen = false, onClick, categoriesMap = {} }) {
   const rawTasks = item.extractedTasks ?? item.tasks ?? item.$values
   const extractedList = Array.isArray(rawTasks)
     ? rawTasks
@@ -38,6 +38,8 @@ export default function FeedbackListItem({ item, isSelected, onClick, categories
         'group relative cursor-pointer transition-all duration-200 p-4 border',
         isSelected
           ? 'border-indigo-500 bg-indigo-50/40 shadow-sm ring-2 ring-indigo-500/20'
+          : isUnseen
+          ? 'border-amber-300 ring-2 ring-amber-100/90 bg-white hover:border-amber-400 hover:shadow-xs'
           : 'border-slate-200 bg-white hover:border-indigo-300 hover:shadow-xs',
       )}
     >
@@ -47,16 +49,25 @@ export default function FeedbackListItem({ item, isSelected, onClick, categories
       )}
 
       <div className="flex flex-col gap-2.5">
-        {/* Top Header: Submitter Email + Standalone Highlighted Circular Task Counter */}
+        {/* Top Header: Submitter Email + Unseen Badge + Standalone Circular Task Counter */}
         <div className="flex items-center justify-between gap-2">
-          {submitterEmail ? (
-            <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 truncate">
-              <User size={12} className="text-slate-400 shrink-0" />
-              <span className="truncate">{submitterEmail}</span>
-            </div>
-          ) : (
-            <div />
-          )}
+          <div className="flex items-center gap-2 min-w-0">
+            {submitterEmail ? (
+              <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 truncate">
+                <User size={12} className="text-slate-400 shrink-0" />
+                <span className="truncate">{submitterEmail}</span>
+              </div>
+            ) : (
+              <div />
+            )}
+
+            {isUnseen && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-white shadow-xs animate-pulse shrink-0">
+                <Bell size={10} />
+                <span>New</span>
+              </span>
+            )}
+          </div>
 
           {/* Standalone Highlighted Circular Task Counter Badge */}
           <div

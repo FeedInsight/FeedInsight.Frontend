@@ -15,7 +15,12 @@ import { Inbox, ArrowDownNarrowWide, Search } from 'lucide-react'
  * sorts items in descending order of highest extracted task count / feedback needed, and renders selectable items.
  * Strictly Read-Only PO Review interface.
  */
-export default function FeedbackList({ selectedId, onSelectFeedback, isCompact = false }) {
+export default function FeedbackList({
+  selectedId,
+  onSelectFeedback,
+  isCompact = false,
+  isUnseen,
+}) {
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const pageSize = 10
@@ -163,6 +168,7 @@ export default function FeedbackList({ selectedId, onSelectFeedback, isCompact =
                 item={item}
                 categoriesMap={categoriesMap}
                 isSelected={String(item.id) === String(selectedId)}
+                isUnseen={Boolean(isUnseen?.(item.id))}
                 onClick={() => onSelectFeedback(item.id)}
               />
             ))}

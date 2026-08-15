@@ -9,6 +9,7 @@ import { ENDPOINTS } from '@shared/api/endpoints.js'
 export async function submitDevelopmentCustomerFeedback(payload) {
   const body = {
     rawContent: payload.rawContent || payload.description || payload.content || '',
+    metadataJson: '',
   }
   const { data } = await axiosClient.post(ENDPOINTS.developmentFeedback.customerSubmit, body)
   return data?.data ?? data

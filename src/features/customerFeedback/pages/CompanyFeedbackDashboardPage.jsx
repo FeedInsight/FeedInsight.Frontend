@@ -1,11 +1,14 @@
 import { useState, useMemo, useEffect } from 'react'
-import { MessagesSquare, Search, MessageCircle, Users } from 'lucide-react'
+import { MessagesSquare, MessageCircle, Bell } from 'lucide-react'
 import SearchBar from '@shared/components/ui/SearchBar.jsx'
 import Spinner from '@shared/components/ui/Spinner.jsx'
 import EmptyState from '@shared/components/ui/EmptyState.jsx'
+import Button from '@shared/components/ui/Button.jsx'
 import TablePagination from '@shared/components/ui/TablePagination.jsx'
 import CompanyFeedbackCard from '../components/CompanyFeedbackCard.jsx'
 import { useDevelopmentCompanyFeedbacks } from '../hooks/useCustomerFeedback.js'
+import { usePOUnseenCompanyFeedbacks } from '../hooks/usePOUnseenCompanyFeedbacks.js'
+import { useCategories } from '@features/categories/hooks/useCategories.js'
 import { useDebounce } from '@shared/hooks/useDebounce.js'
 import { usePagination } from '@shared/hooks/usePagination.js'
 import { normalizeFeedbackList, extractTotalCount } from '../utils/feedbackNormalizer.js'
@@ -20,6 +23,27 @@ export default function CompanyFeedbackDashboardPage() {
     pageSize: params.pageSize,
   })
 
+  const { data: rawCategories } = useCategories()
+  const categoriesMap = useMemo(() => {
+    const map = {}
+    const cats = Array.isArray(rawCategories)
+      ? rawCategories
+      : Array.isArray(rawCategories?.data)
+      ? rawCategories.data
+      : Array.isArray(rawCategories?.items)
+      ? rawCategories.items
+      : Array.isArray(rawCategories?.$values)
+      ? rawCategories.$values
+      : []
+
+    cats.forEach((c) => {
+      if (c && c.id && c.name) {
+        map[c.id] = c.name
+      }
+    })
+    return map
+  }, [rawCategories])
+
   useEffect(() => {
     setPage(1)
   }, [debouncedSearch, setPage])
@@ -27,6 +51,8 @@ export default function CompanyFeedbackDashboardPage() {
   const rawItems = useMemo(() => {
     return normalizeFeedbackList(data)
   }, [data])
+
+  const { markAsSeen, markAllAsSeen, isUnseen, totalUnseenCount } = usePOUnseenCompanyFeedbacks(rawItems)
 
   const filteredItems = useMemo(() => {
     if (!debouncedSearch) return rawItems
@@ -69,6 +95,49 @@ export default function CompanyFeedbackDashboardPage() {
 
         {/* Summary Metric Counters */}
         <div className="flex items-center gap-3">
+          {/* Unseen Feedbacks Counter */}
+          <div
+            className={`flex items-center gap-2.5 rounded-xl px-3.5 py-2 border shadow-2xs transition-colors ${
+              totalUnseenCount > 0
+                ? 'bg-amber-50/80 border-amber-300/80 text-amber-900 ring-2 ring-amber-100'
+                : 'bg-white border-slate-200/80'
+            }`}
+          >
+            <div
+              className={`flex h-7 w-7 items-center justify-center rounded-lg shadow-2xs ${
+                totalUnseenCount > 0 ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-600'
+              }`}
+            >
+              <Bell size={15} />
+            </div>
+            <div className="flex flex-col">
+              <span
+                className={`text-[10px] font-bold uppercase tracking-wider ${
+                  totalUnseenCount > 0 ? 'text-amber-800' : 'text-slate-400'
+                }`}
+              >
+                Unseen
+              </span>
+              <span
+                className={`font-mono text-sm font-extrabold ${
+                  totalUnseenCount > 0 ? 'text-amber-900' : 'text-slate-900'
+                }`}
+              >
+                {totalUnseenCount}
+              </span>
+            </div>
+            {totalUnseenCount > 0 && (
+              <button
+                type="button"
+                onClick={() => markAllAsSeen(rawItems)}
+                className="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline shrink-0 ml-1"
+                title="Mark all company feedbacks as read"
+              >
+                Mark read
+              </button>
+            )}
+          </div>
+
           <div className="flex items-center gap-2.5 rounded-xl bg-white px-3.5 py-2 border border-slate-200/80 shadow-2xs">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
               <MessagesSquare size={15} />
@@ -90,6 +159,37 @@ export default function CompanyFeedbackDashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Unseen Feedbacks Notification Banner */}
+      {totalUnseenCount > 0 && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-amber-500/10 via-brand-500/10 to-indigo-500/10 border border-amber-300/80 p-4 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500 text-white shadow-xs shrink-0">
+              <Bell size={18} />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-slate-900">
+                You have {totalUnseenCount} new customer {totalUnseenCount === 1 ? 'feedback' : 'feedbacks'}!
+              </h4>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Review incoming feedback submitted by your tenant customers and reply with official comments.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => markAllAsSeen(rawItems)}
+              className="text-xs font-semibold text-slate-700 hover:text-slate-900 border-amber-200 bg-white"
+            >
+              Mark all read
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Filter / Search Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
@@ -130,7 +230,13 @@ export default function CompanyFeedbackDashboardPage() {
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-4">
             {filteredItems.map((item, idx) => (
-              <CompanyFeedbackCard key={item.id || `fb-${idx}`} feedback={item} />
+              <CompanyFeedbackCard
+                key={item.id || `fb-${idx}`}
+                feedback={item}
+                categoriesMap={categoriesMap}
+                isUnseen={isUnseen(item.id)}
+                onMarkSeen={markAsSeen}
+              />
             ))}
           </div>
 
@@ -153,3 +259,4 @@ export default function CompanyFeedbackDashboardPage() {
     </div>
   )
 }
+

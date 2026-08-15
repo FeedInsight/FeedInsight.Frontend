@@ -40,15 +40,6 @@ export async function createCompanyCustomer(payload) {
   return data?.data ?? data
 }
 
-/**
- * Update an existing customer profile.
- * @param {string} id
- * @param {{ firstName: string, lastName: string, email: string }} payload
- */
-export async function updateCustomer(id, payload) {
-  const { data } = await axiosClient.put(ENDPOINTS.customers.update(id), payload)
-  return data?.data ?? data
-}
 
 /**
  * Delete a customer by id.
@@ -59,21 +50,4 @@ export async function deleteCustomer(id) {
   return data?.data ?? data
 }
 
-/**
- * Lock customer account.
- * @param {string} id
- * @param {string} reason
- */
-export async function lockCustomer(id, reason = 'Locked by development product owner') {
-  const { data } = await axiosClient.post(ENDPOINTS.users.lock(id), { reason })
-  return data?.data ?? data
-}
 
-/**
- * Unlock customer account.
- * @param {string} id
- */
-export async function unlockCustomer(id) {
-  const { data } = await axiosClient.post(ENDPOINTS.users.unlock(id))
-  return data?.data ?? data
-}

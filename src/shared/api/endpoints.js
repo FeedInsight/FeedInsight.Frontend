@@ -120,7 +120,6 @@ export const ENDPOINTS = {
     list: '/Customers/company-customers', // GET ?Page=&PageSize=
     create: '/Customers/company-customers', // POST { firstName, lastName, email, password }
     getById: (id) => `/Customers/company-customers/${id}`, // GET
-    update: (id) => `/Customers/${id}`, // PUT { firstName, lastName, email }
     remove: (id) => `/Customers/${id}`, // DELETE
   },
 

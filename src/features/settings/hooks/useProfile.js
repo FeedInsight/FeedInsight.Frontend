@@ -1,7 +1,7 @@
-import { useAuthStore } from "@app/store/authStore"
-import { updateProfile, updatePassword, updateTenantProfile } from "../api/profileApi"
-import { useMutation } from "@tanstack/react-query"
-import toast from "react-hot-toast"
+import { useAuthStore } from '@app/store/authStore.js'
+import { updateProfile, updatePassword } from '../api/profileApi.js'
+import { useMutation } from '@tanstack/react-query'
+import toast from 'react-hot-toast'
 
 export function useUpdateProfile() {
   const { user, setSession, token } = useAuthStore()
@@ -13,7 +13,6 @@ export function useUpdateProfile() {
         ...user,
         firstName: variables.firstName ?? user?.firstName,
         lastName: variables.lastName ?? user?.lastName,
-        email: variables.email ?? user?.email,
       })
 
       toast.success('Profile updated successfully')
@@ -54,18 +53,6 @@ export function useUpdatePassword() {
         'Failed to update password'
 
       toast.error(message)
-    },
-  })
-}
-
-export function useUpdateTenantProfile() {
-  return useMutation({
-    mutationFn: updateTenantProfile,
-    onSuccess: () => {
-      toast.success('Company profile updated successfully')
-    },
-    onError: () => {
-      toast.error('Failed to update company profile')
     },
   })
 }

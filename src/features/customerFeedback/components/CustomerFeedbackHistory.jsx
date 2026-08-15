@@ -1,15 +1,14 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Card from '@shared/components/ui/Card.jsx'
-import Badge from '@shared/components/ui/Badge.jsx'
 import Button from '@shared/components/ui/Button.jsx'
 import Spinner from '@shared/components/ui/Spinner.jsx'
 import EmptyState from '@shared/components/ui/EmptyState.jsx'
 import SearchBar from '@shared/components/ui/SearchBar.jsx'
 import TablePagination from '@shared/components/ui/TablePagination.jsx'
 import { formatDateTime, formatRelative } from '@shared/utils/formatDate.js'
-import { getCategoryTheme } from '@shared/utils/categoryColors.js'
 import { useDevelopmentCustomerFeedbacks } from '../hooks/useCustomerFeedback.js'
+import { useUnseenResponses } from '../hooks/useUnseenResponses.js'
 import { usePagination } from '@shared/hooks/usePagination.js'
 import { useDebounce } from '@shared/hooks/useDebounce.js'
 import { normalizeFeedbackList, extractTotalCount } from '../utils/feedbackNormalizer.js'
@@ -20,53 +19,24 @@ import {
   MessageSquare,
   MessagesSquare,
   ShieldCheck,
-  Tag,
-  Sparkles,
-  Smile,
-  Meh,
-  Frown,
   Plus,
   Clock,
   Mail,
   Filter,
-  CheckCircle2,
   Calendar,
   MessageCircle,
+  Bell,
+  CheckCircle2,
+  Sparkles,
+  Tag,
 } from 'lucide-react'
-
-function getSentimentBadge(sentiment) {
-  if (!sentiment) return null
-  const s = String(sentiment).toLowerCase()
-  if (s.includes('pos')) {
-    return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
-        <Smile size={12} className="text-emerald-600" />
-        <span>Positive</span>
-      </span>
-    )
-  }
-  if (s.includes('neg')) {
-    return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-semibold text-rose-700 border border-rose-200">
-        <Frown size={12} className="text-rose-600" />
-        <span>Negative</span>
-      </span>
-    )
-  }
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700 border border-slate-200">
-      <Meh size={12} className="text-slate-500" />
-      <span>Neutral</span>
-    </span>
-  )
-}
+import { getCategoryTheme, resolveCategoryName } from '@shared/utils/categoryColors.js'
 
 export default function CustomerFeedbackHistory() {
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
   const debouncedSearch = useDebounce(searchTerm, 250)
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [responseFilter, setResponseFilter] = useState('all') // 'all' | 'responded' | 'waiting'
+  const [responseFilter, setResponseFilter] = useState('all') // 'all' | 'unread' | 'responded' | 'waiting'
   const [expandedIds, setExpandedIds] = useState({})
 
   const { page, pageSize, setPage, nextPage, prevPage } = usePagination(10)
@@ -79,23 +49,26 @@ export default function CustomerFeedbackHistory() {
   const items = useMemo(() => normalizeFeedbackList(data), [data])
   const totalItems = useMemo(() => extractTotalCount(data, items.length), [data, items.length])
 
-  // Extract unique categories for filtering
-  const availableCategories = useMemo(() => {
-    const set = new Set()
-    items.forEach((item) => {
-      if (item.category && item.category !== 'General') {
-        set.add(item.category)
-      }
-    })
-    return Array.from(set)
-  }, [items])
+  // Hook for tracking unseen product owner responses
+  const {
+    markAsSeen,
+    markAllAsSeen,
+    hasUnseen,
+    getUnseenCount,
+    totalUnseenCount,
+  } = useUnseenResponses(items)
 
-  // Count total product owner comments
+  // Total count of official comments
   const totalResponsesCount = useMemo(() => {
     return items.reduce((acc, curr) => acc + (curr.comments?.length || 0), 0)
   }, [items])
 
-  // Client-side filtering on current page
+  // Count items with unread responses
+  const unreadItemsCount = useMemo(() => {
+    return items.filter((item) => hasUnseen(item.id, item.comments?.length || 0)).length
+  }, [items, hasUnseen])
+
+  // Filter items
   const filteredItems = useMemo(() => {
     return items.filter((item) => {
       // Search filter
@@ -103,39 +76,45 @@ export default function CustomerFeedbackHistory() {
         const q = debouncedSearch.toLowerCase()
         const matchTitle = (item.title || '').toLowerCase().includes(q)
         const matchContent = (item.content || '').toLowerCase().includes(q)
-        const matchCategory = (item.category || '').toLowerCase().includes(q)
         const matchComments = item.comments?.some((c) =>
           (c.content || '').toLowerCase().includes(q),
         )
-        if (!matchTitle && !matchContent && !matchCategory && !matchComments) {
+        if (!matchTitle && !matchContent && !matchComments) {
           return false
         }
       }
 
-      // Category filter
-      if (selectedCategory !== 'all') {
-        if (item.category?.toLowerCase() !== selectedCategory.toLowerCase()) {
-          return false
-        }
-      }
+      const commentsCount = item.comments?.length || 0
+      const isUnread = hasUnseen(item.id, commentsCount)
 
-      // Response filter
-      if (responseFilter === 'responded' && (!item.comments || item.comments.length === 0)) {
+      // Response status filter
+      if (responseFilter === 'unread' && !isUnread) {
         return false
       }
-      if (responseFilter === 'waiting' && item.comments && item.comments.length > 0) {
+      if (responseFilter === 'responded' && commentsCount === 0) {
+        return false
+      }
+      if (responseFilter === 'waiting' && commentsCount > 0) {
         return false
       }
 
       return true
     })
-  }, [items, debouncedSearch, selectedCategory, responseFilter])
+  }, [items, debouncedSearch, responseFilter, hasUnseen])
 
-  const toggleExpand = (id) => {
+  const toggleExpand = (item) => {
+    const isCurrentlyExpanded = expandedIds[item.id] !== undefined ? expandedIds[item.id] : true
+    const nextExpanded = !isCurrentlyExpanded
+
     setExpandedIds((prev) => ({
       ...prev,
-      [id]: !prev[id],
+      [item.id]: nextExpanded,
     }))
+
+    // If opening details, mark comments as seen
+    if (nextExpanded && item.comments?.length) {
+      markAsSeen(item.id, item.comments.length)
+    }
   }
 
   const toggleExpandAll = () => {
@@ -143,6 +122,9 @@ export default function CustomerFeedbackHistory() {
     const nextState = {}
     items.forEach((item) => {
       nextState[item.id] = !allExpanded
+      if (!allExpanded && item.comments?.length) {
+        markAsSeen(item.id, item.comments.length)
+      }
     })
     setExpandedIds(nextState)
   }
@@ -176,16 +158,18 @@ export default function CustomerFeedbackHistory() {
     <div className="flex flex-col gap-6">
       {/* Top Metrics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {/* Metric 1: Total Submissions */}
         <div className="flex items-center gap-3.5 rounded-2xl bg-white p-4 border border-slate-200/80 shadow-xs">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600 border border-brand-100">
             <MessagesSquare size={20} />
           </div>
           <div>
-            <span className="text-xs font-semibold text-slate-500">Total Feedbacks</span>
+            <span className="text-xs font-semibold text-slate-500">My Submissions</span>
             <div className="text-xl font-bold text-slate-900">{totalItems}</div>
           </div>
         </div>
 
+        {/* Metric 2: Official Responses */}
         <div className="flex items-center gap-3.5 rounded-2xl bg-white p-4 border border-slate-200/80 shadow-xs">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
             <MessageCircle size={20} />
@@ -196,16 +180,85 @@ export default function CustomerFeedbackHistory() {
           </div>
         </div>
 
-        <div className="flex items-center gap-3.5 rounded-2xl bg-white p-4 border border-slate-200/80 shadow-xs">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-50 text-purple-600 border border-purple-100">
-            <Sparkles size={20} />
+        {/* Metric 3: New / Unread Responses */}
+        <div
+          className={`flex items-center gap-3.5 rounded-2xl p-4 border shadow-xs transition-all ${
+            totalUnseenCount > 0
+              ? 'bg-amber-50/70 border-amber-200/90 ring-1 ring-amber-200/50'
+              : 'bg-white border-slate-200/80'
+          }`}
+        >
+          <div
+            className={`flex h-11 w-11 items-center justify-center rounded-xl border ${
+              totalUnseenCount > 0
+                ? 'bg-amber-100 text-amber-700 border-amber-300'
+                : 'bg-slate-50 text-slate-500 border-slate-200'
+            }`}
+          >
+            <Bell size={20} className={totalUnseenCount > 0 ? 'animate-bounce' : ''} />
           </div>
-          <div>
-            <span className="text-xs font-semibold text-slate-500">AI Triage Status</span>
-            <div className="text-sm font-bold text-purple-700">Active & Automated</div>
+          <div className="flex-1">
+            <span className="text-xs font-semibold text-slate-500">Unread Responses</span>
+            <div
+              className={`text-xl font-bold ${
+                totalUnseenCount > 0 ? 'text-amber-700' : 'text-slate-900'
+              }`}
+            >
+              {totalUnseenCount}
+            </div>
           </div>
+          {totalUnseenCount > 0 && (
+            <button
+              type="button"
+              onClick={() => markAllAsSeen(items)}
+              className="text-[11px] font-bold text-amber-800 hover:text-amber-900 underline shrink-0"
+              title="Mark all as read"
+            >
+              Mark all read
+            </button>
+          )}
         </div>
       </div>
+
+      {/* Unread Response Notification Banner (if any unseen responses exist) */}
+      {totalUnseenCount > 0 && (
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-amber-500/10 via-brand-500/10 to-indigo-500/10 border border-amber-300/80 p-4 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500 text-white shadow-xs shrink-0">
+              <Bell size={18} />
+            </div>
+            <div>
+              <h4 className="text-sm font-bold text-slate-900">
+                You have {totalUnseenCount} new official {totalUnseenCount === 1 ? 'response' : 'responses'}!
+              </h4>
+              <p className="text-xs text-slate-600 mt-0.5">
+                The product team has replied to your feedback tickets.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setResponseFilter('unread')}
+              className="text-xs font-bold border-amber-300 text-amber-900 hover:bg-amber-100/60"
+            >
+              View New Responses
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => markAllAsSeen(items)}
+              className="text-xs"
+            >
+              Mark all as read
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Filter and Search Bar */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
@@ -213,42 +266,59 @@ export default function CustomerFeedbackHistory() {
           <SearchBar
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search feedback, topic, or response comments..."
+            placeholder="Search your feedback or team replies..."
           />
           {isFetching && <Spinner className="text-brand-600" size={18} />}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Response Filter */}
+          {/* Response Filter Pills */}
           <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs">
             <button
               type="button"
               onClick={() => setResponseFilter('all')}
-              className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
                 responseFilter === 'all'
-                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                  ? 'bg-white text-slate-900 shadow-xs font-bold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               All ({items.length})
             </button>
+
+            {unreadItemsCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setResponseFilter('unread')}
+                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium transition-all ${
+                  responseFilter === 'unread'
+                    ? 'bg-amber-500 text-white shadow-xs font-bold'
+                    : 'text-amber-700 hover:bg-amber-100/60 font-semibold'
+                }`}
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
+                <span>New Responses ({unreadItemsCount})</span>
+              </button>
+            )}
+
             <button
               type="button"
               onClick={() => setResponseFilter('responded')}
-              className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
                 responseFilter === 'responded'
-                  ? 'bg-white text-indigo-700 shadow-xs font-semibold'
+                  ? 'bg-white text-indigo-700 shadow-xs font-bold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               Responded ({items.filter((i) => i.comments?.length > 0).length})
             </button>
+
             <button
               type="button"
               onClick={() => setResponseFilter('waiting')}
-              className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
+              className={`px-3 py-1.5 rounded-lg font-medium transition-all ${
                 responseFilter === 'waiting'
-                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                  ? 'bg-white text-slate-900 shadow-xs font-bold'
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -261,7 +331,7 @@ export default function CustomerFeedbackHistory() {
             <button
               type="button"
               onClick={toggleExpandAll}
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors"
+              className="text-xs font-semibold text-slate-600 hover:text-slate-900 px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors"
             >
               Expand / Collapse All
             </button>
@@ -275,7 +345,7 @@ export default function CustomerFeedbackHistory() {
           <EmptyState
             icon={MessageSquare}
             title="No feedback submitted yet"
-            description="You haven't submitted any feedback tickets yet. Share your thoughts, requests, or bug reports with our product team."
+            description="You haven't submitted any feedback tickets yet. Share your suggestions, ideas, or questions directly with our engineering team."
           />
           <div className="mt-6 flex justify-center">
             <Button
@@ -295,14 +365,13 @@ export default function CustomerFeedbackHistory() {
           <EmptyState
             icon={Filter}
             title="No matching feedback"
-            description="No feedback submissions match your search or selected filters."
+            description="No feedback submissions match your search query or selected filter."
           />
           <div className="mt-4 flex justify-center">
             <button
               type="button"
               onClick={() => {
                 setSearchTerm('')
-                setSelectedCategory('all')
                 setResponseFilter('all')
               }}
               className="text-xs font-bold text-brand-600 hover:text-brand-700 underline"
@@ -314,61 +383,74 @@ export default function CustomerFeedbackHistory() {
       ) : (
         <div className="flex flex-col gap-4">
           {filteredItems.map((item) => {
-            const hasComments = item.comments && item.comments.length > 0
+            const commentsCount = item.comments?.length || 0
+            const hasComments = commentsCount > 0
+            const isUnread = hasUnseen(item.id, commentsCount)
+            const unseenItemCount = getUnseenCount(item.id, commentsCount)
+
             // Default to expanded if it has comments or if explicitly expanded
             const isExpanded = expandedIds[item.id] !== undefined ? expandedIds[item.id] : true
-            const categoryTheme = getCategoryTheme(item.category)
+
+            const categoryName = resolveCategoryName(item)
+            const categoryTheme = getCategoryTheme(categoryName)
 
             return (
               <Card
                 key={item.id}
-                className="flex flex-col gap-4 border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs rounded-2xl transition-all hover:border-slate-300"
+                className={`flex flex-col gap-4 border bg-white p-5 sm:p-6 shadow-xs rounded-2xl transition-all ${
+                  isUnread
+                    ? 'border-amber-300 ring-2 ring-amber-100 hover:border-amber-400'
+                    : 'border-slate-200/80 hover:border-slate-300'
+                }`}
               >
                 {/* Header: Title & Badges */}
                 <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                   <div className="flex flex-col gap-2 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2.5">
                       <h3 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
                         {item.title}
                       </h3>
 
-                      {/* Category Badge */}
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold border ${categoryTheme.badgeClass}`}
-                      >
-                        <Tag size={11} />
-                        <span>{item.category}</span>
-                      </span>
-
-                      {/* Sentiment Badge */}
-                      {getSentimentBadge(item.overallSentiment)}
-
-                      {/* AI Processed Badge */}
-                      {item.isProcessedByRouter && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-semibold text-purple-700 border border-purple-200">
-                          <Sparkles size={11} className="text-purple-600" />
-                          <span>AI Triage</span>
+                      {/* Unread Response Notification Badge */}
+                      {isUnread && (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-2.5 py-0.5 text-xs font-bold text-white shadow-xs animate-pulse">
+                          <Bell size={12} />
+                          <span>
+                            {unseenItemCount > 1 ? `${unseenItemCount} New Responses` : 'New Response'}
+                          </span>
                         </span>
                       )}
 
-                      {/* Official Response Status Pill */}
+                      {/* Category Badge (Only render when not General / Uncategorized) */}
+                      {categoryName &&
+                        categoryName.toLowerCase() !== 'general' &&
+                        categoryName.toLowerCase() !== 'uncategorized' && (
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold border ${categoryTheme.badgeClass}`}
+                          >
+                            <Tag size={10} />
+                            <span>{categoryName}</span>
+                          </span>
+                        )}
+
+                      {/* Clean Official Response Number / Status Pill */}
                       {hasComments ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-bold text-indigo-700 border border-indigo-200 shadow-2xs">
-                          <ShieldCheck size={12} className="text-indigo-600" />
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700 border border-indigo-200 shadow-2xs">
+                          <ShieldCheck size={13} className="text-indigo-600" />
                           <span>
-                            {item.comments.length}{' '}
-                            {item.comments.length === 1 ? 'Response' : 'Responses'}
+                            {commentsCount}{' '}
+                            {commentsCount === 1 ? 'Official Response' : 'Official Responses'}
                           </span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700 border border-amber-200/80">
-                          <Clock size={11} className="text-amber-600" />
-                          <span>Awaiting Review</span>
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 border border-slate-200">
+                          <Clock size={12} className="text-slate-400" />
+                          <span>Awaiting Team Review</span>
                         </span>
                       )}
                     </div>
 
-                    {/* Meta info row */}
+                    {/* Meta Info Row */}
                     <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
                       {item.submittedAt && (
                         <span className="flex items-center gap-1">
@@ -389,7 +471,7 @@ export default function CustomerFeedbackHistory() {
 
                   <button
                     type="button"
-                    onClick={() => toggleExpand(item.id)}
+                    onClick={() => toggleExpand(item)}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors shrink-0 self-start"
                   >
                     <span>{isExpanded ? 'Hide Details' : 'View Full Details'}</span>
@@ -402,23 +484,28 @@ export default function CustomerFeedbackHistory() {
                   <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
                     Your Feedback Submission
                   </span>
-                  <div className="rounded-xl bg-slate-50/80 p-4 text-xs sm:text-sm text-slate-800 leading-relaxed font-sans border border-slate-200/70 whitespace-pre-wrap">
+                  <div className="rounded-xl bg-slate-50/90 p-4 text-xs sm:text-sm text-slate-800 leading-relaxed font-sans border border-slate-200/70 whitespace-pre-wrap">
                     {item.content}
                   </div>
                 </div>
 
-                {/* Expanded Section: Product Owner Comments & Responses */}
+                {/* Expanded Section: Product Team Responses */}
                 {isExpanded && (
                   <div className="flex flex-col gap-3 border-t border-slate-100 pt-4 mt-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1.5">
                         <MessageCircle size={15} className="text-indigo-600" />
-                        <span>Product Owner Responses & Discussion</span>
+                        <span>Product Team Responses ({commentsCount})</span>
                       </span>
-                      {hasComments && (
-                        <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
-                          {item.comments.length} official {item.comments.length === 1 ? 'response' : 'responses'}
-                        </span>
+
+                      {isUnread && (
+                        <button
+                          type="button"
+                          onClick={() => markAsSeen(item.id, commentsCount)}
+                          className="text-xs font-bold text-indigo-600 hover:text-indigo-700 underline"
+                        >
+                          Mark as seen
+                        </button>
                       )}
                     </div>
 
@@ -427,7 +514,7 @@ export default function CustomerFeedbackHistory() {
                         <Clock size={16} className="text-slate-400" />
                         <span className="font-semibold text-slate-700">No responses posted yet.</span>
                         <span className="text-slate-400">
-                          The product team has received your feedback and will post updates directly here.
+                          The product team has received your submission and will post updates directly here.
                         </span>
                       </div>
                     ) : (
@@ -437,23 +524,19 @@ export default function CustomerFeedbackHistory() {
                           return (
                             <div
                               key={comment.id || idx}
-                              className={`flex flex-col gap-2 rounded-xl p-4 text-xs sm:text-sm border transition-all ${
-                                isPO
-                                  ? 'bg-gradient-to-r from-indigo-50/90 to-blue-50/60 border-indigo-200 text-indigo-950 shadow-xs ring-1 ring-indigo-200/50'
-                                  : 'bg-slate-50 border-slate-200/80 text-slate-800'
-                              }`}
+                              className="flex flex-col gap-2 rounded-xl p-4 text-xs sm:text-sm border bg-gradient-to-r from-indigo-50/90 to-blue-50/50 border-indigo-200/80 text-indigo-950 shadow-xs ring-1 ring-indigo-200/40"
                             >
-                              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100/60 pb-2">
+                              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-indigo-100/80 pb-2">
                                 <div className="flex items-center gap-2">
                                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-600 text-white shadow-2xs">
                                     <ShieldCheck size={14} />
                                   </div>
-                                  <span className="font-bold text-indigo-900 text-xs sm:text-sm">
-                                    {comment.author}
+                                  <span className="font-bold text-indigo-950 text-xs sm:text-sm">
+                                    {comment.author || 'Product Team'}
                                   </span>
-                                  <Badge className="bg-indigo-100 text-indigo-800 text-[10px] px-2 py-0.5 font-bold border border-indigo-200">
-                                    Official Product Team Response
-                                  </Badge>
+                                  <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-bold text-indigo-800 border border-indigo-200">
+                                    Product Owner Response
+                                  </span>
                                 </div>
 
                                 {comment.createdAt && (

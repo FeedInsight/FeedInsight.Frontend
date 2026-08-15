@@ -3,7 +3,6 @@ import {
   User,
   Mail,
   Calendar,
-  KeyRound,
   ShieldCheck,
   Lock,
   ArrowLeft,
@@ -65,12 +64,10 @@ export default function CustomerDetailPage() {
     )
   }
 
-  const id = customer.id || customer.userId || customer.customerId || customerId
   const firstName = customer.firstName || ''
   const lastName = customer.lastName || ''
   const fullName = customer.fullName || `${firstName} ${lastName}`.trim() || 'Company Customer'
   const email = customer.email || '—'
-  const role = customer.role || customer.userType || 'CompanyCustomer'
   const createdAtStr =
     customer.createdAt || customer.createdDate
       ? formatDateTime(customer.createdAt || customer.createdDate)
@@ -108,9 +105,6 @@ export default function CustomerDetailPage() {
           <div className="flex flex-col gap-1.5 flex-1">
             <div className="flex flex-wrap items-center gap-2.5">
               <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{fullName}</h1>
-              <Badge className="bg-indigo-50 text-indigo-700 ring-1 ring-indigo-600/20 font-semibold px-2.5 py-0.5 text-xs">
-                {role}
-              </Badge>
               {isLocked ? (
                 <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-semibold text-rose-700 border border-rose-200">
                   <Lock size={11} className="text-rose-600" />
@@ -145,7 +139,7 @@ export default function CustomerDetailPage() {
             <span>Customer Account Details</span>
           </h2>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4">
               <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">
                 First Name
@@ -165,22 +159,6 @@ export default function CustomerDetailPage() {
                 Email Address
               </span>
               <p className="text-sm font-bold text-slate-900 truncate">{email}</p>
-            </div>
-
-            <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4">
-              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                <KeyRound size={12} className="text-slate-400" />
-                <span>Customer User ID</span>
-              </div>
-              <p className="text-xs font-mono font-medium text-slate-700 break-all">{id}</p>
-            </div>
-
-            <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4">
-              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                <ShieldCheck size={12} className="text-indigo-500" />
-                <span>System Role</span>
-              </div>
-              <p className="text-sm font-bold text-indigo-900">{role}</p>
             </div>
 
             <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4">

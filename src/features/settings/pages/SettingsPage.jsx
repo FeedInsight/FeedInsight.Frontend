@@ -1,26 +1,40 @@
-import ProfileNameForm from '../components/ProfileNameForm'
-import CustomerProfileForm from '../components/CustomerProfileForm'
-import UpdatePasswordForm from '../components/UpdatePasswordForm'
-import { useAuth } from '@shared/hooks/useAuth'
-import { ROLES } from '@app/config/constants'
-import TenantNameForm from '../components/TenantNameForm'
+import ProfileNameForm from '../components/ProfileNameForm.jsx'
+import UpdatePasswordForm from '../components/UpdatePasswordForm.jsx'
+import { useAuth } from '@shared/hooks/useAuth.js'
 import { isCompanyCustomer } from '@shared/utils/roleUtils.js'
+import { Settings, ShieldCheck } from 'lucide-react'
 
 export default function SettingsPage() {
   const { user } = useAuth()
-  const isProductOwner =
-    user?.role === ROLES.PRODUCT_OWNER ||
-    String(user?.role || '').toLowerCase() === 'productowner'
   const isCustomer = isCompanyCustomer(user?.role)
 
-  return (
-    <div className="flex max-w-xl flex-col gap-6">
-      <h1 className="text-xl font-semibold text-slate-900">
-        {isCustomer ? 'Customer Account Settings' : 'Account Settings'}
-      </h1>
+  const roleLabel = isCustomer
+    ? 'Company Customer'
+    : user?.role === 'SuperAdmin'
+    ? 'Super Admin'
+    : 'Product Owner'
 
-      {isProductOwner && <TenantNameForm companyName={user?.companyName ?? ''} />}
-      {isCustomer ? <CustomerProfileForm /> : <ProfileNameForm />}
+  return (
+    <div className="flex max-w-2xl flex-col gap-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 pb-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
+            <Settings className="w-6 h-6 text-brand-600" />
+            <span>{isCustomer ? 'Customer Account Settings' : 'Account Settings'}</span>
+          </h1>
+          <p className="text-xs text-slate-500 mt-1">
+            Manage your personal profile details and change your account password.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-700 border border-brand-100 self-start sm:self-auto">
+          <ShieldCheck size={14} />
+          <span>{roleLabel}</span>
+        </div>
+      </div>
+
+      <ProfileNameForm />
       <UpdatePasswordForm />
     </div>
   )

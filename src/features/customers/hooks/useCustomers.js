@@ -4,10 +4,7 @@ import {
   fetchCompanyCustomers,
   fetchCompanyCustomerById,
   createCompanyCustomer,
-  updateCustomer,
   deleteCustomer,
-  lockCustomer,
-  unlockCustomer,
 } from '../api/customersApi.js'
 import { QUERY_KEYS } from '@app/config/constants.js'
 
@@ -61,35 +58,6 @@ export function useCreateCompanyCustomer() {
 }
 
 /**
- * Hook to update an existing customer.
- */
-export function useUpdateCustomer() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: ({ id, ...payload }) => updateCustomer(id, payload),
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] })
-      if (variables?.id) {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.customerDetail(variables.id) })
-      }
-      toast.success('Customer profile updated successfully!')
-      return data
-    },
-    onError: (error) => {
-      const responseData = error?.response?.data
-      const message =
-        responseData?.title ||
-        responseData?.message ||
-        responseData?.detail ||
-        (typeof responseData === 'string' ? responseData : null) ||
-        'Failed to update customer profile.'
-      toast.error(message)
-    },
-  })
-}
-
-/**
  * Hook to delete a customer.
  */
 export function useDeleteCustomer() {
@@ -118,60 +86,4 @@ export function useDeleteCustomer() {
   })
 }
 
-/**
- * Hook to lock a customer account.
- */
-export function useLockCustomer() {
-  const queryClient = useQueryClient()
 
-  return useMutation({
-    mutationFn: ({ id, reason }) => lockCustomer(id, reason),
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] })
-      if (variables?.id) {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.customerDetail(variables.id) })
-      }
-      toast.success('Customer account locked successfully!')
-      return data
-    },
-    onError: (error) => {
-      const responseData = error?.response?.data
-      const message =
-        responseData?.title ||
-        responseData?.message ||
-        responseData?.detail ||
-        (typeof responseData === 'string' ? responseData : null) ||
-        'Failed to lock customer account.'
-      toast.error(message)
-    },
-  })
-}
-
-/**
- * Hook to unlock a customer account.
- */
-export function useUnlockCustomer() {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (id) => unlockCustomer(id),
-    onSuccess: (data, id) => {
-      queryClient.invalidateQueries({ queryKey: ['customers'] })
-      if (id) {
-        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.customerDetail(id) })
-      }
-      toast.success('Customer account unlocked successfully!')
-      return data
-    },
-    onError: (error) => {
-      const responseData = error?.response?.data
-      const message =
-        responseData?.title ||
-        responseData?.message ||
-        responseData?.detail ||
-        (typeof responseData === 'string' ? responseData : null) ||
-        'Failed to unlock customer account.'
-      toast.error(message)
-    },
-  })
-}

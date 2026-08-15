@@ -8,48 +8,23 @@ import {
   ChevronDown,
   ChevronUp,
   MessageCircle,
-  Sparkles,
-  Smile,
-  Meh,
-  Frown,
+  Bell,
 } from 'lucide-react'
 import Card from '@shared/components/ui/Card.jsx'
 import Badge from '@shared/components/ui/Badge.jsx'
 import Button from '@shared/components/ui/Button.jsx'
 import Textarea from '@shared/components/ui/Textarea.jsx'
 import { formatDateTime, formatRelative } from '@shared/utils/formatDate.js'
-import { getCategoryTheme } from '@shared/utils/categoryColors.js'
+import { getCategoryTheme, resolveCategoryName } from '@shared/utils/categoryColors.js'
 import { useAddDevelopmentCompanyComment } from '../hooks/useCustomerFeedback.js'
 import { normalizeFeedbackItem } from '../utils/feedbackNormalizer.js'
 
-function getSentimentBadge(sentiment) {
-  if (!sentiment) return null
-  const s = String(sentiment).toLowerCase()
-  if (s.includes('pos')) {
-    return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
-        <Smile size={11} className="text-emerald-600" />
-        <span>Positive</span>
-      </span>
-    )
-  }
-  if (s.includes('neg')) {
-    return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-semibold text-rose-700 border border-rose-200">
-        <Frown size={11} className="text-rose-600" />
-        <span>Negative</span>
-      </span>
-    )
-  }
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700 border border-slate-200">
-      <Meh size={11} className="text-slate-500" />
-      <span>Neutral</span>
-    </span>
-  )
-}
-
-export default function CompanyFeedbackCard({ feedback: rawFeedback }) {
+export default function CompanyFeedbackCard({
+  feedback: rawFeedback,
+  categoriesMap = {},
+  isUnseen = false,
+  onMarkSeen,
+}) {
   const [isExpanded, setIsExpanded] = useState(true)
   const [commentText, setCommentText] = useState('')
   const { mutate: addComment, isPending } = useAddDevelopmentCompanyComment()
@@ -59,8 +34,8 @@ export default function CompanyFeedbackCard({ feedback: rawFeedback }) {
   const id = feedback.id
   const customerName = feedback.submitterName || 'Company Customer'
   const customerEmail = feedback.submitterEmail || ''
-  const category = feedback.category || 'General'
-  const categoryTheme = getCategoryTheme(category)
+  const categoryName = resolveCategoryName(feedback, categoriesMap)
+  const categoryTheme = getCategoryTheme(categoryName)
   const title = feedback.title || 'Customer Feedback'
   const rawContent = feedback.content || 'No content provided'
   const dateStr = feedback.submittedAt
@@ -76,9 +51,20 @@ export default function CompanyFeedbackCard({ feedback: rawFeedback }) {
     return 'CU'
   }
 
+  const handleToggleExpand = () => {
+    if (!isExpanded && onMarkSeen) {
+      onMarkSeen(id)
+    }
+    setIsExpanded(!isExpanded)
+  }
+
   const handlePostComment = (e) => {
     e.preventDefault()
     if (!commentText.trim()) return
+
+    if (onMarkSeen) {
+      onMarkSeen(id)
+    }
 
     addComment(
       {
@@ -94,7 +80,14 @@ export default function CompanyFeedbackCard({ feedback: rawFeedback }) {
   }
 
   return (
-    <Card className="flex flex-col gap-4 border border-slate-200/80 bg-white p-5 sm:p-6 shadow-xs rounded-2xl transition-all">
+    <Card
+      onClick={() => onMarkSeen?.(id)}
+      className={`flex flex-col gap-4 bg-white p-5 sm:p-6 shadow-xs rounded-2xl transition-all ${
+        isUnseen
+          ? 'border-amber-300 ring-2 ring-amber-100/90 hover:border-amber-400'
+          : 'border border-slate-200/80 hover:border-slate-300'
+      }`}
+    >
       {/* Top Header: Customer Info & Metadata */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
         <div className="flex items-center gap-3">
@@ -118,31 +111,33 @@ export default function CompanyFeedbackCard({ feedback: rawFeedback }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Category Badge */}
-          <span
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold border ${categoryTheme.badgeClass}`}
-          >
-            <Tag size={10} />
-            <span>{category}</span>
-          </span>
-
-          {/* Sentiment Badge */}
-          {getSentimentBadge(feedback.overallSentiment)}
-
-          {/* AI Processed Badge */}
-          {feedback.isProcessedByRouter && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-purple-50 px-2 py-0.5 text-[11px] font-semibold text-purple-700 border border-purple-200">
-              <Sparkles size={10} className="text-purple-600" />
-              <span>AI Processed</span>
+          {/* Unseen Feedback Notification Badge */}
+          {isUnseen && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500 px-2.5 py-0.5 text-xs font-bold text-white shadow-xs animate-pulse">
+              <Bell size={12} />
+              <span>New Feedback</span>
             </span>
           )}
 
-          {/* Status Badge */}
-          {feedback.status && (
-            <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200/80 font-semibold text-xs">
-              {feedback.status}
-            </Badge>
-          )}
+          {/* Category Badge (Only render when not General / Uncategorized) */}
+          {categoryName &&
+            categoryName.toLowerCase() !== 'general' &&
+            categoryName.toLowerCase() !== 'uncategorized' && (
+              <span
+                className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold border ${categoryTheme.badgeClass}`}
+              >
+                <Tag size={10} />
+                <span>{categoryName}</span>
+              </span>
+            )}
+
+          {/* Comments Count Badge */}
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-indigo-700 border border-indigo-200/80">
+            <MessageCircle size={11} className="text-indigo-600" />
+            <span>
+              {comments.length} {comments.length === 1 ? 'Comment' : 'Comments'}
+            </span>
+          </span>
 
           {/* Date */}
           {dateStr && (
@@ -154,7 +149,10 @@ export default function CompanyFeedbackCard({ feedback: rawFeedback }) {
 
           <button
             type="button"
-            onClick={() => setIsExpanded(!isExpanded)}
+            onClick={(e) => {
+              e.stopPropagation()
+              handleToggleExpand()
+            }}
             className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors ml-1"
           >
             <span>{isExpanded ? 'Collapse' : 'Expand'}</span>

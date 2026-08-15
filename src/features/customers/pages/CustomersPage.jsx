@@ -1,9 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Users, UserPlus, Eye, Lock, Unlock, Trash2, ShieldCheck, ShieldAlert } from 'lucide-react'
+import { Users, UserPlus, Eye, Lock, Trash2, ShieldCheck } from 'lucide-react'
 import Table from '@shared/components/ui/Table.jsx'
 import Button from '@shared/components/ui/Button.jsx'
-import Badge from '@shared/components/ui/Badge.jsx'
 import Spinner from '@shared/components/ui/Spinner.jsx'
 import SearchBar from '@shared/components/ui/SearchBar.jsx'
 import TablePagination from '@shared/components/ui/TablePagination.jsx'
@@ -13,11 +12,8 @@ import { usePagination } from '@shared/hooks/usePagination.js'
 import {
   useCompanyCustomers,
   useDeleteCustomer,
-  useLockCustomer,
-  useUnlockCustomer,
 } from '../hooks/useCustomers.js'
 import DeleteCustomerModal from '../components/DeleteCustomerModal.jsx'
-import LockCustomerModal from '../components/LockCustomerModal.jsx'
 import { ROUTES } from '@router/routes.js'
 import { formatDateTime } from '@shared/utils/formatDate.js'
 
@@ -34,7 +30,6 @@ export default function CustomersPage() {
   const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState('')
   const [deletingCustomer, setDeletingCustomer] = useState(null)
-  const [lockingCustomer, setLockingCustomer] = useState(null)
   const debouncedSearchTerm = useDebounce(searchTerm, 300)
   const { page, pageSize, params, setPage, nextPage, prevPage } = usePagination(10)
 
@@ -45,8 +40,6 @@ export default function CustomersPage() {
   })
 
   const { mutate: deleteCust, isPending: isDeleting } = useDeleteCustomer()
-  const { mutate: lockCust, isPending: isLocking } = useLockCustomer()
-  const { mutate: unlockCust, isPending: isUnlocking } = useUnlockCustomer()
 
   useEffect(() => {
     setPage(1)
@@ -84,22 +77,6 @@ export default function CustomersPage() {
     deleteCust(id, {
       onSuccess: () => setDeletingCustomer(null),
     })
-  }
-
-  const handleConfirmLock = () => {
-    if (!lockingCustomer) return
-    const id = lockingCustomer.id || lockingCustomer.userId || lockingCustomer.customerId
-    lockCust(
-      { id, reason: 'Locked via customer management table' },
-      {
-        onSuccess: () => setLockingCustomer(null),
-      },
-    )
-  }
-
-  const handleUnlock = (cust) => {
-    const id = cust.id || cust.userId || cust.customerId
-    unlockCust(id)
   }
 
   return (
@@ -195,7 +172,6 @@ export default function CustomersPage() {
                           <span className="font-semibold text-slate-900 text-sm">
                             {fullName}
                           </span>
-                          <span className="text-xs text-slate-400 font-mono">ID: {id?.substring(0, 8)}...</span>
                         </div>
                       </div>
                     </Table.Cell>
@@ -236,32 +212,17 @@ export default function CustomersPage() {
                           <span>View</span>
                         </Button>
 
-                        {/* 2. Lock / Unlock Button */}
-                        {isLocked ? (
-                          <Button
-                            variant="outline"
-                            size="xs"
-                            onClick={() => handleUnlock(cust)}
-                            title="Unlock customer account"
-                            disabled={isUnlocking}
-                            className="text-xs font-semibold text-emerald-700 hover:bg-emerald-50 border-emerald-300 shadow-2xs"
-                          >
-                            <Unlock size={14} />
-                            <span>Unlock</span>
-                          </Button>
-                        ) : (
-                          <Button
-                            variant="outline"
-                            size="xs"
-                            onClick={() => setLockingCustomer(cust)}
-                            title="Lock customer account"
-                            disabled={isLocking}
-                            className="text-xs font-semibold text-amber-700 hover:bg-amber-50 border-amber-300 shadow-2xs"
-                          >
-                            <Lock size={14} />
-                            <span>Lock</span>
-                          </Button>
-                        )}
+                        {/* 2. Lock Button (Disabled pending schema update in next release) */}
+                        <Button
+                          variant="outline"
+                          size="xs"
+                          disabled={true}
+                          title="Account lock feature will be enabled in the upcoming release"
+                          className="text-xs font-medium text-slate-400 border-slate-200 cursor-not-allowed opacity-60"
+                        >
+                          <Lock size={13} />
+                          <span>Lock</span>
+                        </Button>
 
                         {/* 3. Delete Button */}
                         <Button
@@ -313,19 +274,6 @@ export default function CustomersPage() {
           </div>
         )}
       </div>
-
-      <LockCustomerModal
-        isOpen={Boolean(lockingCustomer)}
-        customerName={
-          lockingCustomer
-            ? `${lockingCustomer.firstName || ''} ${lockingCustomer.lastName || ''}`.trim()
-            : ''
-        }
-        customerEmail={lockingCustomer?.email}
-        isSubmitting={isLocking}
-        onConfirm={handleConfirmLock}
-        onCancel={() => setLockingCustomer(null)}
-      />
 
       <DeleteCustomerModal
         isOpen={Boolean(deletingCustomer)}

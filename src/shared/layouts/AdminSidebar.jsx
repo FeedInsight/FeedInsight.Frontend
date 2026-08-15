@@ -25,7 +25,17 @@ import {
 import { ROUTES } from '@router/routes.js'
 import FeedInsightLogo from '@shared/components/ui/FeedInsightLogo'
 import FeedInsightLogoText from '@shared/components/ui/FeedInsightLogoText'
-import { canAccessApiKeys, canAccessCustomers } from '@shared/utils/roleUtils.js'
+import { canAccessApiKeys, canAccessCustomers, isCompanyCustomer } from '@shared/utils/roleUtils.js'
+import {
+  useDevelopmentCustomerFeedbacks,
+  useDevelopmentCompanyFeedbacks,
+} from '@features/customerFeedback/hooks/useCustomerFeedback.js'
+import { useUnseenResponses } from '@features/customerFeedback/hooks/useUnseenResponses.js'
+import { usePOUnseenCompanyFeedbacks } from '@features/customerFeedback/hooks/usePOUnseenCompanyFeedbacks.js'
+import { useFeedbacks } from '@features/triage/hooks/useFeedbacks.js'
+import { useUnseenTriageFeedbacks } from '@features/triage/hooks/useUnseenTriageFeedbacks.js'
+import { normalizeFeedbackList } from '@features/customerFeedback/utils/feedbackNormalizer.js'
+import { useMemo } from 'react'
 
 const NAV_ITEMS = [
   { to: ROUTES.workspaceDashboard, label: 'Dashboard', icon: LayoutDashboard, roles: REQUIRE_PRODUCT_OWNER },
@@ -116,6 +126,40 @@ const NAV_ITEMS = [
 export default function AdminSidebar() {
   const { isSidebarCollapsed } = useUiStore()
   const { user } = useAuth()
+  const isCustomer = isCompanyCustomer(user?.role)
+  const isPO = !isCustomer && (user?.role === 'ProductOwner' || String(user?.role || '').toLowerCase() === 'productowner')
+
+  // 1. Customer portal unseen responses
+  const { data: customerFeedbackData } = useDevelopmentCustomerFeedbacks(
+    isCustomer ? { page: 1, pageSize: 50 } : undefined,
+  )
+  const customerItems = useMemo(
+    () => (isCustomer ? normalizeFeedbackList(customerFeedbackData) : []),
+    [isCustomer, customerFeedbackData],
+  )
+  const { totalUnseenCount: customerUnseenCount } = useUnseenResponses(customerItems)
+
+  // 2. PO unseen triage submissions
+  const { data: triageFeedbacksData } = useFeedbacks(
+    isPO ? { page: 1, pageSize: 50 } : undefined,
+  )
+  const triageItems = useMemo(() => {
+    if (!isPO || !triageFeedbacksData) return []
+    return Array.isArray(triageFeedbacksData)
+      ? triageFeedbacksData
+      : triageFeedbacksData?.items || triageFeedbacksData?.data || triageFeedbacksData?.$values || []
+  }, [isPO, triageFeedbacksData])
+  const { totalUnseenCount: triageUnseenCount } = useUnseenTriageFeedbacks(triageItems)
+
+  // 3. PO unseen company customer feedbacks
+  const { data: companyFeedbackData } = useDevelopmentCompanyFeedbacks(
+    isPO ? { page: 1, pageSize: 50 } : undefined,
+  )
+  const companyItems = useMemo(
+    () => (isPO ? normalizeFeedbackList(companyFeedbackData) : []),
+    [isPO, companyFeedbackData],
+  )
+  const { totalUnseenCount: companyUnseenCount } = usePOUnseenCompanyFeedbacks(companyItems)
 
   const visibleNavItems = NAV_ITEMS.filter((item) => {
     if (
@@ -144,21 +188,50 @@ export default function AdminSidebar() {
         {isSidebarCollapsed ? <FeedInsightLogo size={42} /> : <FeedInsightLogoText />}
       </div>
 
-      {visibleNavItems.map(({ to, label, icon: Icon }) => (
-        <NavLink
-          key={to}
-          to={to}
-          className={({ isActive }) =>
-            cn(
-              'flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-slate-100',
-              isActive ? 'bg-brand-50 text-brand-500 font-bold' : 'text-slate-600 font-medium',
-            )
-          }
-        >
-          <Icon size={18} className="shrink-0" />
-          {!isSidebarCollapsed && <span className="truncate">{label}</span>}
-        </NavLink>
-      ))}
+      {visibleNavItems.map(({ to, label, icon: Icon }) => {
+        let badgeCount = 0
+        if (to === ROUTES.customerFeedback && isCustomer) {
+          badgeCount = customerUnseenCount
+        } else if (to === ROUTES.workspaceTriage && isPO) {
+          badgeCount = triageUnseenCount
+        } else if (to === ROUTES.workspaceCustomerFeedbacks && isPO) {
+          badgeCount = companyUnseenCount
+        }
+
+        const hasBadge = badgeCount > 0
+
+        return (
+          <NavLink
+            key={to}
+            to={to}
+            className={({ isActive }) =>
+              cn(
+                'relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-slate-100',
+                isActive ? 'bg-brand-50 text-brand-500 font-bold' : 'text-slate-600 font-medium',
+              )
+            }
+          >
+            <div className="relative">
+              <Icon size={18} className="shrink-0" />
+              {isSidebarCollapsed && hasBadge && (
+                <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-brand-600 ring-2 ring-white animate-pulse" />
+              )}
+            </div>
+
+            {!isSidebarCollapsed && (
+              <>
+                <span className="truncate">{label}</span>
+                {hasBadge && (
+                  <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-600 px-1.5 text-[11px] font-bold text-white shadow-xs animate-pulse">
+                    {badgeCount}
+                  </span>
+                )}
+              </>
+            )}
+          </NavLink>
+        )
+      })}
     </aside>
   )
 }
+

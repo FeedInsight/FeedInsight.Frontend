@@ -2,7 +2,6 @@ export const ROLES = {
   SUPER_ADMIN: 'SuperAdmin',
   PRODUCT_OWNER: 'ProductOwner',
   COMPANY_CUSTOMER: 'CompanyCustomer',
-  CUSTOMER_COMPANY: 'CustomerCompany',
 }
 
 export const STORY_STATUS = {
