@@ -8,13 +8,17 @@ import { Settings, ShieldCheck } from 'lucide-react'
 export default function SettingsPage() {
   const { user } = useAuth()
   const isCustomer = isCompanyCustomer(user?.role)
+  const roleNormalized = String(user?.role || '').toLowerCase().replace(/[\s_-]/g, '')
   const isProductOwner =
     !isCustomer &&
-    (user?.role === 'ProductOwner' || String(user?.role || '').toLowerCase() === 'productowner')
+    (roleNormalized === 'productowner' ||
+      roleNormalized === 'po' ||
+      user?.role === 'ProductOwner' ||
+      user?.role === 'PO')
 
   const roleLabel = isCustomer
     ? 'Company Customer'
-    : user?.role === 'SuperAdmin'
+    : user?.role === 'SuperAdmin' || roleNormalized === 'superadmin'
     ? 'Super Admin'
     : 'Product Owner'
 
@@ -41,11 +45,12 @@ export default function SettingsPage() {
       {/* User Personal Profile Information */}
       <ProfileNameForm />
 
-      {/* Organization / Tenant Information for Product Owners */}
-      {isProductOwner && <TenantNameForm companyName={user?.companyName || user?.tenantName} />}
+      {/* Organization / Tenant Name Update for Product Owners (both Development and Production) */}
+      {isProductOwner && <TenantNameForm />}
 
       {/* Account Security / Password Update */}
       <UpdatePasswordForm />
     </div>
   )
 }
+

@@ -129,9 +129,10 @@ export default function AdminSidebar() {
   const isCustomer = isCompanyCustomer(user?.role)
   const isPO = !isCustomer && (user?.role === 'ProductOwner' || String(user?.role || '').toLowerCase() === 'productowner')
 
-  // 1. Customer portal unseen responses
+  // 1. Customer portal unseen responses - ONLY for Company Customer
   const { data: customerFeedbackData } = useDevelopmentCustomerFeedbacks(
-    isCustomer ? { page: 1, pageSize: 50 } : undefined,
+    { page: 1, pageSize: 50 },
+    { enabled: Boolean(isCustomer) },
   )
   const customerItems = useMemo(
     () => (isCustomer ? normalizeFeedbackList(customerFeedbackData) : []),
@@ -139,9 +140,10 @@ export default function AdminSidebar() {
   )
   const { totalUnseenCount: customerUnseenCount } = useUnseenResponses(customerItems)
 
-  // 2. PO unseen triage submissions
+  // 2. PO unseen triage submissions - ONLY for Product Owner
   const { data: triageFeedbacksData } = useFeedbacks(
-    isPO ? { page: 1, pageSize: 50 } : undefined,
+    { page: 1, pageSize: 50 },
+    { enabled: Boolean(isPO) },
   )
   const triageItems = useMemo(() => {
     if (!isPO || !triageFeedbacksData) return []
@@ -151,9 +153,10 @@ export default function AdminSidebar() {
   }, [isPO, triageFeedbacksData])
   const { totalUnseenCount: triageUnseenCount } = useUnseenTriageFeedbacks(triageItems)
 
-  // 3. PO unseen company customer feedbacks
+  // 3. PO unseen company customer feedbacks - ONLY for Product Owner
   const { data: companyFeedbackData } = useDevelopmentCompanyFeedbacks(
-    isPO ? { page: 1, pageSize: 50 } : undefined,
+    { page: 1, pageSize: 50 },
+    { enabled: Boolean(isPO) },
   )
   const companyItems = useMemo(
     () => (isPO ? normalizeFeedbackList(companyFeedbackData) : []),

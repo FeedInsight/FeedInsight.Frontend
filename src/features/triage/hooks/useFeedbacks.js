@@ -5,11 +5,13 @@ import { QUERY_KEYS } from '@app/config/constants.js'
 /**
  * Hook to retrieve feedback items for the AI Triage Inbox.
  * @param {{ search?: string, status?: string, page?: number, pageSize?: number }} filters
+ * @param {import('@tanstack/react-query').UseQueryOptions} [options]
  */
-export function useFeedbacks(filters = {}) {
+export function useFeedbacks(filters = {}, options = {}) {
   return useQuery({
     queryKey: [...QUERY_KEYS.feedbacks, filters],
     queryFn: () => fetchFeedbacks(filters),
+    ...options,
   })
 }
 

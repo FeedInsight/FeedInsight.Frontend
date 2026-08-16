@@ -22,11 +22,13 @@ function getErrorMessage(error, fallback) {
 /**
  * Hook to retrieve feedbacks submitted by the logged-in customer (Company Customer).
  * @param {{ page?: number, pageSize?: number }} params
+ * @param {import('@tanstack/react-query').UseQueryOptions} [options]
  */
-export function useDevelopmentCustomerFeedbacks(params = {}) {
+export function useDevelopmentCustomerFeedbacks(params = {}, options = {}) {
   return useQuery({
     queryKey: QUERY_KEYS.developmentCustomerFeedbacks(params),
     queryFn: () => fetchDevelopmentCustomerFeedbacks(params),
+    ...options,
   })
 }
 
@@ -52,11 +54,13 @@ export function useSubmitDevelopmentCustomerFeedback() {
 /**
  * Hook to retrieve all customer feedbacks for the tenant (Development Product Owner).
  * @param {{ page?: number, pageSize?: number }} params
+ * @param {import('@tanstack/react-query').UseQueryOptions} [options]
  */
-export function useDevelopmentCompanyFeedbacks(params = {}) {
+export function useDevelopmentCompanyFeedbacks(params = {}, options = {}) {
   return useQuery({
     queryKey: QUERY_KEYS.developmentCompanyFeedbacks(params),
     queryFn: () => fetchDevelopmentCompanyFeedbacks(params),
+    ...options,
   })
 }
 
@@ -82,8 +86,8 @@ export function useAddDevelopmentCompanyComment() {
 /**
  * Backward compatibility aliases
  */
-export function useCustomerFeedbackHistory(params = {}) {
-  return useDevelopmentCustomerFeedbacks(params)
+export function useCustomerFeedbackHistory(params = {}, options = {}) {
+  return useDevelopmentCustomerFeedbacks(params, options)
 }
 
 export function useSubmitCustomerFeedback() {

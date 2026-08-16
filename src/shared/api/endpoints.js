@@ -121,6 +121,8 @@ export const ENDPOINTS = {
     create: '/Customers/company-customers', // POST { firstName, lastName, email, password }
     getById: (id) => `/Customers/company-customers/${id}`, // GET
     remove: (id) => `/Customers/${id}`, // DELETE
+    lock: (id) => `/Customers/company-customers/${id}/lock`, // POST { reason?: string }
+    unlock: (id) => `/Customers/company-customers/${id}/unlock`, // POST
   },
 
   // --- Development Feedback & Comments ---

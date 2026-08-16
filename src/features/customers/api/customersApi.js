@@ -40,7 +40,6 @@ export async function createCompanyCustomer(payload) {
   return data?.data ?? data
 }
 
-
 /**
  * Delete a customer by id.
  * @param {string} id
@@ -50,4 +49,31 @@ export async function deleteCustomer(id) {
   return data?.data ?? data
 }
 
+/**
+ * Lock a company customer account.
+ * POST /api/Customers/company-customers/{id}/lock
+ * @param {string} id
+ * @param {string} [reason] - Optional reason for locking
+ */
+export async function lockCompanyCustomer(id, reason) {
+  const finalReason =
+    typeof reason === 'string' && reason.trim()
+      ? reason.trim()
+      : 'Account locked by product owner'
 
+  const payload = {
+    reason: finalReason,
+  }
+
+  const { data } = await axiosClient.post(ENDPOINTS.customers.lock(id), payload)
+  return data?.data ?? data
+}
+
+/**
+ * Unlock a company customer account.
+ * @param {string} id
+ */
+export async function unlockCompanyCustomer(id) {
+  const { data } = await axiosClient.post(ENDPOINTS.customers.unlock(id))
+  return data?.data ?? data
+}

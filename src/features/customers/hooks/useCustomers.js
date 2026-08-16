@@ -5,6 +5,8 @@ import {
   fetchCompanyCustomerById,
   createCompanyCustomer,
   deleteCustomer,
+  lockCompanyCustomer,
+  unlockCompanyCustomer,
 } from '../api/customersApi.js'
 import { QUERY_KEYS } from '@app/config/constants.js'
 
@@ -85,5 +87,64 @@ export function useDeleteCustomer() {
     },
   })
 }
+
+/**
+ * Hook to lock a company customer account.
+ */
+export function useLockCompanyCustomer() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ id, reason }) => lockCompanyCustomer(id, reason),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] })
+      if (variables?.id) {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.customerDetail(variables.id) })
+      }
+      toast.success('Customer account locked successfully!')
+      return data
+    },
+    onError: (error) => {
+      const responseData = error?.response?.data
+      const message =
+        responseData?.title ||
+        responseData?.message ||
+        responseData?.detail ||
+        (typeof responseData === 'string' ? responseData : null) ||
+        'Failed to lock customer account.'
+      toast.error(message)
+    },
+  })
+}
+
+/**
+ * Hook to unlock a company customer account.
+ */
+export function useUnlockCompanyCustomer() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id) => unlockCompanyCustomer(id),
+    onSuccess: (data, id) => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] })
+      if (id) {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.customerDetail(id) })
+      }
+      toast.success('Customer account unlocked successfully!')
+      return data
+    },
+    onError: (error) => {
+      const responseData = error?.response?.data
+      const message =
+        responseData?.title ||
+        responseData?.message ||
+        responseData?.detail ||
+        (typeof responseData === 'string' ? responseData : null) ||
+        'Failed to unlock customer account.'
+      toast.error(message)
+    },
+  })
+}
+
 
 
