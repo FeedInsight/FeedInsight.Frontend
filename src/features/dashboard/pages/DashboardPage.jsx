@@ -50,7 +50,7 @@ export default function DashboardPage() {
             />
           </div>
 
-          <SentimentTrendChart snapshots={snapshots} />
+          <SentimentTrendChart snapshots={snapshots} range={range} />
           <FeatureRequestsWidget items={[]} />
         </>
       )}
