@@ -30,7 +30,8 @@ export const ENDPOINTS = {
 
   // --- Dashboard / Analytics ---
   analytics: {
-    dailySnapshots: '/analytics/daily-snapshots', // GET ?from=&to=
+    latestSnapshot: '/Analytics/snapshots/latest',
+    snapshots: '/Analytics/snapshots',
   },
 
   // --- Categories ---
