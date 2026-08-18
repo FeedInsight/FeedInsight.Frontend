@@ -4,7 +4,6 @@ import { MessageSquareText, FileText, CheckCircle } from 'lucide-react'
 import KpiCard from '@features/dashboard/components/KpiCard.jsx'
 import SentimentTrendChart from '@features/dashboard/components/SentimentTrendChart.jsx'
 import FeatureRequestsWidget from '@features/dashboard/components/FeatureRequestsWidget.jsx'
-import SnapshotDatePicker from '@features/dashboard/components/SnapshotDatePicker.jsx'
 import Spinner from '@shared/components/ui/Spinner.jsx'
 import { useAnalyticsSnapshots, useLatestAnalyticsSnapshot } from '../hooks/useAnalytics'
 
@@ -23,7 +22,6 @@ export default function DashboardPage() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-slate-900">Dashboard</h1>
-        <SnapshotDatePicker range={range} onChange={setRange} />
       </div>
 
       {isLoading ? (
@@ -50,7 +48,7 @@ export default function DashboardPage() {
             />
           </div>
 
-          <SentimentTrendChart snapshots={snapshots} range={range} />
+          <SentimentTrendChart snapshots={snapshots} range={range} onRangeChange={setRange} />
           <FeatureRequestsWidget items={latest?.topRequestedFeaturesJson ? JSON.parse(latest.topRequestedFeaturesJson) : []} />
         </>
       )}

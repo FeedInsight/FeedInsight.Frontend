@@ -11,6 +11,7 @@ import { eachDayOfInterval, format, parseISO } from 'date-fns'
 import Card from '@shared/components/ui/Card.jsx'
 import { ChartColumn } from 'lucide-react'
 import EmptyState from '@shared/components/ui/EmptyState'
+import SnapshotDatePicker from '@features/dashboard/components/SnapshotDatePicker.jsx'
 
 const EMPTY_DAY = {
   positiveSentimentCount: 0,
@@ -34,13 +35,18 @@ const chartData = (snapshots, range) => {
   })
 }
 
-export default function SentimentTrendChart({ snapshots, range }) {
-  const chartSnapshots = chartData(snapshots, range)
+export default function SentimentTrendChart({ snapshots, range, onRangeChange }) {
+  const hasData = Array.isArray(snapshots) && snapshots.length > 0
+  const chartSnapshots = hasData ? chartData(snapshots, range) : []
 
   return (
     <Card>
-      <h3 className="mb-3 text-sm font-semibold text-slate-700">Sentiment Trend</h3>
-      {chartSnapshots && chartSnapshots?.length > 0 ? (
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-semibold text-slate-700">Sentiment Trend</h3>
+        <SnapshotDatePicker range={range} onChange={onRangeChange} />
+      </div>
+
+      {hasData ? (
         <ResponsiveContainer width="100%" height={260}>
           <LineChart data={chartSnapshots}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
