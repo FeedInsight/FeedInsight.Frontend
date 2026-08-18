@@ -12,6 +12,7 @@ import Card from '@shared/components/ui/Card.jsx'
 import { ChartColumn } from 'lucide-react'
 import EmptyState from '@shared/components/ui/EmptyState'
 import SnapshotDatePicker from '@features/dashboard/components/SnapshotDatePicker.jsx'
+import Spinner from '@shared/components/ui/Spinner.jsx'
 
 const EMPTY_DAY = {
   positiveSentimentCount: 0,
@@ -35,7 +36,7 @@ const chartData = (snapshots, range) => {
   })
 }
 
-export default function SentimentTrendChart({ snapshots, range, onRangeChange }) {
+export default function SentimentTrendChart({ snapshots, range, onRangeChange, isLoading }) {
   const hasData = Array.isArray(snapshots) && snapshots.length > 0
   const chartSnapshots = hasData ? chartData(snapshots, range) : []
 
@@ -46,7 +47,11 @@ export default function SentimentTrendChart({ snapshots, range, onRangeChange })
         <SnapshotDatePicker range={range} onChange={onRangeChange} />
       </div>
 
-      {hasData ? (
+      {isLoading ? (
+        <div className="flex items-center justify-center" style={{ height: 260 }}>
+          <Spinner size={32} />
+        </div>
+      ) : hasData ? (
         <ResponsiveContainer width="100%" height={260}>
           <LineChart data={chartSnapshots}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -80,7 +85,6 @@ export default function SentimentTrendChart({ snapshots, range, onRangeChange })
               strokeWidth={2}
               dot={false}
             />
-
           </LineChart>
         </ResponsiveContainer>
       ) : (

@@ -16,16 +16,16 @@ export default function DashboardPage() {
   const { data: latest, isLoading: isLoadingLatest } = useLatestAnalyticsSnapshot()
   const { data: snapshots, isLoading: isLoadingSnapshots } = useAnalyticsSnapshots(range)
 
-  const isLoading = isLoadingLatest || isLoadingSnapshots
-
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-slate-900">Dashboard</h1>
       </div>
 
-      {isLoading ? (
-        <Spinner />
+      {isLoadingLatest ? (
+        <div className="flex flex-1 items-center justify-center py-24">
+          <Spinner size={36} />
+        </div>
       ) : (
         <>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -48,7 +48,13 @@ export default function DashboardPage() {
             />
           </div>
 
-          <SentimentTrendChart snapshots={snapshots} range={range} onRangeChange={setRange} />
+          <SentimentTrendChart
+            snapshots={snapshots}
+            range={range}
+            onRangeChange={setRange}
+            isLoading={isLoadingSnapshots}
+          />
+
           <FeatureRequestsWidget items={latest?.topRequestedFeaturesJson ? JSON.parse(latest.topRequestedFeaturesJson) : []} />
         </>
       )}
