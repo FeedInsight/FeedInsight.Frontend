@@ -6,7 +6,7 @@ export const fetchLatestAnalyticsSnapshot = async () => {
   return data?.data
 }
 
-export const fetchAnalyticsSnapshots = async ({ from, to, page = 1, pageSize = 90 }) => {
+export const fetchAnalyticsSnapshots = async ({ from, to, page = 1, pageSize = 30 }) => {
   const { data } = await axiosClient.get(ENDPOINTS.analytics.snapshots, {
     params: {
       From: from,
