@@ -40,7 +40,7 @@ export default function SentimentTrendChart({ snapshots, range }) {
   return (
     <Card>
       <h3 className="mb-3 text-sm font-semibold text-slate-700">Sentiment Trend</h3>
-      {chartSnapshots && chartSnapshots.length > 0 ? (
+      {chartSnapshots && chartSnapshots?.length > 0 ? (
         <ResponsiveContainer width="100%" height={260}>
           <LineChart data={chartSnapshots}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />

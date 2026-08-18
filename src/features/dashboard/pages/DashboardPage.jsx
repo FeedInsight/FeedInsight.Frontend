@@ -51,7 +51,7 @@ export default function DashboardPage() {
           </div>
 
           <SentimentTrendChart snapshots={snapshots} range={range} />
-          <FeatureRequestsWidget items={[]} />
+          <FeatureRequestsWidget items={latest?.topRequestedFeaturesJson ? JSON.parse(latest.topRequestedFeaturesJson) : []} />
         </>
       )}
     </div>
