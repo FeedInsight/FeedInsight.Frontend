@@ -11,12 +11,14 @@
  *    a CSS module or inline classes, never appended to this file.
  */
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-slate-50 text-slate-900 antialiased transition-colors dark:bg-slate-950 dark:text-slate-100;
 }
 
 /* Scrollbar styling for the AI Product Assistant chat thread and long
@@ -25,5 +27,60 @@ body {
   width: 6px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  @apply bg-slate-300 rounded-full;
+  @apply rounded-full bg-slate-300 dark:bg-slate-700;
+}
+
+/* Keeps legacy feature utility classes readable while screens are migrated
+   incrementally to explicit dark: variants. */
+@layer utilities {
+  .dark .bg-white,
+  .dark .bg-white\/60,
+  .dark .bg-white\/70 {
+    background-color: rgb(15 23 42 / 0.96);
+  }
+
+  .dark .bg-slate-50,
+  .dark .bg-slate-50\/40,
+  .dark .bg-slate-50\/50,
+  .dark .bg-slate-50\/60,
+  .dark .bg-slate-50\/70,
+  .dark .bg-slate-50\/80 {
+    background-color: rgb(30 41 59 / 0.8);
+  }
+
+  .dark .bg-slate-100,
+  .dark .bg-slate-100\/90 {
+    background-color: rgb(51 65 85 / 0.8);
+  }
+
+  .dark .text-slate-900 {
+    color: rgb(241 245 249);
+  }
+  .dark .text-slate-800 {
+    color: rgb(226 232 240);
+  }
+  .dark .text-slate-700 {
+    color: rgb(203 213 225);
+  }
+  .dark .text-slate-600 {
+    color: rgb(148 163 184);
+  }
+  .dark .border-slate-200,
+  .dark .border-slate-200\/60,
+  .dark .border-slate-200\/80,
+  .dark .border-slate-300 {
+    border-color: rgb(71 85 105);
+  }
+  .dark .border-slate-100 {
+    border-color: rgb(51 65 85);
+  }
+
+  .dark .hover\:bg-slate-50\/60:hover,
+  .dark .hover\:bg-slate-50\/70:hover,
+  .dark .hover\:bg-slate-100:hover {
+    background-color: rgb(51 65 85 / 0.8);
+  }
+  .dark .hover\:bg-white:hover {
+    background-color: rgb(30 41 59);
+  }
 }

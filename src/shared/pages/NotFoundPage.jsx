@@ -17,7 +17,7 @@ export default function NotFoundPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-12">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-12 dark:bg-slate-950">
       <div className="max-w-md w-full text-center flex flex-col items-center">
         <div className="w-20 h-20 rounded-3xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 shadow-sm mb-6 animate-bounce">
           <FileQuestion size={40} />

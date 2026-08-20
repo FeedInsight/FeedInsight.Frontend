@@ -1,6 +1,7 @@
 import { BrowserRouter } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import QueryProvider from './QueryProvider.jsx'
+import ThemeProvider from './ThemeProvider.jsx'
 
 /**
  * Composes every app-wide provider in one place. Add new global providers
@@ -10,10 +11,12 @@ import QueryProvider from './QueryProvider.jsx'
 export default function AppProviders({ children }) {
   return (
     <QueryProvider>
-      <BrowserRouter>
-        {children}
-        <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
-      </BrowserRouter>
+      <ThemeProvider>
+        <BrowserRouter>
+          {children}
+          <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
+        </BrowserRouter>
+      </ThemeProvider>
     </QueryProvider>
   )
 }

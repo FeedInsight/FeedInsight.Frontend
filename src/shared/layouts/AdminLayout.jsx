@@ -18,7 +18,7 @@ export default function AdminLayout() {
       <AdminSidebar />
       <div className="flex flex-1 flex-col">
         <AdminTopbar />
-        <main className="flex-1 overflow-y-auto bg-slate-50 p-6">
+        <main className="flex-1 overflow-y-auto bg-slate-50 p-6 dark:bg-slate-950">
           <ErrorBoundary key={location.pathname}>
             <Outlet />
           </ErrorBoundary>

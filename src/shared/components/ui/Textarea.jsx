@@ -5,7 +5,7 @@ const Textarea = forwardRef(({ label, error, className, id, rows = 5, ...props }
   return (
     <div className="flex flex-col gap-1">
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-slate-700">
+        <label htmlFor={id} className="text-sm font-medium text-slate-700 dark:text-slate-300">
           {label}
         </label>
       )}
@@ -14,7 +14,7 @@ const Textarea = forwardRef(({ label, error, className, id, rows = 5, ...props }
         ref={ref}
         rows={rows}
         className={cn(
-          'rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100',
+          'rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-brand-950',
           error && 'border-red-400 focus:border-red-500 focus:ring-red-100',
           className,
         )}
