@@ -13,9 +13,11 @@ const VARIANTS = {
   ghost:
     'bg-transparent text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 disabled:text-slate-300 disabled:hover:bg-transparent dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white dark:disabled:text-slate-600',
   outline:
-    'bg-transparent text-brand-600 border border-brand-200 hover:bg-brand-50/70 hover:border-brand-300 disabled:text-slate-300 disabled:border-slate-200 dark:text-brand-400 dark:border-brand-800 dark:hover:bg-brand-950/60 dark:hover:border-brand-700 dark:disabled:text-slate-600 dark:disabled:border-slate-700',
+    'bg-brand-50/70 text-brand-700 border border-brand-200 shadow-xs hover:bg-brand-100 hover:border-brand-300 hover:text-brand-800 hover:shadow-sm disabled:bg-slate-50 disabled:text-slate-300 disabled:border-slate-200 dark:bg-brand-950/50 dark:text-brand-300 dark:border-brand-800 dark:hover:bg-brand-900/70 dark:hover:border-brand-700 dark:hover:text-brand-200 dark:disabled:bg-slate-900 dark:disabled:text-slate-600 dark:disabled:border-slate-700',
   subtle:
     'bg-slate-100 text-slate-700 hover:bg-slate-200/80 hover:text-slate-900 disabled:bg-slate-50 disabled:text-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white dark:disabled:bg-slate-900 dark:disabled:text-slate-600',
+  filter:
+    'border border-slate-200 bg-slate-50 text-slate-600 shadow-xs hover:bg-slate-100 hover:text-slate-900 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white dark:hover:border-slate-600',
 }
 
 const SIZES = {
@@ -38,7 +40,7 @@ export default function Button({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center select-none transition-all duration-200 ease-out active:scale-[0.98] disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 focus-visible:ring-offset-1',
+        'inline-flex items-center justify-center select-none transition-all duration-200 ease-out active:scale-[0.98] disabled:scale-100 disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500/50 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900',
         VARIANTS[variant] || VARIANTS.primary,
         SIZES[size] || SIZES.md,
         className,

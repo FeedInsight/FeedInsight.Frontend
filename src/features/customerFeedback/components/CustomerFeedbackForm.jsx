@@ -60,17 +60,20 @@ export default function CustomerFeedbackForm({ onSuccessCallback, showBackLink =
   }
 
   return (
-    <Card className="flex flex-col gap-6 border border-slate-200/80 bg-white p-6 sm:p-8 shadow-xs rounded-2xl">
+    <Card className="flex flex-col gap-6 border border-slate-200/80 bg-white p-6 sm:p-8 shadow-xs rounded-2xl dark:border-slate-700 dark:bg-slate-900">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5 dark:border-slate-700">
         <div className="flex items-center gap-3.5">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 border border-brand-100/80 shadow-2xs">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-600 border border-brand-100/80 shadow-2xs dark:bg-brand-950 dark:border-brand-800 dark:text-brand-300">
             <MessageSquarePlus size={24} />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-slate-900">Submit Customer Feedback</h2>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Share your suggestions, requests, or report issues directly to the product engineering team.
+            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+              Submit Customer Feedback
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5 dark:text-slate-400">
+              Share your suggestions, requests, or report issues directly to the product engineering
+              team.
             </p>
           </div>
         </div>
@@ -78,7 +81,7 @@ export default function CustomerFeedbackForm({ onSuccessCallback, showBackLink =
         {showBackLink && (
           <Button
             type="button"
-            variant="outline"
+            variant="filter"
             size="sm"
             onClick={() => navigate(ROUTES.customerFeedback)}
             className="self-start sm:self-auto text-xs"
@@ -101,7 +104,7 @@ export default function CustomerFeedbackForm({ onSuccessCallback, showBackLink =
             required
             {...register('rawContent')}
           />
-          <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
+          <div className="flex items-center justify-between text-[11px] text-slate-400 px-1 dark:text-slate-500">
             <span>Minimum 5 characters required</span>
             <span className={contentValue.length > 3800 ? 'text-amber-600 font-semibold' : ''}>
               {contentValue.length} / 4000 characters
@@ -110,19 +113,21 @@ export default function CustomerFeedbackForm({ onSuccessCallback, showBackLink =
         </div>
 
         {/* Informative Note */}
-        <div className="flex items-start gap-2.5 rounded-xl bg-blue-50/70 border border-blue-100 p-3.5 text-xs text-blue-900">
-          <Info size={16} className="text-blue-600 shrink-0 mt-0.5" />
+        <div className="flex items-start gap-2.5 rounded-xl bg-blue-50/70 border border-blue-100 p-3.5 text-xs text-blue-900 dark:bg-blue-950/50 dark:border-blue-800 dark:text-blue-100">
+          <Info size={16} className="text-blue-600 shrink-0 mt-0.5 dark:text-blue-300" />
           <div className="leading-relaxed">
-            <span className="font-semibold">Direct Product Team Channel:</span> Your feedback will be reviewed by the product owner, and any official responses or updates will appear directly on your feedback thread.
+            <span className="font-semibold">Direct Product Team Channel:</span> Your feedback will
+            be reviewed by the product owner, and any official responses or updates will appear
+            directly on your feedback thread.
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-3 border-t border-slate-100">
+        <div className="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-700">
           {showBackLink && (
             <Button
               type="button"
-              variant="outline"
+              variant="filter"
               size="md"
               onClick={() => navigate(ROUTES.customerFeedback)}
               disabled={isPending}

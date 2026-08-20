@@ -27,10 +27,13 @@ export default function ExtractedTaskCard({ task, index, categoriesMap = {} }) {
   const keywords = Array.isArray(rawKeywords)
     ? rawKeywords
     : Array.isArray(rawKeywords?.$values)
-    ? rawKeywords.$values
-    : typeof rawKeywords === 'string' && rawKeywords.trim()
-    ? rawKeywords.split(',').map((k) => k.trim()).filter(Boolean)
-    : []
+      ? rawKeywords.$values
+      : typeof rawKeywords === 'string' && rawKeywords.trim()
+        ? rawKeywords
+            .split(',')
+            .map((k) => k.trim())
+            .filter(Boolean)
+        : []
 
   // Main task content / title prioritization
   const mainTitle =
@@ -45,16 +48,16 @@ export default function ExtractedTaskCard({ task, index, categoriesMap = {} }) {
     <>
       <Card
         onClick={() => setIsModalOpen(true)}
-        className="group relative flex flex-col gap-3.5 border border-slate-200/90 bg-white p-4.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md cursor-pointer rounded-2xl"
+        className="group relative flex flex-col gap-3.5 border border-slate-200/90 bg-white p-4.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-indigo-300 hover:shadow-md cursor-pointer rounded-2xl dark:border-slate-700 dark:bg-slate-900"
       >
         {/* Accent Bar on hover */}
         <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-l-2xl bg-transparent transition-all group-hover:bg-indigo-600" />
 
         {/* Top Bar: Subtitle "Extracted Task #1", Category Badge, Sync Status, Jira Key */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-700">
           <div className="flex flex-wrap items-center gap-2">
             {/* Small Subtitle & Index Counter */}
-            <span className="inline-flex items-center gap-1.5 rounded-md bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700 ring-1 ring-inset ring-indigo-600/20">
+            <span className="inline-flex items-center gap-1.5 rounded-md bg-indigo-50 px-2.5 py-1 text-xs font-bold text-indigo-700 ring-1 ring-inset ring-indigo-600/20 dark:bg-indigo-950 dark:text-indigo-300">
               <Sparkles size={13} className="text-indigo-600" />
               Extracted Task #{index + 1}
             </span>
@@ -72,20 +75,20 @@ export default function ExtractedTaskCard({ task, index, categoriesMap = {} }) {
           <div className="flex items-center gap-2">
             {/* Sync Status Badge */}
             {task.syncStatus && (
-              <Badge className="bg-slate-100 text-slate-700 font-semibold text-[11px] border border-slate-200">
+              <Badge className="bg-slate-100 text-slate-700 font-semibold text-[11px] border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
                 {task.syncStatus}
               </Badge>
             )}
 
             {/* Jira Subtask Key if present */}
             {task.jiraSubtaskKey && (
-              <Badge className="bg-blue-50 text-blue-700 font-mono text-[11px] border border-blue-200">
+              <Badge className="bg-blue-50 text-blue-700 font-mono text-[11px] border border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800">
                 Jira: {task.jiraSubtaskKey}
               </Badge>
             )}
 
             {task.sentiment && (
-              <Badge className="bg-slate-100 text-slate-700 capitalize font-medium text-[11px]">
+              <Badge className="bg-slate-100 text-slate-700 capitalize font-medium text-[11px] dark:bg-slate-800 dark:text-slate-300">
                 {task.sentiment}
               </Badge>
             )}
@@ -98,7 +101,7 @@ export default function ExtractedTaskCard({ task, index, categoriesMap = {} }) {
         {/* Main Title (Task Content / Extracted Intent) */}
         <div className="flex flex-col gap-1.5">
           <div className="flex items-start justify-between gap-2">
-            <h4 className="text-base font-bold text-slate-900 group-hover:text-indigo-700 transition-colors leading-snug">
+            <h4 className="text-base font-bold text-slate-900 group-hover:text-indigo-700 transition-colors leading-snug dark:text-slate-100 dark:group-hover:text-indigo-300">
               {mainTitle}
             </h4>
             <span className="text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
@@ -108,14 +111,14 @@ export default function ExtractedTaskCard({ task, index, categoriesMap = {} }) {
 
           {/* Show separate description if present and different from extracted intent */}
           {task.description && task.description !== task.extractedIntent && (
-            <p className="text-xs text-slate-600 leading-relaxed line-clamp-2">
+            <p className="text-xs text-slate-600 leading-relaxed line-clamp-2 dark:text-slate-300">
               {task.description}
             </p>
           )}
 
           {/* Extracted Intent explicitly highlighted if title was different */}
           {task.extractedIntent && (
-            <div className="flex items-center gap-1.5 text-xs text-indigo-700 bg-indigo-50/60 p-2 rounded-lg border border-indigo-100">
+            <div className="flex items-center gap-1.5 text-xs text-indigo-700 bg-indigo-50/60 p-2 rounded-lg border border-indigo-100 dark:bg-indigo-950/60 dark:text-indigo-300 dark:border-indigo-800">
               <Layers size={13} className="text-indigo-600 shrink-0" />
               <span className="font-semibold">Intent:</span>
               <span className="truncate">{task.extractedIntent}</span>
@@ -124,7 +127,7 @@ export default function ExtractedTaskCard({ task, index, categoriesMap = {} }) {
         </div>
 
         {/* Technical Keywords & Footer Meta */}
-        <div className="flex flex-col gap-2 border-t border-slate-100 pt-3">
+        <div className="flex flex-col gap-2 border-t border-slate-100 pt-3 dark:border-slate-700">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
               <Code2 size={13} className="text-indigo-600" />

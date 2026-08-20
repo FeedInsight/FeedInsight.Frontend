@@ -21,12 +21,12 @@ export default function TriageInboxPage() {
   const items = Array.isArray(feedbacks)
     ? feedbacks
     : Array.isArray(feedbacks?.items)
-    ? feedbacks.items
-    : Array.isArray(feedbacks?.data)
-    ? feedbacks.data
-    : Array.isArray(feedbacks?.$values)
-    ? feedbacks.$values
-    : []
+      ? feedbacks.items
+      : Array.isArray(feedbacks?.data)
+        ? feedbacks.data
+        : Array.isArray(feedbacks?.$values)
+          ? feedbacks.$values
+          : []
 
   const { markAsSeen, markAllAsSeen, isUnseen, totalUnseenCount } = useUnseenTriageFeedbacks(items)
 
@@ -42,7 +42,11 @@ export default function TriageInboxPage() {
     const count =
       item.tasksCount ??
       item.extractedTasksCount ??
-      (Array.isArray(rawTasks) ? rawTasks.length : Array.isArray(rawTasks?.items) ? rawTasks.items.length : 0)
+      (Array.isArray(rawTasks)
+        ? rawTasks.length
+        : Array.isArray(rawTasks?.items)
+          ? rawTasks.items.length
+          : 0)
     return sum + count
   }, 0)
 
@@ -58,17 +62,20 @@ export default function TriageInboxPage() {
   return (
     <div className="flex flex-col gap-6">
       {/* Executive Page Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 pb-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 pb-4 dark:border-slate-700">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl font-black tracking-tight text-slate-900">AI Triage Inbox</h1>
-            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600 border border-slate-200">
-              <Eye size={12} className="text-slate-500" />
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">
+              AI Triage Inbox
+            </h1>
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
+              <Eye size={12} className="text-slate-500 dark:text-slate-400" />
               Read-Only PO Review
             </span>
           </div>
-          <p className="mt-1 text-xs text-slate-500 font-medium">
-            Review incoming customer feedback submissions and inspect AI-extracted product tasks generated from compound splitting.
+          <p className="mt-1 text-xs text-slate-500 font-medium dark:text-slate-400">
+            Review incoming customer feedback submissions and inspect AI-extracted product tasks
+            generated from compound splitting.
           </p>
         </div>
 
@@ -79,12 +86,14 @@ export default function TriageInboxPage() {
             className={`flex items-center gap-2.5 rounded-xl px-3.5 py-2 border shadow-2xs transition-colors ${
               totalUnseenCount > 0
                 ? 'bg-amber-50/80 border-amber-300/80 text-amber-900 ring-2 ring-amber-100'
-                : 'bg-white border-slate-200/80'
+                : 'bg-white border-slate-200/80 dark:bg-slate-900 dark:border-slate-700'
             }`}
           >
             <div
               className={`flex h-7 w-7 items-center justify-center rounded-lg shadow-2xs ${
-                totalUnseenCount > 0 ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-600'
+                totalUnseenCount > 0
+                  ? 'bg-amber-500 text-white'
+                  : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300'
               }`}
             >
               <Bell size={15} />
@@ -117,23 +126,31 @@ export default function TriageInboxPage() {
             )}
           </div>
 
-          <div className="flex items-center gap-2.5 rounded-xl bg-white px-3.5 py-2 border border-slate-200/80 shadow-2xs">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+          <div className="flex items-center gap-2.5 rounded-xl bg-white px-3.5 py-2 border border-slate-200/80 shadow-2xs dark:bg-slate-900 dark:border-slate-700">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
               <Inbox size={15} />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total</span>
-              <span className="font-mono text-sm font-extrabold text-slate-900">{items.length}</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                Total
+              </span>
+              <span className="font-mono text-sm font-extrabold text-slate-900 dark:text-slate-100">
+                {items.length}
+              </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 px-3.5 py-2 border border-indigo-200/80 shadow-2xs">
+          <div className="flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 px-3.5 py-2 border border-indigo-200/80 shadow-2xs dark:from-indigo-950/70 dark:to-slate-800 dark:border-indigo-800">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-2xs">
               <Layers size={15} />
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">Extracted Tasks</span>
-              <span className="font-mono text-sm font-extrabold text-indigo-950">{totalTasksCount}</span>
+              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">
+                Extracted Tasks
+              </span>
+              <span className="font-mono text-sm font-extrabold text-indigo-950 dark:text-indigo-100">
+                {totalTasksCount}
+              </span>
             </div>
           </div>
         </div>
@@ -147,10 +164,11 @@ export default function TriageInboxPage() {
               <Bell size={18} />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-slate-900">
-                You have {totalUnseenCount} new unseen feedback {totalUnseenCount === 1 ? 'submission' : 'submissions'}!
+              <h4 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                You have {totalUnseenCount} new unseen feedback{' '}
+                {totalUnseenCount === 1 ? 'submission' : 'submissions'}!
               </h4>
-              <p className="text-xs text-slate-600 mt-0.5">
+              <p className="text-xs text-slate-600 mt-0.5 dark:text-slate-300">
                 Review incoming feedback submissions and inspect AI-extracted product tasks.
               </p>
             </div>
@@ -190,4 +208,3 @@ export default function TriageInboxPage() {
     </div>
   )
 }
-
