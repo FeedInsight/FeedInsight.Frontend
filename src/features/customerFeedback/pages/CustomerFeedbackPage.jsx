@@ -10,14 +10,15 @@ export default function CustomerFeedbackPage() {
   return (
     <div className="flex flex-col gap-6 max-w-6xl mx-auto">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5 dark:border-slate-700">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5 dark:text-slate-100">
             <MessagesSquare className="w-7 h-7 text-brand-600" />
             <span>My Feedback Submissions</span>
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Track the status of your submitted feedback, view AI triage categorization, and review official responses from the product team.
+          <p className="text-sm text-slate-500 mt-1 dark:text-slate-400">
+            Track the status of your submitted feedback, view AI triage categorization, and review
+            official responses from the product team.
           </p>
         </div>
 

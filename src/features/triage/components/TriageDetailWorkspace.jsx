@@ -40,12 +40,12 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
     const cats = Array.isArray(rawCategories)
       ? rawCategories
       : Array.isArray(rawCategories?.data)
-      ? rawCategories.data
-      : Array.isArray(rawCategories?.items)
-      ? rawCategories.items
-      : Array.isArray(rawCategories?.$values)
-      ? rawCategories.$values
-      : []
+        ? rawCategories.data
+        : Array.isArray(rawCategories?.items)
+          ? rawCategories.items
+          : Array.isArray(rawCategories?.$values)
+            ? rawCategories.$values
+            : []
 
     cats.forEach((c) => {
       if (c && c.id && c.name) {
@@ -99,11 +99,13 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
   const extractedTasks = Array.isArray(rawTasks)
     ? rawTasks
     : Array.isArray(rawTasks?.items)
-    ? rawTasks.items
-    : []
+      ? rawTasks.items
+      : []
 
   const submitterEmail = feedback.submitterEmail || feedback.email || ''
-  const dateStr = formatDateTime(feedback.createdAt || feedback.submissionDate || feedback.submittedAt)
+  const dateStr = formatDateTime(
+    feedback.createdAt || feedback.submissionDate || feedback.submittedAt,
+  )
 
   // Resolve category for the original customer feedback
   const feedbackCategory = resolveCategoryName(feedback, categoriesMap)
@@ -111,7 +113,10 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
 
   // Sub-task pagination calculations
   const totalSubTasks = extractedTasks.length
-  const paginatedTasks = extractedTasks.slice((subTaskPage - 1) * subTaskPageSize, subTaskPage * subTaskPageSize)
+  const paginatedTasks = extractedTasks.slice(
+    (subTaskPage - 1) * subTaskPageSize,
+    subTaskPage * subTaskPageSize,
+  )
   const rangeStart = totalSubTasks > 0 ? (subTaskPage - 1) * subTaskPageSize + 1 : 0
   const rangeEnd = Math.min(subTaskPage * subTaskPageSize, totalSubTasks)
   const hasNextSubPage = subTaskPage * subTaskPageSize < totalSubTasks
@@ -124,12 +129,14 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
         {onBack ? (
           <button
             onClick={onBack}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-white px-3.5 py-2 text-xs font-bold text-slate-700 border border-slate-200 shadow-xs hover:bg-slate-50 hover:text-slate-900 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-xs font-bold text-slate-700 shadow-xs transition-colors hover:bg-slate-100 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
           >
             <ArrowLeft size={14} className="text-slate-500" />
             <span>Back to All Feedbacks</span>
           </button>
-        ) : <div />}
+        ) : (
+          <div />
+        )}
 
         <div className="flex items-center gap-1.5 rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-slate-100 shadow-xs">
           <ShieldCheck size={14} className="text-emerald-400" />
@@ -138,16 +145,20 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
       </div>
 
       {/* Top Card: Original Raw Customer Feedback Panel */}
-      <Card className="flex flex-col gap-4 border border-slate-200/80 shadow-xs bg-white p-5 rounded-2xl">
+      <Card className="flex flex-col gap-4 border border-slate-200/80 shadow-xs bg-white p-5 rounded-2xl dark:border-slate-700 dark:bg-slate-900">
         {/* Panel Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3.5 dark:border-slate-700">
           <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-white shadow-xs">
               <MessageSquareText size={18} />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900">Original Customer Feedback</h2>
-              <p className="text-[11px] text-slate-500">Submitted directly via Customer Portal</p>
+              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                Original Customer Feedback
+              </h2>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Submitted directly via Customer Portal
+              </p>
             </div>
           </div>
 
@@ -162,13 +173,13 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
             </span>
 
             {submitterEmail && (
-              <div className="flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 border border-slate-200/60 font-medium">
+              <div className="flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 border border-slate-200/60 font-medium dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300">
                 <Mail size={13} className="text-slate-400" />
                 <span>{submitterEmail}</span>
               </div>
             )}
             {dateStr && (
-              <div className="flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 border border-slate-200/60 font-medium">
+              <div className="flex items-center gap-1.5 rounded-md bg-slate-50 px-2.5 py-1 border border-slate-200/60 font-medium dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300">
                 <Calendar size={13} className="text-slate-400" />
                 <span>{dateStr}</span>
               </div>
@@ -191,8 +202,10 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
 
         {/* Attachment preview if present */}
         {feedback.screenshotUrl && (
-          <div className="flex items-center gap-2 rounded-lg bg-indigo-50/50 p-2.5 border border-indigo-100 text-xs">
-            <span className="font-semibold text-indigo-900">Attached Media:</span>
+          <div className="flex items-center gap-2 rounded-lg bg-indigo-50/50 p-2.5 border border-indigo-100 text-xs dark:bg-indigo-950/50 dark:border-indigo-800">
+            <span className="font-semibold text-indigo-900 dark:text-indigo-200">
+              Attached Media:
+            </span>
             <a
               href={feedback.screenshotUrl}
               target="_blank"
@@ -208,25 +221,27 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
 
       {/* Extracted AI Tasks Section Header */}
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between rounded-2xl bg-white p-4 border border-slate-200/80 shadow-xs">
+        <div className="flex items-center justify-between rounded-2xl bg-white p-4 border border-slate-200/80 shadow-xs dark:bg-slate-900 dark:border-slate-700">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700 font-bold shadow-2xs">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700 font-bold shadow-2xs dark:bg-indigo-950 dark:text-indigo-300">
               <Sparkles size={20} />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-slate-900">Extracted AI Sub-Tasks</h3>
-                <span className="inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 font-mono text-xs font-bold text-indigo-800">
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                  Extracted AI Sub-Tasks
+                </h3>
+                <span className="inline-flex items-center rounded-full bg-indigo-100 px-2.5 py-0.5 font-mono text-xs font-bold text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
                   {totalSubTasks} {totalSubTasks === 1 ? 'Task' : 'Tasks'}
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Decomposed sub-tasks extracted from this customer feedback item.
               </p>
             </div>
           </div>
 
-          <div className="hidden sm:flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 border border-slate-200">
+          <div className="hidden sm:flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
             <ShieldCheck size={14} className="text-emerald-600" />
             <span>Strictly View-Only</span>
           </div>
@@ -234,7 +249,7 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
 
         {/* Task Cards List with Pagination */}
         {totalSubTasks === 0 ? (
-          <Card className="py-12 border-dashed border-slate-200 bg-white text-center shadow-xs rounded-2xl">
+          <Card className="py-12 border-dashed border-slate-200 bg-white text-center shadow-xs rounded-2xl dark:border-slate-700 dark:bg-slate-900">
             <EmptyState
               icon={Layers}
               title="No tasks extracted"
@@ -256,7 +271,7 @@ export default function TriageDetailWorkspace({ feedbackId, onBack }) {
             })}
 
             {totalSubTasks > subTaskPageSize && (
-              <div className="px-4 py-1 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+              <div className="px-4 py-1 bg-white rounded-2xl border border-slate-200/80 shadow-xs dark:bg-slate-900 dark:border-slate-700">
                 <TablePagination
                   rangeStart={rangeStart}
                   rangeEnd={rangeEnd}

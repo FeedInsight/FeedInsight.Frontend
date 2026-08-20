@@ -27,10 +27,13 @@ export default function TaskDetailModal({
   const keywords = Array.isArray(rawKeywords)
     ? rawKeywords
     : Array.isArray(rawKeywords?.$values)
-    ? rawKeywords.$values
-    : typeof rawKeywords === 'string' && rawKeywords.trim()
-    ? rawKeywords.split(',').map((k) => k.trim()).filter(Boolean)
-    : []
+      ? rawKeywords.$values
+      : typeof rawKeywords === 'string' && rawKeywords.trim()
+        ? rawKeywords
+            .split(',')
+            .map((k) => k.trim())
+            .filter(Boolean)
+        : []
 
   const mainTitle =
     task.extractedIntent ||
@@ -41,12 +44,17 @@ export default function TaskDetailModal({
   const createdDateStr = task.createdAt ? formatDateTime(task.createdAt) : null
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={`Extracted Task #${index + 1} Details`} size="lg">
-      <div className="flex flex-col gap-5 text-sm text-slate-700">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={`Extracted Task #${index + 1} Details`}
+      size="lg"
+    >
+      <div className="flex flex-col gap-5 text-sm text-slate-700 dark:text-slate-300">
         {/* Subtitle Badge & Category Bar */}
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-50 p-3.5 border border-slate-200/80">
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-50 p-3.5 border border-slate-200/80 dark:bg-slate-800 dark:border-slate-700">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 rounded-md bg-indigo-100 px-2.5 py-1 text-xs font-bold text-indigo-800">
+            <span className="inline-flex items-center gap-1.5 rounded-md bg-indigo-100 px-2.5 py-1 text-xs font-bold text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200">
               <Sparkles size={13} className="text-indigo-600" />
               Extracted Task #{index + 1}
             </span>
@@ -63,19 +71,19 @@ export default function TaskDetailModal({
 
           <div className="flex flex-wrap items-center gap-2">
             {task.syncStatus && (
-              <Badge className="bg-slate-200 text-slate-800 font-semibold text-xs border border-slate-300">
+              <Badge className="bg-slate-200 text-slate-800 font-semibold text-xs border border-slate-300 dark:bg-slate-700 dark:text-slate-200 dark:border-slate-600">
                 Sync: {task.syncStatus}
               </Badge>
             )}
 
             {task.jiraSubtaskKey && (
-              <Badge className="bg-blue-100 text-blue-800 font-mono text-xs border border-blue-200">
+              <Badge className="bg-blue-100 text-blue-800 font-mono text-xs border border-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700">
                 Jira: {task.jiraSubtaskKey}
               </Badge>
             )}
 
             {task.sentiment && (
-              <Badge className="bg-slate-100 text-slate-700 capitalize font-medium">
+              <Badge className="bg-slate-100 text-slate-700 capitalize font-medium dark:bg-slate-800 dark:text-slate-300">
                 {task.sentiment}
               </Badge>
             )}
@@ -91,11 +99,15 @@ export default function TaskDetailModal({
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
             Task Main Title / Extracted Content
           </span>
-          <h3 className="text-lg font-extrabold text-slate-900 leading-snug">{mainTitle}</h3>
+          <h3 className="text-lg font-extrabold text-slate-900 leading-snug dark:text-slate-100">
+            {mainTitle}
+          </h3>
 
           {task.description && task.description !== task.extractedIntent && (
-            <div className="mt-1 rounded-xl bg-slate-50/80 p-3.5 border border-slate-200/60 leading-relaxed text-slate-700 font-sans text-xs">
-              <span className="font-bold text-slate-900 block mb-1">Detailed Description:</span>
+            <div className="mt-1 rounded-xl bg-slate-50/80 p-3.5 border border-slate-200/60 leading-relaxed text-slate-700 font-sans text-xs dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300">
+              <span className="font-bold text-slate-900 block mb-1 dark:text-slate-100">
+                Detailed Description:
+              </span>
               {task.description}
             </div>
           )}
@@ -103,20 +115,20 @@ export default function TaskDetailModal({
 
         {/* Extracted Intent Details */}
         {task.extractedIntent && (
-          <div className="flex flex-col gap-1.5 rounded-xl bg-indigo-50/60 p-4 border border-indigo-100">
-            <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-900">
+          <div className="flex flex-col gap-1.5 rounded-xl bg-indigo-50/60 p-4 border border-indigo-100 dark:bg-indigo-950/60 dark:border-indigo-800">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-indigo-900 dark:text-indigo-200">
               <Layers size={15} className="text-indigo-600" />
               <span>Extracted AI Intent</span>
             </div>
-            <p className="text-xs text-indigo-950 font-medium leading-relaxed">
+            <p className="text-xs text-indigo-950 font-medium leading-relaxed dark:text-indigo-100">
               {task.extractedIntent}
             </p>
           </div>
         )}
 
         {/* Technical Keywords */}
-        <div className="flex flex-col gap-2 rounded-xl border border-slate-200/70 bg-slate-50/40 p-4">
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+        <div className="flex flex-col gap-2 rounded-xl border border-slate-200/70 bg-slate-50/40 p-4 dark:border-slate-700 dark:bg-slate-800/60">
+          <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
             <Code2 size={15} className="text-indigo-600" />
             <span>Extracted Technical Keywords</span>
           </div>
@@ -141,33 +153,37 @@ export default function TaskDetailModal({
 
         {/* Metadata Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-          <div className="rounded-xl border border-slate-200/80 p-3 bg-white">
+          <div className="rounded-xl border border-slate-200/80 p-3 bg-white dark:border-slate-700 dark:bg-slate-900">
             <div className="flex items-center gap-1.5 text-slate-500 font-medium mb-1">
               <Calendar size={13} className="text-indigo-500" />
               <span>Created At</span>
             </div>
-            <p className="font-semibold text-slate-900">{createdDateStr || '—'}</p>
+            <p className="font-semibold text-slate-900 dark:text-slate-100">
+              {createdDateStr || '—'}
+            </p>
           </div>
 
-          <div className="rounded-xl border border-slate-200/80 p-3 bg-white">
+          <div className="rounded-xl border border-slate-200/80 p-3 bg-white dark:border-slate-700 dark:bg-slate-900">
             <div className="flex items-center gap-1.5 text-slate-500 font-medium mb-1">
               <Link2 size={13} className="text-emerald-500" />
               <span>User Story Link</span>
             </div>
-            <p className="font-semibold text-slate-900">{task.userStoryId || 'Unassigned'}</p>
+            <p className="font-semibold text-slate-900 dark:text-slate-100">
+              {task.userStoryId || 'Unassigned'}
+            </p>
           </div>
 
-          <div className="rounded-xl border border-slate-200/80 p-3 bg-white">
+          <div className="rounded-xl border border-slate-200/80 p-3 bg-white dark:border-slate-700 dark:bg-slate-900">
             <div className="flex items-center gap-1.5 text-slate-500 font-medium mb-1">
               <ShieldCheck size={13} className="text-emerald-500" />
               <span>Review Mode</span>
             </div>
-            <p className="font-semibold text-slate-900">Read-Only PO Review</p>
+            <p className="font-semibold text-slate-900 dark:text-slate-100">Read-Only PO Review</p>
           </div>
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+        <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-700">
           <span className="text-xs text-slate-400 flex items-center gap-1">
             <Sparkles size={13} className="text-indigo-500" /> AI-extracted task item (Read-Only)
           </span>
