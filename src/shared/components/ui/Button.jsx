@@ -5,17 +5,17 @@ const VARIANTS = {
   primary:
     'bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white shadow-sm shadow-brand-500/20 hover:shadow-md hover:shadow-brand-500/30 disabled:from-brand-300 disabled:to-indigo-300 disabled:shadow-none',
   secondary:
-    'bg-white text-slate-700 border border-slate-200/80 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 shadow-xs disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200',
+    'bg-white text-slate-700 border border-slate-200/80 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-900 shadow-xs disabled:bg-slate-100 disabled:text-slate-400 disabled:border-slate-200 dark:bg-slate-900 dark:text-slate-200 dark:border-slate-700 dark:hover:bg-slate-800 dark:hover:border-slate-600 dark:hover:text-white dark:disabled:bg-slate-800 dark:disabled:text-slate-500 dark:disabled:border-slate-700',
   danger:
     'bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white shadow-sm shadow-red-500/20 hover:shadow-md hover:shadow-red-500/30 disabled:from-red-300 disabled:to-rose-300 disabled:shadow-none',
   success:
     'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-sm shadow-emerald-500/20 hover:shadow-md hover:shadow-emerald-500/30 disabled:from-emerald-300 disabled:to-teal-300 disabled:shadow-none',
   ghost:
-    'bg-transparent text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 disabled:text-slate-300 disabled:hover:bg-transparent',
+    'bg-transparent text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 disabled:text-slate-300 disabled:hover:bg-transparent dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white dark:disabled:text-slate-600',
   outline:
-    'bg-transparent text-brand-600 border border-brand-200 hover:bg-brand-50/70 hover:border-brand-300 disabled:text-slate-300 disabled:border-slate-200',
+    'bg-transparent text-brand-600 border border-brand-200 hover:bg-brand-50/70 hover:border-brand-300 disabled:text-slate-300 disabled:border-slate-200 dark:text-brand-400 dark:border-brand-800 dark:hover:bg-brand-950/60 dark:hover:border-brand-700 dark:disabled:text-slate-600 dark:disabled:border-slate-700',
   subtle:
-    'bg-slate-100 text-slate-700 hover:bg-slate-200/80 hover:text-slate-900 disabled:bg-slate-50 disabled:text-slate-300',
+    'bg-slate-100 text-slate-700 hover:bg-slate-200/80 hover:text-slate-900 disabled:bg-slate-50 disabled:text-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white dark:disabled:bg-slate-900 dark:disabled:text-slate-600',
 }
 
 const SIZES = {
@@ -48,7 +48,10 @@ export default function Button({
     >
       {isLoading ? (
         <>
-          <Loader2 size={size === 'xs' || size === 'sm' ? 14 : 16} className="animate-spin shrink-0" />
+          <Loader2
+            size={size === 'xs' || size === 'sm' ? 14 : 16}
+            className="animate-spin shrink-0"
+          />
           <span>{loadingText ?? children ?? 'Please wait…'}</span>
         </>
       ) : (
@@ -57,4 +60,3 @@ export default function Button({
     </button>
   )
 }
-

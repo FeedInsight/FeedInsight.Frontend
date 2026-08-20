@@ -38,7 +38,12 @@ import { normalizeFeedbackList } from '@features/customerFeedback/utils/feedback
 import { useMemo } from 'react'
 
 const NAV_ITEMS = [
-  { to: ROUTES.workspaceDashboard, label: 'Dashboard', icon: LayoutDashboard, roles: REQUIRE_PRODUCT_OWNER },
+  {
+    to: ROUTES.workspaceDashboard,
+    label: 'Dashboard',
+    icon: LayoutDashboard,
+    roles: REQUIRE_PRODUCT_OWNER,
+  },
   { to: ROUTES.workspaceTriage, label: 'Triage Inbox', icon: Inbox, roles: REQUIRE_PRODUCT_OWNER },
   {
     to: ROUTES.workspaceCustomerFeedbacks,
@@ -47,8 +52,18 @@ const NAV_ITEMS = [
     roles: REQUIRE_PRODUCT_OWNER,
   },
   { to: ROUTES.workspaceCategories, label: 'Categories', icon: Tags, roles: REQUIRE_PRODUCT_OWNER },
-  { to: ROUTES.workspaceBacklog, label: 'Backlog Review', icon: ListChecks, roles: REQUIRE_PRODUCT_OWNER },
-  { to: ROUTES.workspaceAssistant, label: 'AI Assistant', icon: MessageSquare, roles: REQUIRE_PRODUCT_OWNER },
+  {
+    to: ROUTES.workspaceBacklog,
+    label: 'Backlog Review',
+    icon: ListChecks,
+    roles: REQUIRE_PRODUCT_OWNER,
+  },
+  {
+    to: ROUTES.workspaceAssistant,
+    label: 'AI Assistant',
+    icon: MessageSquare,
+    roles: REQUIRE_PRODUCT_OWNER,
+  },
   {
     to: ROUTES.workspaceCustomers,
     label: 'Customers',
@@ -127,7 +142,9 @@ export default function AdminSidebar() {
   const { isSidebarCollapsed } = useUiStore()
   const { user } = useAuth()
   const isCustomer = isCompanyCustomer(user?.role)
-  const isPO = !isCustomer && (user?.role === 'ProductOwner' || String(user?.role || '').toLowerCase() === 'productowner')
+  const isPO =
+    !isCustomer &&
+    (user?.role === 'ProductOwner' || String(user?.role || '').toLowerCase() === 'productowner')
 
   // 1. Customer portal unseen responses - ONLY for Company Customer
   const { data: customerFeedbackData } = useDevelopmentCustomerFeedbacks(
@@ -149,7 +166,10 @@ export default function AdminSidebar() {
     if (!isPO || !triageFeedbacksData) return []
     return Array.isArray(triageFeedbacksData)
       ? triageFeedbacksData
-      : triageFeedbacksData?.items || triageFeedbacksData?.data || triageFeedbacksData?.$values || []
+      : triageFeedbacksData?.items ||
+          triageFeedbacksData?.data ||
+          triageFeedbacksData?.$values ||
+          []
   }, [isPO, triageFeedbacksData])
   const { totalUnseenCount: triageUnseenCount } = useUnseenTriageFeedbacks(triageItems)
 
@@ -177,13 +197,15 @@ export default function AdminSidebar() {
     }
 
     if (!item.roles) return true
-    return item.roles.some((r) => String(r).toLowerCase() === String(user?.role || '').toLowerCase())
+    return item.roles.some(
+      (r) => String(r).toLowerCase() === String(user?.role || '').toLowerCase(),
+    )
   })
 
   return (
     <aside
       className={cn(
-        'flex flex-col gap-1 border-r border-slate-200 bg-white p-3 transition-all',
+        'flex flex-col gap-1 border-r border-slate-200 bg-white p-3 transition-all dark:border-slate-800 dark:bg-slate-900',
         isSidebarCollapsed ? 'w-16' : 'w-60',
       )}
     >
@@ -209,8 +231,10 @@ export default function AdminSidebar() {
             to={to}
             className={({ isActive }) =>
               cn(
-                'relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-slate-100',
-                isActive ? 'bg-brand-50 text-brand-500 font-bold' : 'text-slate-600 font-medium',
+                'relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors hover:bg-slate-100 dark:hover:bg-slate-800',
+                isActive
+                  ? 'bg-brand-50 text-brand-500 font-bold dark:bg-brand-950/60 dark:text-brand-400'
+                  : 'text-slate-600 font-medium dark:text-slate-300',
               )
             }
           >
@@ -237,4 +261,3 @@ export default function AdminSidebar() {
     </aside>
   )
 }
-

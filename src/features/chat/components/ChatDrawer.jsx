@@ -26,16 +26,20 @@ export default function ChatDrawer() {
       />
 
       <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
-        <div className="w-screen max-w-xl bg-white shadow-2xl border-l border-slate-200/90 flex flex-col animate-slide-in-right">
+        <div className="w-screen max-w-xl bg-white shadow-2xl border-l border-slate-200/90 flex flex-col animate-slide-in-right dark:bg-slate-900 dark:border-slate-800">
           {/* Drawer Header */}
-          <div className="flex items-center justify-between border-b border-slate-200/80 bg-white px-4 py-3 shadow-2xs">
+          <div className="flex items-center justify-between border-b border-slate-200/80 bg-white px-4 py-3 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white shadow-xs">
                 <Sparkles size={18} />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-slate-900 leading-none">FeedInsight AI Assistant</h3>
-                <span className="text-[11px] font-medium text-slate-400">Contextual PO Intelligence</span>
+                <h3 className="text-sm font-bold text-slate-900 leading-none">
+                  FeedInsight AI Assistant
+                </h3>
+                <span className="text-[11px] font-medium text-slate-400">
+                  Contextual PO Intelligence
+                </span>
               </div>
             </div>
 
