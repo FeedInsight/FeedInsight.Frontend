@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { ShieldCheck, UserPlus, CheckCircle2 } from 'lucide-react'
+import { UserPlus, CheckCircle2 } from 'lucide-react'
 import Button from '@shared/components/ui/Button.jsx'
 import Input from '@shared/components/ui/Input.jsx'
 import { useRegisterAdmin } from '../hooks/useRegisterAdmin.js'
+import PageHeader from '@shared/components/ui/PageHeader.jsx'
 
 const initialFormData = {
   firstName: '',
@@ -83,15 +84,10 @@ export default function AddSuperAdminPage() {
 
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
-      <div className="flex flex-col gap-1 border-b border-slate-200/80 pb-5">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-          <UserPlus className="w-6 h-6 text-brand-600" />
-          Add Super Admin
-        </h1>
-        <p className="text-sm text-slate-500 mt-0.5">
-          Create a new platform Super Admin user with complete platform administration privileges.
-        </p>
-      </div>
+      <PageHeader
+        title="Add Super Admin"
+        description="Create a new platform Super Admin user with complete platform administration privileges."
+      />
 
       {successMessage && (
         <div className="flex items-start gap-3 rounded-xl bg-emerald-50 p-4 text-emerald-800 border border-emerald-200 shadow-2xs">
@@ -103,7 +99,6 @@ export default function AddSuperAdminPage() {
         </div>
       )}
 
-      {/* Registration Form Card */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6">
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
