@@ -6,6 +6,7 @@ import SentimentTrendChart from '@features/dashboard/components/SentimentTrendCh
 import FeatureRequestsWidget from '@features/dashboard/components/FeatureRequestsWidget.jsx'
 import Spinner from '@shared/components/ui/Spinner.jsx'
 import { useAnalyticsSnapshots, useLatestAnalyticsSnapshot } from '../hooks/useAnalytics'
+import PageHeader from '@shared/components/ui/PageHeader'
 
 export default function DashboardPage() {
   const [range, setRange] = useState({
@@ -18,9 +19,10 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-900">Dashboard</h1>
-      </div>
+      <PageHeader
+        title="Dashboard"
+        description="A high-level overview of feedback activity, sentiment trends, and feature requests."
+      />
 
       {isLoadingLatest ? (
         <div className="flex flex-1 items-center justify-center py-24">

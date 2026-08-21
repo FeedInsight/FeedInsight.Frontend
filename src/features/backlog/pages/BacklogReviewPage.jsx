@@ -2,7 +2,8 @@ import { useState } from 'react'
 import Input from '@shared/components/ui/Input.jsx'
 import { useUserStories, useUserStoryMutations } from '@features/backlog/hooks/useUserStories.js'
 import UserStoryTable from '@features/backlog/components/UserStoryTable.jsx'
-import { ListChecks, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
+import PageHeader from '@shared/components/ui/PageHeader'
 
 const initialFilters = {
   source: '',
@@ -52,17 +53,10 @@ export default function BacklogReviewPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 pb-5">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <ListChecks className="w-6 h-6 text-brand-600" />
-            Backlog Review
-          </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Review user stories, filter by source and sync state, and trigger Jira synchronization.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Backlog Review"
+        description="Review user stories, filter by source and sync state, and trigger Jira synchronization."
+      />
 
       <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
