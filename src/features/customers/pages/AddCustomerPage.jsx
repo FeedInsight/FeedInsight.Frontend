@@ -6,6 +6,7 @@ import Input from '@shared/components/ui/Input.jsx'
 import Card from '@shared/components/ui/Card.jsx'
 import { useCreateCompanyCustomer } from '../hooks/useCustomers.js'
 import { ROUTES } from '@router/routes.js'
+import PageHeader from '@shared/components/ui/PageHeader.jsx'
 
 const initialFormData = {
   firstName: '',
@@ -81,7 +82,6 @@ export default function AddCustomerPage() {
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl">
-      {/* Top Header Controls */}
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -93,18 +93,11 @@ export default function AddCustomerPage() {
         </button>
       </div>
 
-      {/* Header */}
-      <div className="flex flex-col gap-1 border-b border-slate-200/80 pb-4">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-          <UserPlus className="w-6 h-6 text-brand-600" />
-          Add New Customer
-        </h1>
-        <p className="text-sm text-slate-500">
-          Create a new company customer account for your tenant organization.
-        </p>
-      </div>
+      <PageHeader
+        title="Add New Customer"
+        description="Create a new company customer account for your tenant organization."
+      />
 
-      {/* Form Card */}
       <Card className="p-6 border border-slate-200/80 bg-white shadow-xs rounded-2xl">
         <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

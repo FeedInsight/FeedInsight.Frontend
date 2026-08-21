@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { UserPlus, Building2, CheckCircle2 } from 'lucide-react'
+import { UserPlus, CheckCircle2 } from 'lucide-react'
 import Button from '@shared/components/ui/Button.jsx'
 import Input from '@shared/components/ui/Input.jsx'
 import { useAddTenantProductOwner } from '../hooks/useAddTenantProductOwner.js'
+import PageHeader from '@shared/components/ui/PageHeader.jsx'
 
 const initialFormData = {
   firstName: '',
@@ -83,16 +84,10 @@ export default function AddProductOwnerPage() {
 
   return (
     <div className="flex flex-col gap-6 max-w-3xl">
-      <div className="flex flex-col gap-1 border-b border-slate-200/80 pb-5">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-          <UserPlus className="w-6 h-6 text-brand-600" />
-          Add Product Owner
-        </h1>
-        <p className="text-sm text-slate-500 mt-0.5">
-          Add a new Product Owner to your organization (tenant) with administrative access to
-          workspace features.
-        </p>
-      </div>
+      <PageHeader
+        title="Add Product Owner"
+        description="Add a new Product Owner to your organization with administrative access to workspace features."
+      />
 
       {successMessage && (
         <div className="flex items-start gap-3 rounded-xl bg-emerald-50 p-4 text-emerald-800 border border-emerald-200 shadow-2xs">
