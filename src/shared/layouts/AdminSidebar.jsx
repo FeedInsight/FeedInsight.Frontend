@@ -119,15 +119,15 @@ const NAV_ITEMS = [
     roles: REQUIRE_SUPER_ADMIN,
   },
   {
-    to: ROUTES.customerSubmitFeedback,
-    label: 'Submit Feedback',
-    icon: MessageSquarePlus,
-    roles: REQUIRE_COMPANY_CUSTOMER,
-  },
-  {
     to: ROUTES.customerFeedback,
     label: 'My Feedbacks',
     icon: MessagesSquare,
+    roles: REQUIRE_COMPANY_CUSTOMER,
+  },
+  {
+    to: ROUTES.customerSubmitFeedback,
+    label: 'Submit Feedback',
+    icon: MessageSquarePlus,
     roles: REQUIRE_COMPANY_CUSTOMER,
   },
   {
@@ -167,9 +167,9 @@ export default function AdminSidebar() {
     return Array.isArray(triageFeedbacksData)
       ? triageFeedbacksData
       : triageFeedbacksData?.items ||
-          triageFeedbacksData?.data ||
-          triageFeedbacksData?.$values ||
-          []
+      triageFeedbacksData?.data ||
+      triageFeedbacksData?.$values ||
+      []
   }, [isPO, triageFeedbacksData])
   const { totalUnseenCount: triageUnseenCount } = useUnseenTriageFeedbacks(triageItems)
 

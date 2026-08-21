@@ -1,29 +1,21 @@
-import { MessageSquarePlus, Sparkles, CheckCircle2 } from 'lucide-react'
+import { Sparkles, CheckCircle2 } from 'lucide-react'
 import CustomerFeedbackForm from '../components/CustomerFeedbackForm.jsx'
+import PageHeader from '@shared/components/ui/PageHeader.jsx'
 
 export default function SubmitCustomerFeedbackPage() {
   return (
     <div className="flex flex-col gap-6 max-w-6xl mx-auto">
-      {/* Page Heading */}
-      <div className="flex flex-col gap-1.5">
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5 dark:text-slate-100">
-          <MessageSquarePlus className="w-7 h-7 text-brand-600" />
-          <span>Submit Customer Feedback</span>
-        </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Share your ideas, requests, or report issues directly to our product engineering team.
-        </p>
-      </div>
+      <PageHeader
+        title="Submit Feedback"
+        description="Share your ideas, requests, or report issues directly to our product engineering team."
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-        {/* Form Container (Takes 2 Columns on large screens) */}
         <div className="lg:col-span-2">
           <CustomerFeedbackForm showBackLink={true} />
         </div>
 
-        {/* Tips & How It Works Sidebar (1 Column) */}
         <div className="flex flex-col gap-5">
-          {/* How It Works Card */}
           <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs flex flex-col gap-4 dark:border-slate-700 dark:bg-slate-900">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 dark:text-slate-100">
               <Sparkles size={16} className="text-indigo-600" />
@@ -71,7 +63,6 @@ export default function SubmitCustomerFeedbackPage() {
             </div>
           </div>
 
-          {/* Best Practices Card */}
           <div className="rounded-2xl border border-slate-200/80 bg-gradient-to-br from-slate-50 to-white p-5 shadow-xs flex flex-col gap-3 dark:border-slate-700 dark:from-slate-900 dark:to-slate-800">
             <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2 dark:text-slate-100">
               <CheckCircle2 size={16} className="text-emerald-600" />
