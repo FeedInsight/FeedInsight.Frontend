@@ -12,6 +12,7 @@ import { useCategories } from '@features/categories/hooks/useCategories.js'
 import { useDebounce } from '@shared/hooks/useDebounce.js'
 import { usePagination } from '@shared/hooks/usePagination.js'
 import { normalizeFeedbackList, extractTotalCount } from '../utils/feedbackNormalizer.js'
+import PageHeader from '@shared/components/ui/PageHeader.jsx'
 
 export default function CompanyFeedbackDashboardPage() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -29,12 +30,12 @@ export default function CompanyFeedbackDashboardPage() {
     const cats = Array.isArray(rawCategories)
       ? rawCategories
       : Array.isArray(rawCategories?.data)
-      ? rawCategories.data
-      : Array.isArray(rawCategories?.items)
-      ? rawCategories.items
-      : Array.isArray(rawCategories?.$values)
-      ? rawCategories.$values
-      : []
+        ? rawCategories.data
+        : Array.isArray(rawCategories?.items)
+          ? rawCategories.items
+          : Array.isArray(rawCategories?.$values)
+            ? rawCategories.$values
+            : []
 
     cats.forEach((c) => {
       if (c && c.id && c.name) {
@@ -81,86 +82,69 @@ export default function CompanyFeedbackDashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Page Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 pb-5">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <MessagesSquare className="w-6 h-6 text-brand-600" />
-            Customer Feedbacks Hub
-          </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Review incoming feedback submitted by your tenant customers, inspect discussions, and respond with official product team comments.
-          </p>
-        </div>
-
-        {/* Summary Metric Counters */}
-        <div className="flex items-center gap-3">
-          {/* Unseen Feedbacks Counter */}
-          <div
-            className={`flex items-center gap-2.5 rounded-xl px-3.5 py-2 border shadow-2xs transition-colors ${
-              totalUnseenCount > 0
-                ? 'bg-amber-50/80 border-amber-300/80 text-amber-900 ring-2 ring-amber-100'
-                : 'bg-white border-slate-200/80'
+      <PageHeader
+        title="Customer Feedbacks Hub"
+        description="Review incoming feedback submitted by your tenant customers, inspect discussions, and respond with official product team comments."
+      >
+        <div
+          className={`flex items-center gap-2.5 rounded-xl px-3.5 py-2 border shadow-2xs transition-colors ${totalUnseenCount > 0
+              ? 'bg-amber-50/80 border-amber-300/80 text-amber-900 ring-2 ring-amber-100'
+              : 'bg-white border-slate-200/80'
             }`}
-          >
-            <div
-              className={`flex h-7 w-7 items-center justify-center rounded-lg shadow-2xs ${
-                totalUnseenCount > 0 ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-600'
+        >
+          <div
+            className={`flex h-7 w-7 items-center justify-center rounded-lg shadow-2xs ${totalUnseenCount > 0 ? 'bg-amber-500 text-white' : 'bg-slate-100 text-slate-600'
               }`}
+          >
+            <Bell size={15} />
+          </div>
+          <div className="flex flex-col">
+            <span
+              className={`text-[10px] font-bold uppercase tracking-wider ${totalUnseenCount > 0 ? 'text-amber-800' : 'text-slate-400'
+                }`}
             >
-              <Bell size={15} />
-            </div>
-            <div className="flex flex-col">
-              <span
-                className={`text-[10px] font-bold uppercase tracking-wider ${
-                  totalUnseenCount > 0 ? 'text-amber-800' : 'text-slate-400'
+              Unseen
+            </span>
+            <span
+              className={`font-mono text-sm font-extrabold ${totalUnseenCount > 0 ? 'text-amber-900' : 'text-slate-900'
                 }`}
-              >
-                Unseen
-              </span>
-              <span
-                className={`font-mono text-sm font-extrabold ${
-                  totalUnseenCount > 0 ? 'text-amber-900' : 'text-slate-900'
-                }`}
-              >
-                {totalUnseenCount}
-              </span>
-            </div>
-            {totalUnseenCount > 0 && (
-              <button
-                type="button"
-                onClick={() => markAllAsSeen(rawItems)}
-                className="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline shrink-0 ml-1"
-                title="Mark all company feedbacks as read"
-              >
-                Mark read
-              </button>
-            )}
+            >
+              {totalUnseenCount}
+            </span>
           </div>
+          {totalUnseenCount > 0 && (
+            <button
+              type="button"
+              onClick={() => markAllAsSeen(rawItems)}
+              className="text-[11px] font-bold text-amber-800 hover:text-amber-950 underline shrink-0 ml-1"
+              title="Mark all company feedbacks as read"
+            >
+              Mark read
+            </button>
+          )}
+        </div>
 
-          <div className="flex items-center gap-2.5 rounded-xl bg-white px-3.5 py-2 border border-slate-200/80 shadow-2xs">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
-              <MessagesSquare size={15} />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Feedbacks</span>
-              <span className="font-mono text-sm font-extrabold text-slate-900">{totalItems}</span>
-            </div>
+        <div className="flex items-center gap-2.5 rounded-xl bg-white px-3.5 py-2 border border-slate-200/80 shadow-2xs">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+            <MessagesSquare size={15} />
           </div>
-
-          <div className="flex items-center gap-2.5 rounded-xl bg-white px-3.5 py-2 border border-slate-200/80 shadow-2xs">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
-              <MessageCircle size={15} />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Comments</span>
-              <span className="font-mono text-sm font-extrabold text-slate-900">{totalComments}</span>
-            </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Feedbacks</span>
+            <span className="font-mono text-sm font-extrabold text-slate-900">{totalItems}</span>
           </div>
         </div>
-      </div>
 
-      {/* Unseen Feedbacks Notification Banner */}
+        <div className="flex items-center gap-2.5 rounded-xl bg-white px-3.5 py-2 border border-slate-200/80 shadow-2xs">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+            <MessageCircle size={15} />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Comments</span>
+            <span className="font-mono text-sm font-extrabold text-slate-900">{totalComments}</span>
+          </div>
+        </div>
+      </PageHeader>
+
       {totalUnseenCount > 0 && (
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl bg-gradient-to-r from-amber-500/10 via-brand-500/10 to-indigo-500/10 border border-amber-300/80 p-4 shadow-xs">
           <div className="flex items-center gap-3">
@@ -191,7 +175,6 @@ export default function CompanyFeedbackDashboardPage() {
         </div>
       )}
 
-      {/* Filter / Search Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
         <div className="flex items-center gap-2 flex-1 max-w-md">
           <SearchBar
@@ -206,7 +189,6 @@ export default function CompanyFeedbackDashboardPage() {
         </div>
       </div>
 
-      {/* Main Feedback List */}
       {isLoading ? (
         <div className="flex h-64 items-center justify-center rounded-2xl border border-slate-200/80 bg-white shadow-xs">
           <div className="flex flex-col items-center gap-2.5 text-xs text-slate-500">

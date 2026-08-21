@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  Users,
   UserPlus,
   Eye,
   Lock,
@@ -29,6 +28,7 @@ import LockCustomerModal from '../components/LockCustomerModal.jsx'
 import UnlockCustomerModal from '../components/UnlockCustomerModal.jsx'
 import { ROUTES } from '@router/routes.js'
 import { formatDateTime } from '@shared/utils/formatDate.js'
+import PageHeader from '@shared/components/ui/PageHeader.jsx'
 
 function isCustomerLocked(customer) {
   if (!customer) return false
@@ -130,17 +130,10 @@ export default function CustomersPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Page Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 pb-5">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <Users className="w-6 h-6 text-brand-600" />
-            <span>Company Customers</span>
-          </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Manage active and locked customer accounts associated with your organization.
-          </p>
-        </div>
+      <PageHeader
+        title="Company Customers"
+        description="Manage active and locked customer accounts associated with your organization."
+      >
         <Button
           variant="primary"
           size="md"
@@ -150,9 +143,8 @@ export default function CustomersPage() {
           <UserPlus size={16} />
           <span>Add New Customer</span>
         </Button>
-      </div>
+      </PageHeader>
 
-      {/* Filter & Summary Stats Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white/70 backdrop-blur-md p-4 rounded-2xl border border-slate-200/80 shadow-xs">
         <div className="flex items-center gap-2 flex-1 max-w-md">
           <SearchBar
@@ -177,16 +169,14 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      {/* Table Toggle Button Switcher (Active Accounts vs Locked Accounts) */}
       <div className="flex items-center gap-2 border-b border-slate-200/80 pb-3">
         <button
           type="button"
           onClick={() => setActiveTab('active')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-150 shadow-xs ${
-            activeTab === 'active'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-150 shadow-xs ${activeTab === 'active'
               ? 'bg-slate-900 text-white shadow-md'
               : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/80'
-          }`}
+            }`}
         >
           <ShieldCheck
             size={17}
@@ -194,11 +184,10 @@ export default function CustomersPage() {
           />
           <span>Active Accounts</span>
           <span
-            className={`text-xs px-2 py-0.5 rounded-full font-bold ml-1 ${
-              activeTab === 'active'
+            className={`text-xs px-2 py-0.5 rounded-full font-bold ml-1 ${activeTab === 'active'
                 ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
                 : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-            }`}
+              }`}
           >
             {activeCustomers.length}
           </span>
@@ -207,11 +196,10 @@ export default function CustomersPage() {
         <button
           type="button"
           onClick={() => setActiveTab('locked')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-150 shadow-xs ${
-            activeTab === 'locked'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-150 shadow-xs ${activeTab === 'locked'
               ? 'bg-slate-900 text-white shadow-md'
               : 'bg-white text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-slate-200/80'
-          }`}
+            }`}
         >
           <Lock
             size={16}
@@ -219,18 +207,16 @@ export default function CustomersPage() {
           />
           <span>Locked Accounts</span>
           <span
-            className={`text-xs px-2 py-0.5 rounded-full font-bold ml-1 ${
-              activeTab === 'locked'
+            className={`text-xs px-2 py-0.5 rounded-full font-bold ml-1 ${activeTab === 'locked'
                 ? 'bg-rose-950 text-rose-300 border border-rose-800'
                 : 'bg-rose-50 text-rose-700 border border-rose-200'
-            }`}
+              }`}
           >
             {lockedCustomers.length}
           </span>
         </button>
       </div>
 
-      {/* SECTION 1: Active Accounts Table (Shown when activeTab === 'active') */}
       {activeTab === 'active' && (
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between px-1">
@@ -328,7 +314,6 @@ export default function CustomersPage() {
 
                         <Table.Cell className="text-right py-3.5">
                           <div className="flex items-center justify-end gap-2">
-                            {/* 1. View Button */}
                             <Button
                               variant="secondary"
                               size="xs"
@@ -340,7 +325,6 @@ export default function CustomersPage() {
                               <span>View</span>
                             </Button>
 
-                            {/* 2. Lock Button */}
                             <Button
                               variant="outline"
                               size="xs"
@@ -353,7 +337,6 @@ export default function CustomersPage() {
                               <span>Lock</span>
                             </Button>
 
-                            {/* 3. Delete Button */}
                             <Button
                               variant="danger"
                               size="xs"
@@ -391,7 +374,6 @@ export default function CustomersPage() {
         </div>
       )}
 
-      {/* SECTION 2: Locked Accounts Table (Shown when activeTab === 'locked') */}
       {activeTab === 'locked' && (
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between px-1">
@@ -489,7 +471,6 @@ export default function CustomersPage() {
 
                         <Table.Cell className="text-right py-3.5">
                           <div className="flex items-center justify-end gap-2">
-                            {/* 1. View Button */}
                             <Button
                               variant="secondary"
                               size="xs"
@@ -501,7 +482,6 @@ export default function CustomersPage() {
                               <span>View</span>
                             </Button>
 
-                            {/* 2. Unlock Button */}
                             <Button
                               variant="outline"
                               size="xs"
@@ -514,7 +494,6 @@ export default function CustomersPage() {
                               <span>Unlock</span>
                             </Button>
 
-                            {/* 3. Delete Button */}
                             <Button
                               variant="danger"
                               size="xs"
@@ -552,7 +531,6 @@ export default function CustomersPage() {
         </div>
       )}
 
-      {/* Pagination Footer */}
       {totalItems > 0 && (
         <div className="px-5 py-2 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
           <TablePagination
@@ -568,7 +546,6 @@ export default function CustomersPage() {
         </div>
       )}
 
-      {/* Lock Customer Modal */}
       <LockCustomerModal
         isOpen={Boolean(lockingCustomer)}
         customerName={
@@ -582,7 +559,6 @@ export default function CustomersPage() {
         onCancel={() => setLockingCustomer(null)}
       />
 
-      {/* Unlock Customer Modal */}
       <UnlockCustomerModal
         isOpen={Boolean(unlockingCustomer)}
         customerName={
@@ -596,7 +572,6 @@ export default function CustomersPage() {
         onCancel={() => setUnlockingCustomer(null)}
       />
 
-      {/* Delete Customer Modal */}
       <DeleteCustomerModal
         isOpen={Boolean(deletingCustomer)}
         customerName={

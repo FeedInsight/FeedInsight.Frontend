@@ -8,18 +8,19 @@ import { useCategories, useCategoryMutations } from '@features/categories/hooks/
 import CategoryFormModal from './CategoryFormModal.jsx'
 import DeleteCategoryModal from './DeleteCategoryModal.jsx'
 import Badge from '@shared/components/ui/Badge.jsx'
+import PageHeader from '@shared/components/ui/PageHeader.jsx'
 
 export default function CategoryList() {
   const { data: rawCategories, isLoading } = useCategories()
   const categories = Array.isArray(rawCategories)
     ? rawCategories
     : Array.isArray(rawCategories?.items)
-    ? rawCategories.items
-    : Array.isArray(rawCategories?.data)
-    ? rawCategories.data
-    : Array.isArray(rawCategories?.$values)
-    ? rawCategories.$values
-    : []
+      ? rawCategories.items
+      : Array.isArray(rawCategories?.data)
+        ? rawCategories.data
+        : Array.isArray(rawCategories?.$values)
+          ? rawCategories.$values
+          : []
   const { remove } = useCategoryMutations()
   const [editingCategory, setEditingCategory] = useState(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -58,24 +59,16 @@ export default function CategoryList() {
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Page Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-slate-200/80 pb-5">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <Tags className="w-6 h-6 text-brand-600" />
-            Categories Directory
-          </h1>
-          <p className="text-sm text-slate-500 mt-0.5">
-            Configure system classification categories and target routing rules for AI triage decomposition.
-          </p>
-        </div>
+      <PageHeader
+        title="Categories Directory"
+        description="Configure system classification categories and target routing rules for AI triage decomposition."
+      >
         <Button variant="primary" size="md" onClick={openCreate} className="shadow-md shadow-brand-500/20">
           <Plus size={16} />
           <span>New Category</span>
         </Button>
-      </div>
+      </PageHeader>
 
-      {/* Main Table Card */}
       <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         {!isLoading && categories.length === 0 ? (
           <div className="py-12 text-center">
