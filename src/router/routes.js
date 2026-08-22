@@ -1,6 +1,8 @@
 export const ROUTES = {
   notFound: '/404',
 
+  landing: '/',
+
   login: '/login',
   register: '/register',
 
