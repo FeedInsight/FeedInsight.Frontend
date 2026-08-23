@@ -10,7 +10,7 @@ export default function Modal({ isOpen, onClose, title, size = 'md', children })
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
       <div
         className={cn(
-          'w-full rounded-xl bg-white p-6 text-slate-900 shadow-lg dark:bg-slate-900 dark:text-slate-100',
+          'flex flex-col max-h-[90vh] w-full rounded-xl bg-white p-6 text-slate-900 shadow-lg dark:bg-slate-900 dark:text-slate-100',
           SIZES[size],
         )}
       >
@@ -24,7 +24,10 @@ export default function Modal({ isOpen, onClose, title, size = 'md', children })
             <X size={20} />
           </button>
         </div>
-        {children}
+
+        <div className="overflow-y-auto pr-1 -mr-4">
+          {children}
+        </div>
       </div>
     </div>
   )
