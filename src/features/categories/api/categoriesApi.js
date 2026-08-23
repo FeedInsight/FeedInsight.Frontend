@@ -1,28 +1,44 @@
 import { axiosClient } from '@shared/api/axiosClient.js'
 import { ENDPOINTS } from '@shared/api/endpoints.js'
 
-/** Matches the Categories SQL table. These are the "Dynamic Category
- * Management" classification targets the Router Agent uses (README §Admin
- * Portal), so mutations here should stay simple CRUD -- no AI logic. */
 export async function fetchCategories() {
-  const { data } = await axiosClient.get(ENDPOINTS.categories.list)
-  return data
+  const response = await axiosClient.get(ENDPOINTS.categories.list)
+  const payload = response.data
+
+  return Array.isArray(payload?.data) ? payload.data : []
 }
 
-/** @param {{ name: string, description?: string }} payload */
 export async function createCategory(payload) {
-  const { data } = await axiosClient.post(ENDPOINTS.categories.create, payload)
-  return data
+  const body = {
+    name: payload.name,
+    description: payload.description ?? '',
+  }
+
+  const response = await axiosClient.post(ENDPOINTS.categories.create, body)
+  return {
+    id: response.data?.data?.id,
+    name: body.name,
+    description: body.description,
+    isSystemDefault: false,
+  }
 }
 
-/** @param {string} id @param {{ name: string, description?: string }} payload */
 export async function updateCategory(id, payload) {
-  const { data } = await axiosClient.put(ENDPOINTS.categories.update(id), payload)
-  return data
+  const body = {
+    id,
+    name: payload.name,
+    description: payload.description ?? '',
+  }
+
+  await axiosClient.put(ENDPOINTS.categories.update, body)
+  return {
+    id,
+    name: body.name,
+    description: body.description,
+  }
 }
 
-/** Soft delete (sets IsDeleted, per README's global soft-deletion note). */
 export async function deleteCategory(id) {
-  const { data } = await axiosClient.delete(ENDPOINTS.categories.remove(id))
-  return data
+  await axiosClient.delete(ENDPOINTS.categories.remove(id))
+  return { id }
 }

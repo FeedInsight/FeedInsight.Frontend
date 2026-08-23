@@ -1,26 +1,16 @@
-/**
- * App-wide constants that are NOT environment-specific. Anything tenant- or
- * deployment-specific belongs in env.js instead.
- */
-
-// Matches AdminUsers.Role in the SQL schema. Keep these string values in
-// exact sync with the backend enum/check-constraint.
-export const ADMIN_ROLES = {
-  OWNER: 'SuperAdmin',
-  PRODUCT_MANAGER: 'ProductManager',
-  VIEWER: 'Viewer',
+export const ROLES = {
+  SUPER_ADMIN: 'SuperAdmin',
+  PRODUCT_OWNER: 'ProductOwner',
+  COMPANY_CUSTOMER: 'CompanyCustomer',
 }
 
-// Matches UserStories.Status lifecycle used across BacklogReviewPage and
-// StoryDetailPage.
 export const STORY_STATUS = {
   DRAFT: 'Draft',
   APPROVED: 'Approved',
   REJECTED: 'Rejected',
-  PUBLISHED: 'Published', // set once JiraTicketKey is populated
+  PUBLISHED: 'Published',
 }
 
-// Matches CustomerFeedbacks.OverallSentiment, produced by the Router Agent.
 export const SENTIMENT = {
   POSITIVE: 'Positive',
   NEUTRAL: 'Neutral',
@@ -32,21 +22,31 @@ export const CHAT_SENDER_ROLE = {
   ASSISTANT: 'Assistant',
 }
 
-// React Query cache keys, grouped by feature so invalidation calls
-// (queryClient.invalidateQueries) stay predictable across the app.
 export const QUERY_KEYS = {
+  feedbacks: ['feedbacks'],
+  feedbackDetail: (id) => ['feedbacks', id],
+  customerFeedbackHistory: ['customer-feedback-history'],
   categories: ['categories'],
   draftStories: ['stories', 'draft'],
+  userStories: ['stories', 'user-stories'],
   story: (id) => ['stories', id],
-  dailySnapshots: (range) => ['analytics', 'daily-snapshots', range],
+  latestAnalyticsSnapshot: ['analytics', 'latest-snapshot'],
+  analyticsSnapshots: (range) => ['analytics', 'snapshots', range],
   chatSessions: ['chat', 'sessions'],
   chatMessages: (sessionId) => ['chat', 'sessions', sessionId, 'messages'],
   tenantSettings: ['tenant', 'settings'],
-  apiSettings: ['api', 'settings'],
+  apiKeys: ['api', 'keys'],
   adminUsers: ['admin-users'],
   tenantsLookup: ['tenants', 'lookup'],
+  customers: (params) => (params ? ['customers', params] : ['customers']),
+  customerDetail: (id) => ['customers', id],
+  developmentCustomerFeedbacks: (params) =>
+    params ? ['development-feedbacks', 'customer', params] : ['development-feedbacks', 'customer'],
+  developmentCompanyFeedbacks: (params) =>
+    params ? ['development-feedbacks', 'company', params] : ['development-feedbacks', 'company'],
 }
 
 export const HTTP_HEADERS = {
+  API_KEY: 'X-Api-Key',
   TENANT_ID: 'X-Tenant-Id',
 }

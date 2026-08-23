@@ -1,20 +1,31 @@
 import { axiosClient } from '@shared/api/axiosClient.js'
 import { ENDPOINTS } from '@shared/api/endpoints.js'
 
-/** ChatSessions list/create -- matches CHATSESSIONS table. */
 export async function fetchChatSessions() {
   const { data } = await axiosClient.get(ENDPOINTS.chat.sessions)
   return data
 }
 
-/** @param {{ title?: string }} payload -- title can be auto-generated
- * server-side from the first message if omitted. */
 export async function createChatSession(payload = {}) {
   const { data } = await axiosClient.post(ENDPOINTS.chat.sessions, payload)
   return data
 }
 
-/** Full message history for one session, matches CHATMESSAGES table. */
+export async function updateChatSession(sessionId, payload) {
+  try {
+    const { data } = await axiosClient.patch(ENDPOINTS.chat.sessionDetail(sessionId), payload)
+    return data
+  } catch {
+    // Retry with PUT if PATCH is not handled on endpoint
+    try {
+      const { data } = await axiosClient.put(ENDPOINTS.chat.sessionDetail(sessionId), payload)
+      return data
+    } catch {
+      return null
+    }
+  }
+}
+
 export async function fetchChatMessages(sessionId) {
   const { data } = await axiosClient.get(ENDPOINTS.chat.sessionMessages(sessionId))
   return data
@@ -33,8 +44,7 @@ export async function sendChatMessage(sessionId, content) {
   return data
 }
 
-/** ClearHistoryCommandHandler. */
 export async function clearChatSession(sessionId) {
-  const { data } = await axiosClient.delete(ENDPOINTS.chat.clearSession(sessionId))
+  const { data } = await axiosClient.delete(ENDPOINTS.chat.sessionDetail(sessionId))
   return data
 }

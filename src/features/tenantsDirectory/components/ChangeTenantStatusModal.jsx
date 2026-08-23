@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { Ban, CheckCircle, ShieldAlert } from 'lucide-react'
 import { useTenantMutations } from '../hooks/useTenants'
 import Modal from '@shared/components/ui/Modal'
 import Input from '@shared/components/ui/Input'
@@ -47,7 +48,7 @@ const ChangeTenantStatusModal = ({ isOpen, onClose, tenant }) => {
       },
       {
         onSuccess: () => {
-          toast.success(`Tenant ${tenant.companyName} is ${newStatus}`)
+          toast.success(`Tenant ${tenant.companyName} is now ${newStatus}`)
           onClose()
         },
         onError: (err) => {
@@ -62,38 +63,61 @@ const ChangeTenantStatusModal = ({ isOpen, onClose, tenant }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={`${isActive ? 'Suspend' : 'Activate'} Tenant`}
+      title={`${isActive ? 'Suspend' : 'Activate'} Tenant Account`}
       size="sm"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <p className="text-sm text-slate-600">
-          Are you sure you want to {isActive ? 'suspend' : 'activate'}
-          <strong> {tenant.companyName}</strong>?
-        </p>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 pt-1">
+        <div
+          className={`flex items-start gap-3 p-3 rounded-xl border text-xs ${
+            isActive
+              ? 'bg-rose-50 border-rose-200 text-rose-900'
+              : 'bg-emerald-50 border-emerald-200 text-emerald-900'
+          }`}
+        >
+          {isActive ? (
+            <ShieldAlert size={18} className="text-rose-600 shrink-0 mt-0.5" />
+          ) : (
+            <CheckCircle size={18} className="text-emerald-600 shrink-0 mt-0.5" />
+          )}
+          <span>
+            {isActive
+              ? `Suspending ${tenant.companyName} will restrict access for all associated users under this tenant.`
+              : `Activating ${tenant.companyName} will restore normal access for all associated users.`}
+          </span>
+        </div>
 
         <Input
-          label="Reason"
+          label="Reason for Status Change"
           placeholder={
             isActive
-              ? "e.g. Didn't pay, Violation of terms"
-              : 'e.g. Payment received, Issue resolved'
+              ? "e.g. Subscription lapsed, Terms violation"
+              : 'e.g. Payment confirmed, Account verified'
           }
           disabled={toggleStatus.isPending}
           error={errors.reason?.message}
           {...register('reason')}
         />
 
-        <div className="mt-4 flex justify-end gap-3">
+        <div className="mt-3 flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
           <Button
             type="button"
             variant="secondary"
+            size="md"
             onClick={onClose}
             disabled={toggleStatus.isPending}
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={toggleStatus.isPending}>
-            {toggleStatus.isPending ? 'Confirming...' : 'Confirm'}
+          <Button
+            type="submit"
+            variant={isActive ? 'danger' : 'success'}
+            size="md"
+            isLoading={toggleStatus.isPending}
+            loadingText={isActive ? 'Suspending...' : 'Activating...'}
+            className={isActive ? 'shadow-md shadow-red-500/20' : 'shadow-md shadow-emerald-500/20'}
+          >
+            {isActive ? <Ban size={15} /> : <CheckCircle size={15} />}
+            <span>Confirm {isActive ? 'Suspension' : 'Activation'}</span>
           </Button>
         </div>
       </form>
@@ -102,3 +126,4 @@ const ChangeTenantStatusModal = ({ isOpen, onClose, tenant }) => {
 }
 
 export default ChangeTenantStatusModal
+

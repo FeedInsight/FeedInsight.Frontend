@@ -1,16 +1,24 @@
-import { format, formatDistanceToNow, parseISO } from 'date-fns'
+import { format, formatDistanceToNow, parseISO, isValid } from 'date-fns'
 
-/** Absolute display date, e.g. "Jul 26, 2026, 3:45 PM". Used in tables
- * (BacklogReviewPage, AdminUsersTable) where scanability matters more than
- * relative time. */
 export function formatDateTime(isoString) {
   if (!isoString) return '—'
-  return format(parseISO(isoString), 'MMM d, yyyy, h:mm a')
+  try {
+    const date = typeof isoString === 'string' ? parseISO(isoString) : new Date(isoString)
+    if (!isValid(date)) return '—'
+    return format(date, 'MMM d, yyyy, h:mm a')
+  } catch {
+    return '—'
+  }
 }
 
-/** Relative display, e.g. "3 hours ago". Used in ChatWindow message
- * timestamps and CustomerFeedbacks activity feeds. */
 export function formatRelative(isoString) {
   if (!isoString) return '—'
-  return formatDistanceToNow(parseISO(isoString), { addSuffix: true })
+  try {
+    const date = typeof isoString === 'string' ? parseISO(isoString) : new Date(isoString)
+    if (!isValid(date)) return '—'
+    return formatDistanceToNow(date, { addSuffix: true })
+  } catch {
+    return '—'
+  }
 }
+

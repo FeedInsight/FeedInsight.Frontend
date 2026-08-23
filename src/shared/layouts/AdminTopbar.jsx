@@ -1,20 +1,15 @@
-import { Menu, LogOut } from 'lucide-react'
+import { Menu, LogOut, Moon, Sparkles, Sun } from 'lucide-react'
+import { ROLES } from '@app/config/constants.js'
 import { useUiStore } from '@app/store/uiStore.js'
 import { useAuth } from '@shared/hooks/useAuth.js'
 import { useNavigate } from 'react-router-dom'
 import { ROUTES } from '@router/routes.js'
 
-/**
- * Top bar shown on every Admin Portal screen: sidebar toggle, current
- * tenant/company name (read from the authenticated user), and logout.
- * Keep this component free of feature-specific actions -- per-page actions
- * (e.g. "New Category" button) belong inside that page's own header, not
- * here.
- */
 export default function AdminTopbar() {
-  const { toggleSidebar } = useUiStore()
+  const { theme, toggleTheme, toggleSidebar, toggleChatDrawer } = useUiStore()
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const isProductOwner = user?.role === ROLES.PRODUCT_OWNER
 
   const handleLogout = async () => {
     await logout()
@@ -22,18 +17,52 @@ export default function AdminTopbar() {
   }
 
   return (
-    <header className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3">
-      <button onClick={toggleSidebar} aria-label="Toggle sidebar" className="text-slate-500">
-        <Menu size={20} />
-      </button>
-      <div className="flex items-center gap-4">
-        <span className="text-sm text-slate-600">{user?.fullName}</span>
+    <header className="flex items-center justify-between border-b border-slate-200/80 bg-white px-4 py-2.5 shadow-2xs dark:border-slate-800 dark:bg-slate-900">
+      <div className="flex items-center gap-3">
+        <button
+          onClick={toggleSidebar}
+          aria-label="Toggle sidebar"
+          className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+        >
+          <Menu size={20} />
+        </button>
+      </div>
+
+      <div className="flex items-center gap-3">
+        {isProductOwner && (
+          <>
+            <button
+              type="button"
+              onClick={toggleChatDrawer}
+              className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-brand-600 to-indigo-600 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:from-brand-500 hover:to-indigo-500 transition-all active:scale-95"
+            >
+              <Sparkles size={14} className="animate-pulse" />
+              <span>AI Assistant</span>
+            </button>
+
+            <div className="h-4 w-px bg-slate-200 dark:bg-slate-700" />
+          </>
+        )}
+
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          className="rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+        >
+          {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+        </button>
+
+        <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+          {user?.firstName}
+        </span>
+
         <button
           onClick={handleLogout}
           aria-label="Log out"
-          className="flex items-center gap-1 text-sm text-slate-500 hover:text-red-600"
+          className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-medium text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-950/40"
         >
-          <LogOut size={16} /> Logout
+          <LogOut size={15} /> Logout
         </button>
       </div>
     </header>

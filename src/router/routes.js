@@ -1,29 +1,34 @@
-/**
- * Path constants. Import from here in <Link>/<NavLink>/navigate() calls
- * instead of hardcoding strings, so a path rename is a one-file change.
- * Keep in sync with the <Route path> values in AppRouter.jsx.
- */
 export const ROUTES = {
-  // Customer Portal (public)
-  customerFeedback: '/feedback/:tenantKey', // e.g. /feedback/acme -> resolves tenant via TenantResolver
-  customerFeedbackDefault: '/feedback',
+  notFound: '/404',
 
-  // Auth
+  landing: '/',
+
   login: '/login',
   register: '/register',
 
-  // Admin Portal
-  adminDashboard: '/admin/dashboard',
   workspaceDashboard: '/workspace/dashboard',
-  superAdminDashboard: '/super-admin/dashboard',
-  adminCategories: '/admin/categories',
-  adminBacklog: '/admin/backlog',
-  adminStoryDetail: '/admin/backlog/:storyId',
-  adminAssistant: '/admin/assistant',
-  adminUsers: '/admin/users',
-  adminSettings: '/admin/settings',
-  jiraIntegrationSettings: '/workspace/settings/integrations',
-  apiSettings: '/workspace/api-settings',
+  workspaceTriage: '/workspace/triage',
+  workspaceTriageDetail: '/workspace/triage/:feedbackId',
+  workspaceCategories: '/workspace/categories',
+  workspaceBacklog: '/workspace/backlog',
+  workspaceStoryDetail: '/workspace/backlog/:storyId',
+  workspaceAssistant: '/workspace/assistant',
+  workspaceSettings: '/workspace/settings',
+  workspaceJiraIntegration: '/workspace/integrations',
+  workspaceApiKeys: '/workspace/api-keys',
+  workspaceAddProductOwner: '/workspace/add-product-owner',
+  workspaceCustomers: '/workspace/customers',
+  workspaceAddCustomer: '/workspace/customers/new',
+  workspaceCustomerDetail: '/workspace/customers/:customerId',
+  workspaceCustomerFeedbacks: '/workspace/customer-feedbacks',
 
-  tenantsDirectory: '/super-admin/tenants',
+  superAdminTenants: '/super-admin/tenants',
+  superAdminUsers: '/super-admin/product-owners',
+  superAdminAddAdmin: '/super-admin/add-super-admin',
+  superAdminSettings: '/super-admin/settings',
+
+  customerFeedback: '/customer/feedback',
+  customerSubmitFeedback: '/customer/submit-feedback',
+  customerFeedbackHistory: '/customer/feedback-history',
+  customerSettings: '/customer/settings',
 }

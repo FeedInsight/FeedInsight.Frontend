@@ -1,18 +1,59 @@
 import { create } from 'zustand'
 
-/**
- * Ephemeral, non-persisted UI state shared across Admin Portal screens.
- * Anything that should survive a refresh belongs in a persisted store
- * (authStore) instead. Anything that is server data belongs in React Query,
- * not here.
- */
+const STORAGE_KEY_SESSION = 'feedinsight_active_chat_session_id'
+const STORAGE_KEY_THEME = 'feedinsight_theme'
+
+const getInitialSessionId = () => {
+  try {
+    return localStorage.getItem(STORAGE_KEY_SESSION) || null
+  } catch {
+    return null
+  }
+}
+
+const getInitialTheme = () => {
+  try {
+    const storedTheme = localStorage.getItem(STORAGE_KEY_THEME)
+    if (storedTheme === 'light' || storedTheme === 'dark') return storedTheme
+  } catch {
+    // Ignore storage errors
+  }
+
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 export const useUiStore = create((set) => ({
+  theme: getInitialTheme(),
+  toggleTheme: () =>
+    set((state) => {
+      const theme = state.theme === 'dark' ? 'light' : 'dark'
+      try {
+        localStorage.setItem(STORAGE_KEY_THEME, theme)
+      } catch {
+        // Ignore storage errors
+      }
+      return { theme }
+    }),
+
   isSidebarCollapsed: false,
   toggleSidebar: () => set((s) => ({ isSidebarCollapsed: !s.isSidebarCollapsed })),
 
-  // Tracks which chat session is open in the AI Product Assistant so the
-  // ChatSessionList and ChatWindow (features/chat) stay in sync without
-  // prop-drilling through AssistantPage.
-  activeChatSessionId: null,
-  setActiveChatSessionId: (id) => set({ activeChatSessionId: id }),
+  activeChatSessionId: getInitialSessionId(),
+  setActiveChatSessionId: (id) => {
+    try {
+      if (id) {
+        localStorage.setItem(STORAGE_KEY_SESSION, id)
+      } else {
+        localStorage.removeItem(STORAGE_KEY_SESSION)
+      }
+    } catch {
+      // Ignore storage errors
+    }
+    set({ activeChatSessionId: id })
+  },
+
+  isChatDrawerOpen: false,
+  toggleChatDrawer: () => set((s) => ({ isChatDrawerOpen: !s.isChatDrawerOpen })),
+  openChatDrawer: () => set({ isChatDrawerOpen: true }),
+  closeChatDrawer: () => set({ isChatDrawerOpen: false }),
 }))

@@ -1,4 +1,5 @@
 import Button from "./Button"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 
 const TablePagination = ({
   rangeStart,
@@ -11,24 +12,28 @@ const TablePagination = ({
   isLoading = false,
 }) => {
   return (
-    <div className="flex flex-col gap-3 py-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="text-sm text-slate-500">
-        Showing {rangeStart} - {rangeEnd} of {totalItems}
+    <div className="flex flex-col gap-3 py-3.5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="text-xs font-medium text-slate-500">
+        Showing <span className="font-semibold text-slate-700">{rangeStart}</span> – <span className="font-semibold text-slate-700">{rangeEnd}</span> of <span className="font-semibold text-slate-700">{totalItems}</span> items
       </div>
       <div className="flex items-center gap-2">
         <Button
-          size="sm"
+          variant="secondary"
+          size="xs"
           onClick={onPrevious}
           disabled={!hasPreviousPage || isLoading}
         >
-          Previous
+          <ChevronLeft size={14} />
+          <span>Previous</span>
         </Button>
         <Button
-          size="sm"
+          variant="secondary"
+          size="xs"
           onClick={onNext}
           disabled={!hasNextPage || isLoading}
         >
-          Next
+          <span>Next</span>
+          <ChevronRight size={14} />
         </Button>
       </div>
     </div>
@@ -36,3 +41,4 @@ const TablePagination = ({
 }
 
 export default TablePagination
+

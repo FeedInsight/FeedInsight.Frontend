@@ -13,8 +13,9 @@ const required = (key, value) => {
 }
 
 export const env = {
-  apiBaseUrl: required('VITE_API_BASE_URL', import.meta.env.VITE_API_BASE_URL || 'http://feedinsight.runasp.net'),
+  apiBaseUrl: required('VITE_API_BASE_URL', import.meta.env.VITE_API_BASE_URL),
   devTenantId: import.meta.env.VITE_DEV_TENANT_ID,
+  ingestionApiKey: import.meta.env.VITE_INGESTION_API_KEY || import.meta.env.VITE_DEV_API_KEY,
   useMocks: import.meta.env.VITE_USE_MOCKS === 'true',
   isDev: import.meta.env.DEV,
 }

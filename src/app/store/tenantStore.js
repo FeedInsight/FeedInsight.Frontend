@@ -17,7 +17,13 @@ import { create } from 'zustand'
 export const useTenantStore = create((set) => ({
   tenantId: null,
   companyName: null,
+  apiKey: null,
 
-  setTenant: (tenantId, companyName = null) => set({ tenantId, companyName }),
-  clearTenant: () => set({ tenantId: null, companyName: null }),
+  setTenant: (tenantId, companyName = null, apiKey = null) => set((state) => ({
+    tenantId: tenantId ?? state.tenantId,
+    companyName: companyName ?? state.companyName,
+    apiKey: apiKey ?? state.apiKey,
+  })),
+  setApiKey: (apiKey) => set({ apiKey }),
+  clearTenant: () => set({ tenantId: null, companyName: null, apiKey: null }),
 }))

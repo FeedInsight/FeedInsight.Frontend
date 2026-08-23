@@ -1,95 +1,99 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { ROUTES } from './routes.js'
 import ProtectedRoute from './ProtectedRoute.jsx'
-import RoleGuard from './RoleGuard.jsx'
 import {
-  CAN_MANAGE_TENANT_SETTINGS,
-  CAN_VIEW_ALL_TENANTS,
-  CAN_MANAGE_ADMIN_USERS,
+  REQUIRE_PRODUCT_OWNER,
+  REQUIRE_SUPER_ADMIN,
+  REQUIRE_COMPANY_CUSTOMER,
 } from '@shared/constants/roles.js'
 import { useAuth } from '@shared/hooks/useAuth.js'
 import { getDashboardRouteForRole } from '@shared/utils/roleUtils.js'
 
-import CustomerLayout from '@shared/layouts/CustomerLayout.jsx'
 import AuthLayout from '@shared/layouts/AuthLayout.jsx'
 import AdminLayout from '@shared/layouts/AdminLayout.jsx'
 
-import CustomerFeedbackPage from '@features/customerPortal/pages/CustomerFeedbackPage.jsx'
 import LoginPage from '@features/auth/pages/LoginPage.jsx'
 import RegisterPage from '@features/auth/pages/RegisterPage.jsx'
 import DashboardPage from '@features/dashboard/pages/DashboardPage.jsx'
+import CustomerFeedbackPage from '@features/customerFeedback/pages/CustomerFeedbackPage.jsx'
+import SubmitCustomerFeedbackPage from '@features/customerFeedback/pages/SubmitCustomerFeedbackPage.jsx'
+import TriageInboxPage from '@features/triage/pages/TriageInboxPage.jsx'
 import CategoriesPage from '@features/categories/pages/CategoriesPage.jsx'
 import BacklogReviewPage from '@features/backlog/pages/BacklogReviewPage.jsx'
 import StoryDetailPage from '@features/backlog/pages/StoryDetailPage.jsx'
 import AssistantPage from '@features/chat/pages/AssistantPage.jsx'
 import AdminUsersPage from '@features/adminUsers/pages/AdminUsersPage.jsx'
-import TenantSettingsPage from '@features/tenantSettings/pages/TenantSettingsPage.jsx'
-import JiraIntegrationPage from '@features/tenantSettings/pages/JiraIntegrationPage.jsx'
-import ApiSettingsPage from '@features/apiSettings/pages/ApiSettingsPage.jsx'
+import AddSuperAdminPage from '@features/adminUsers/pages/AddSuperAdminPage.jsx'
+import SettingsPage from '@features/settings/pages/SettingsPage.jsx'
+import JiraIntegrationPage from '@features/jira/pages/JiraIntegrationPage.jsx'
 import TenantsDirectoryPage from '@features/tenantsDirectory/pages/TenantsDirectoryPage.jsx'
+import ApiKeysPage from '@features/apiSettings/pages/ApiKeysPage.jsx'
+import AddProductOwnerPage from '@features/settings/pages/AddProductOwnerPage.jsx'
+import CustomersPage from '@features/customers/pages/CustomersPage.jsx'
+import AddCustomerPage from '@features/customers/pages/AddCustomerPage.jsx'
+import CustomerDetailPage from '@features/customers/pages/CustomerDetailPage.jsx'
+import CompanyFeedbackDashboardPage from '@features/customerFeedback/pages/CompanyFeedbackDashboardPage.jsx'
+import NotFoundPage from '@shared/pages/NotFoundPage.jsx'
+import LandingPage from '@features/landing/pages/LandingPage.jsx'
 
 function HomeRedirect() {
   const { isAuthenticated, user } = useAuth()
-  if (!isAuthenticated) {
-    return <Navigate to={ROUTES.login} replace />
+
+  if (isAuthenticated) {
+    return <Navigate to={getDashboardRouteForRole(user?.role)} replace />
   }
-  return <Navigate to={getDashboardRouteForRole(user?.role)} replace />
+
+  return <LandingPage />
 }
 
-/**
- * Single route table for the whole app. Both portals are registered in one
- * project as required, but stay visually and behaviorally separate through
- * their layouts: CustomerLayout (public) vs AdminLayout (behind
- * ProtectedRoute).
- */
 export default function AppRouter() {
   return (
     <Routes>
-      {/* --- Customer Portal (public, tenant-scoped) --- */}
-      <Route element={<CustomerLayout />}>
-        <Route path={ROUTES.customerFeedback} element={<CustomerFeedbackPage />} />
-        <Route path={ROUTES.customerFeedbackDefault} element={<CustomerFeedbackPage />} />
-      </Route>
-
-      {/* --- Auth --- */}
       <Route element={<AuthLayout />}>
         <Route path={ROUTES.login} element={<LoginPage />} />
         <Route path={ROUTES.register} element={<RegisterPage />} />
       </Route>
 
-      {/* --- Admin Portal (JWT-protected) --- */}
       <Route element={<ProtectedRoute />}>
         <Route element={<AdminLayout />}>
-          <Route path={ROUTES.adminDashboard} element={<DashboardPage />} />
-          <Route path={ROUTES.workspaceDashboard} element={<DashboardPage />} />
-
-          {/* Super Admin Dashboard Route */}
-          <Route element={<RoleGuard allowedRoles={CAN_VIEW_ALL_TENANTS} />}>
-            <Route path={ROUTES.superAdminDashboard} element={<TenantsDirectoryPage />} />
+          <Route element={<ProtectedRoute requiredRoles={REQUIRE_PRODUCT_OWNER} />}>
+            <Route path={ROUTES.workspaceDashboard} element={<DashboardPage />} />
+            <Route path={ROUTES.workspaceTriage} element={<TriageInboxPage />} />
+            <Route path={ROUTES.workspaceTriageDetail} element={<TriageInboxPage />} />
+            <Route path={ROUTES.workspaceCustomerFeedbacks} element={<CompanyFeedbackDashboardPage />} />
+            <Route path={ROUTES.workspaceSettings} element={<SettingsPage />} />
+            <Route path={ROUTES.workspaceJiraIntegration} element={<JiraIntegrationPage />} />
+            <Route path={ROUTES.workspaceApiKeys} element={<ApiKeysPage />} />
+            <Route path={ROUTES.workspaceAddProductOwner} element={<AddProductOwnerPage />} />
+            <Route path={ROUTES.workspaceCustomers} element={<CustomersPage />} />
+            <Route path={ROUTES.workspaceAddCustomer} element={<AddCustomerPage />} />
+            <Route path={ROUTES.workspaceCustomerDetail} element={<CustomerDetailPage />} />
+            <Route path={ROUTES.workspaceCategories} element={<CategoriesPage />} />
+            <Route path={ROUTES.workspaceBacklog} element={<BacklogReviewPage />} />
+            <Route path={ROUTES.workspaceStoryDetail} element={<StoryDetailPage />} />
+            <Route path={ROUTES.workspaceAssistant} element={<AssistantPage />} />
           </Route>
 
-          <Route path={ROUTES.adminCategories} element={<CategoriesPage />} />
-          <Route path={ROUTES.adminBacklog} element={<BacklogReviewPage />} />
-          <Route path={ROUTES.adminStoryDetail} element={<StoryDetailPage />} />
-          <Route path={ROUTES.adminAssistant} element={<AssistantPage />} />
-
-          <Route element={<ProtectedRoute requiredRoles={CAN_MANAGE_ADMIN_USERS} />}>
-            <Route path={ROUTES.adminUsers} element={<AdminUsersPage />} />
-          </Route>
-          <Route element={<ProtectedRoute requiredRoles={CAN_VIEW_ALL_TENANTS} />}>
-            <Route path={ROUTES.tenantsDirectory} element={<TenantsDirectoryPage />} />
+          <Route element={<ProtectedRoute requiredRoles={REQUIRE_COMPANY_CUSTOMER} />}>
+            <Route path={ROUTES.customerFeedback} element={<CustomerFeedbackPage />} />
+            <Route path={ROUTES.customerFeedbackHistory} element={<CustomerFeedbackPage />} />
+            <Route path={ROUTES.customerSubmitFeedback} element={<SubmitCustomerFeedbackPage />} />
+            <Route path="/customer/feedback/new" element={<SubmitCustomerFeedbackPage />} />
+            <Route path={ROUTES.customerSettings} element={<SettingsPage />} />
           </Route>
 
-          <Route element={<ProtectedRoute requiredRoles={CAN_MANAGE_TENANT_SETTINGS} />}>
-            <Route path={ROUTES.adminSettings} element={<TenantSettingsPage />} />
-            <Route path={ROUTES.jiraIntegrationSettings} element={<JiraIntegrationPage />} />
-            <Route path={ROUTES.apiSettings} element={<ApiSettingsPage />} />
+          <Route element={<ProtectedRoute requiredRoles={REQUIRE_SUPER_ADMIN} />}>
+            <Route path={ROUTES.superAdminTenants} element={<TenantsDirectoryPage />} />
+            <Route path={ROUTES.superAdminUsers} element={<AdminUsersPage />} />
+            <Route path={ROUTES.superAdminAddAdmin} element={<AddSuperAdminPage />} />
+            <Route path={ROUTES.superAdminSettings} element={<SettingsPage />} />
           </Route>
         </Route>
       </Route>
 
+      <Route path={ROUTES.notFound} element={<NotFoundPage />} />
       <Route path="/" element={<HomeRedirect />} />
-      <Route path="*" element={<HomeRedirect />} />
+      <Route path="*" element={<Navigate to={ROUTES.notFound} replace />} />
     </Routes>
   )
 }

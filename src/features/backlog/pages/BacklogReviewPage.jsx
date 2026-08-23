@@ -1,46 +1,121 @@
 import { useState } from 'react'
 import Input from '@shared/components/ui/Input.jsx'
-import Spinner from '@shared/components/ui/Spinner.jsx'
-import EmptyState from '@shared/components/ui/EmptyState.jsx'
-import UserStoryCard from '@features/backlog/components/UserStoryCard.jsx'
-import { useDraftStories } from '@features/backlog/hooks/useDraftStories.js'
-import { useDebounce } from '@shared/hooks/useDebounce.js'
-import { ListChecks } from 'lucide-react'
+import { useUserStories, useUserStoryMutations } from '@features/backlog/hooks/useUserStories.js'
+import UserStoryTable from '@features/backlog/components/UserStoryTable.jsx'
+import { Search } from 'lucide-react'
+import PageHeader from '@shared/components/ui/PageHeader'
 
-/**
- * "Backlog Review Workspace" list view (README §Admin Portal). Search box
- * is debounced client-side before hitting useDraftStories so we don't spam
- * the API on every keystroke. Category filtering can be added the same way
- * once CategoriesPage data is wired to a <select> here.
- */
+const initialFilters = {
+  source: '',
+  isSynced: '',
+  searchTerm: '',
+  pageNumber: 1,
+  pageSize: 10,
+}
+
+const normalizeStories = (response) => {
+  const payload = response?.data ?? response
+  if (Array.isArray(payload)) return payload
+  if (Array.isArray(payload?.data)) return payload.data
+  if (Array.isArray(payload?.items)) return payload.items
+  if (Array.isArray(payload?.$values)) return payload.$values
+  return []
+}
+
 export default function BacklogReviewPage() {
-  const [search, setSearch] = useState('')
-  const debouncedSearch = useDebounce(search)
-  const { data: stories = [], isLoading } = useDraftStories({ search: debouncedSearch })
+  const [filters, setFilters] = useState(initialFilters)
+  const { data: rawStories, isLoading } = useUserStories(filters)
+  const { update, sync } = useUserStoryMutations()
+
+  const stories = normalizeStories(rawStories)
+  const totalItems = rawStories?.pagination?.totalItems ?? rawStories?.totalItems ?? stories.length
+  const page = Number(filters.pageNumber || 1)
+  const pageSize = Number(filters.pageSize || 10)
+
+  const updateFilter = (field, value) => {
+    setFilters((current) => ({
+      ...current,
+      [field]: value,
+      ...(field !== 'pageNumber' && field !== 'pageSize' ? { pageNumber: 1 } : {}),
+    }))
+  }
+
+  const handleEdit = ({ id, payload }) => {
+    update.mutate(
+      { id, payload },
+      {
+        onSuccess: () => {
+          setFilters((current) => ({ ...current, pageNumber: 1 }))
+        },
+      },
+    )
+  }
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-900">Backlog Review</h1>
-        <Input
-          placeholder="Search draft stories…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-64"
-        />
+      <PageHeader
+        title="Backlog Review"
+        description="Review user stories, filter by source and sync state, and trigger Jira synchronization."
+      />
+
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-slate-600">Source</label>
+            <select
+              value={filters.source}
+              onChange={(e) => updateFilter('source', e.target.value)}
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+            >
+              <option value="">All</option>
+              <option value="FeedInsight">FeedInsight</option>
+              <option value="Jira">Jira</option>
+            </select>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-slate-600">Sync State</label>
+            <select
+              value={filters.isSynced}
+              onChange={(e) => updateFilter('isSynced', e.target.value)}
+              className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm focus:border-brand-500 focus:outline-none focus:ring-2 focus:ring-brand-100"
+            >
+              <option value="">All</option>
+              <option value="true">Synced</option>
+              <option value="false">Not synced</option>
+            </select>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs font-medium text-slate-600">Search</label>
+            <div className="relative">
+              <Search
+                size={14}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+              />
+              <Input
+                value={filters.searchTerm}
+                onChange={(e) => updateFilter('searchTerm', e.target.value)}
+                placeholder="Search title or acceptance criteria"
+                className="w-full pl-8"
+              />
+            </div>
+          </div>
+        </div>
       </div>
 
-      {isLoading ? (
-        <Spinner />
-      ) : stories.length === 0 ? (
-        <EmptyState icon={ListChecks} title="No draft stories" description="Newly triaged feedback will appear here for review." />
-      ) : (
-        <div className="flex flex-col gap-3">
-          {stories.map((story) => (
-            <UserStoryCard key={story.id} story={story} />
-          ))}
-        </div>
-      )}
+      <UserStoryTable
+        rows={stories}
+        isLoading={isLoading}
+        page={page}
+        pageSize={pageSize}
+        totalItems={totalItems}
+        onPageChange={(nextPage) => setFilters((current) => ({ ...current, pageNumber: nextPage }))}
+        onEdit={handleEdit}
+        onSync={(storyId) => sync.mutate(storyId)}
+        isSyncingId={sync.isPending ? sync.variables : null}
+        isEditingId={update.isPending ? update.variables?.id : null}
+      />
     </div>
   )
 }

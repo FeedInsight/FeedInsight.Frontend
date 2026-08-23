@@ -1,8 +1,5 @@
 import { cn } from '@shared/utils/classNames.js'
 
-/** Small pill used for story status (see shared/constants/statusEnums.js),
- * sentiment, and urgency indicators. Pass a pre-resolved `className` for
- * color -- this component only handles shape/typography. */
 export default function Badge({ className, children }) {
   return (
     <span
