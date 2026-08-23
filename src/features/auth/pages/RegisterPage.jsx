@@ -1,6 +1,7 @@
+import { ROUTES } from '@router/routes'
 import RegisterForm from '../components/RegisterForm'
 import FeedInsightLogoText from '@shared/components/ui/FeedInsightLogoText'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
@@ -9,11 +10,14 @@ export default function RegisterPage() {
     <div className="flex flex-col gap-3">
       <div>
         <div className="flex flex-col items-center mb-3">
-          <FeedInsightLogoText className="h-12" />
+          <Link to={ROUTES.landing}>
+            <FeedInsightLogoText className="h-12" />
+          </Link>
         </div>
+
         <div className="flex flex-col items-center gap-1">
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">Create your account</h1>
-          <p className="text-sm text-slate-500 text-center">
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-50">Create your account</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
             Join thousands of enterprises optimizing their feedback loops
           </p>
         </div>

@@ -1,6 +1,7 @@
 import LoginForm from '@features/auth/components/LoginForm.jsx'
+import { ROUTES } from '@router/routes'
 import FeedInsightLogoText from '@shared/components/ui/FeedInsightLogoText'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -8,11 +9,14 @@ export default function LoginPage() {
     <div className="flex flex-col gap-3">
       <div>
         <div className="flex flex-col items-center mb-3">
-          <FeedInsightLogoText className="h-12" />
+          <Link to={ROUTES.landing}>
+            <FeedInsightLogoText className="h-12" />
+          </Link>
         </div>
+
         <div className="flex flex-col items-center gap-1">
-          <h1 className="text-xl font-bold tracking-tight text-slate-900">Welcome back!</h1>
-          <p className="text-sm text-slate-500">Sign in to your product intelligence workspace.</p>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-50">Welcome back!</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Sign in to your product intelligence workspace.</p>
         </div>
       </div>
       <LoginForm />
