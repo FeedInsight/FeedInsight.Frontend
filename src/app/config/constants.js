@@ -38,6 +38,7 @@ export const QUERY_KEYS = {
   apiKeys: ['api', 'keys'],
   adminUsers: ['admin-users'],
   tenantsLookup: ['tenants', 'lookup'],
+  jiraConfig: ['jira', 'config'],
   customers: (params) => (params ? ['customers', params] : ['customers']),
   customerDetail: (id) => ['customers', id],
   developmentCustomerFeedbacks: (params) =>

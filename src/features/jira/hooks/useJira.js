@@ -1,11 +1,19 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
 import {
+  getJiraConfig,
   testJiraConnection,
   configureJiraIntegration,
   regenerateWebhookSecret,
 } from '../api/jiraApi.js'
 import { QUERY_KEYS } from '@app/config/constants.js'
+
+export function useJiraConfig() {
+  return useQuery({
+    queryKey: QUERY_KEYS.jiraConfig,
+    queryFn: getJiraConfig
+  })
+}
 
 export function useTestJiraConnection() {
   return useMutation({
@@ -23,6 +31,7 @@ export function useConfigureJiraIntegration() {
     mutationFn: configureJiraIntegration,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.tenantSettings })
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.jiraConfig })
       toast.success('Jira integration saved')
     },
     onError: () => {
