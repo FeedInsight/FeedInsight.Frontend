@@ -3,8 +3,8 @@ import FeedInsightLogoText from "@shared/components/ui/FeedInsightLogoText"
 import { Link } from "react-router-dom"
 
 const NAVLINKS = [
-  { label: 'Features', href: '#features' }
-]
+  { label: 'Features', href: '#features' },
+  { label: 'Workflow', href: '#workflow' }]
 
 const LandingTopbar = () => (
   <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/90">
