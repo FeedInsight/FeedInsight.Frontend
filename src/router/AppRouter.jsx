@@ -34,19 +34,21 @@ import AddCustomerPage from '@features/customers/pages/AddCustomerPage.jsx'
 import CustomerDetailPage from '@features/customers/pages/CustomerDetailPage.jsx'
 import CompanyFeedbackDashboardPage from '@features/customerFeedback/pages/CompanyFeedbackDashboardPage.jsx'
 import NotFoundPage from '@shared/pages/NotFoundPage.jsx'
+import LandingPage from '@features/landing/pages/LandingPage.jsx'
 
 function HomeRedirect() {
   const { isAuthenticated, user } = useAuth()
-  if (!isAuthenticated) {
-    return <Navigate to={ROUTES.login} replace />
+
+  if (isAuthenticated) {
+    return <Navigate to={getDashboardRouteForRole(user?.role)} replace />
   }
-  return <Navigate to={getDashboardRouteForRole(user?.role)} replace />
+
+  return <LandingPage />
 }
 
 export default function AppRouter() {
   return (
     <Routes>
-      {/* --- Auth --- */}
       <Route element={<AuthLayout />}>
         <Route path={ROUTES.login} element={<LoginPage />} />
         <Route path={ROUTES.register} element={<RegisterPage />} />
