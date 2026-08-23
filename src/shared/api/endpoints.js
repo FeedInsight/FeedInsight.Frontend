@@ -24,7 +24,7 @@ export const ENDPOINTS = {
 
   // --- Profile ---
   profile: {
-    update: '/Profile/me', // PUT
+    update: '/Profile/me',
     updatePassword: '/Profile/me/password', // PUT
   },
 
