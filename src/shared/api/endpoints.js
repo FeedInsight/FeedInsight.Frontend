@@ -24,7 +24,7 @@ export const ENDPOINTS = {
 
   // --- Profile ---
   profile: {
-    update: '/Profile/me', // PUT
+    update: '/Profile/me',
     updatePassword: '/Profile/me/password', // PUT
   },
 
@@ -74,6 +74,7 @@ export const ENDPOINTS = {
     testJiraConnection: '/Tenants/my-company/jira-config/test',
     regenerateWebhookSecret: '/Tenants/my-company/jira-config/webhook-secret',
     settings: '/Tenants/my-company',
+    jiraConfig: '/Tenants/jira',
   },
   tenants: {
     updateMyCompany: '/Tenants/my-company',

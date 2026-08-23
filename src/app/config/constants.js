@@ -34,10 +34,12 @@ export const QUERY_KEYS = {
   analyticsSnapshots: (range) => ['analytics', 'snapshots', range],
   chatSessions: ['chat', 'sessions'],
   chatMessages: (sessionId) => ['chat', 'sessions', sessionId, 'messages'],
+  profile: ['profile', 'me'],
   tenantSettings: ['tenant', 'settings'],
   apiKeys: ['api', 'keys'],
   adminUsers: ['admin-users'],
   tenantsLookup: ['tenants', 'lookup'],
+  jiraConfig: ['jira', 'config'],
   customers: (params) => (params ? ['customers', params] : ['customers']),
   customerDetail: (id) => ['customers', id],
   developmentCustomerFeedbacks: (params) =>

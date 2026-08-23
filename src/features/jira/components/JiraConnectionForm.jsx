@@ -3,7 +3,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Input from '@shared/components/ui/Input.jsx'
 import Button from '@shared/components/ui/Button.jsx'
-import { useConfigureJiraIntegration } from '../hooks/useJira.js'
+import { useConfigureJiraIntegration, useJiraConfig } from '../hooks/useJira.js'
+import { useEffect } from 'react'
 
 const schema = z.object({
   jiraUrl: z
@@ -16,7 +17,21 @@ const schema = z.object({
 })
 
 export default function JiraConnectionForm() {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { data: config, isLoading } = useJiraConfig()
+
+  const isConnected =
+    !!config?.jiraBaseUrl ||
+    (config?.isPersonalAccessTokenConfigured && config?.isWebhookSecretConfigured)
+
+  const isTokenConfigured = !!config?.isPersonalAccessTokenConfigured
+  const isSecretConfigured = !!config?.isWebhookSecretConfigured
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       jiraUrl: '',
@@ -25,42 +40,57 @@ export default function JiraConnectionForm() {
     },
   })
 
+  useEffect(() => {
+    if (config?.jiraBaseUrl) {
+      reset({ jiraUrl: config.jiraBaseUrl, personalAccessToken: '', webHookSecret: '' })
+    }
+  }, [config?.jiraBaseUrl, reset])
+
   const { mutate: save, isPending } = useConfigureJiraIntegration()
 
   return (
-    <form
-      onSubmit={handleSubmit((values) => save(values))}
-      className="flex flex-col gap-4"
-    >
-      <Input
-        label="Jira base URL"
-        placeholder="https://[company].atlassian.net"
-        error={errors.jiraUrl?.message}
-        disabled={isPending}
-        {...register('jiraUrl')}
-      />
+    <div className="flex flex-col gap-1">
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-sm font-semibold text-slate-800">Jira Connection</p>
 
-      <Input
-        label="Personal Access Token"
-        placeholder="Enter your personal access token"
-        type="password"
-        error={errors.personalAccessToken?.message}
-        disabled={isPending}
-        {...register('personalAccessToken')}
-      />
+        {!isLoading && isConnected && (
+          <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+            Connected
+          </span>
+        )}
+      </div>
 
-      <Input
-        label="WebHook Secret"
-        placeholder="Enter your webhook secret"
-        type="password"
-        error={errors.webHookSecret?.message}
-        disabled={isPending}
-        {...register('webHookSecret')}
-      />
+      <form onSubmit={handleSubmit((values) => save(values))} className="flex flex-col gap-4">
+        <Input
+          label="Jira base URL"
+          placeholder="https://[company].atlassian.net"
+          error={errors.jiraUrl?.message}
+          disabled={isPending}
+          {...register('jiraUrl')}
+        />
 
-      <Button type="submit" isLoading={isPending}>
-        Save
-      </Button>
-    </form>
+        <Input
+          label="Personal Access Token"
+          placeholder={isTokenConfigured ? '•••••••• (Configured, enter new token to update)' : 'Enter your personal access token'}
+          type="password"
+          error={errors.personalAccessToken?.message}
+          disabled={isPending}
+          {...register('personalAccessToken')}
+        />
+
+        <Input
+          label="WebHook Secret"
+          placeholder={isSecretConfigured ? '•••••••• (Configured, enter new secret to update)' : 'Enter your webhook secret'}
+          type="password"
+          error={errors.webHookSecret?.message}
+          disabled={isPending}
+          {...register('webHookSecret')}
+        />
+
+        <Button type="submit" isLoading={isPending}>
+          Save
+        </Button>
+      </form>
+    </div>
   )
 }
