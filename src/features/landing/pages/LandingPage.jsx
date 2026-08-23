@@ -1,6 +1,8 @@
-﻿import FeaturesSection from "../components/FeaturesSection"
+﻿import CtaBanner from "../components/CtaBanner"
+import FeaturesSection from "../components/FeaturesSection"
 import Footer from "../components/Footer"
 import HeroSection from "../components/HeroSection"
+import IntegrationsSection from "../components/IntegrationsSection"
 import LandingTopbar from "../components/LandingTopbar"
 import WorkflowSection from "../components/WorkflowSection"
 
@@ -11,6 +13,8 @@ const LandingPage = () => (
       <HeroSection />
       <FeaturesSection />
       <WorkflowSection />
+      <IntegrationsSection />
+      <CtaBanner />
     </main>
     <Footer />
   </div>
