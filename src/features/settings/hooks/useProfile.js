@@ -1,7 +1,16 @@
 import { useAuthStore } from '@app/store/authStore.js'
-import { updateProfile, updatePassword } from '../api/profileApi.js'
-import { useMutation } from '@tanstack/react-query'
+import { getProfile, updateProfile, updatePassword } from '../api/profileApi.js'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import toast from 'react-hot-toast'
+import { QUERY_KEYS } from '@app/config/constants.js'
+
+export function useUserProfile() {
+  return useQuery({
+    queryKey: QUERY_KEYS.profile,
+    queryFn: getProfile,
+  })
+}
+
 
 export function useUpdateProfile() {
   const { user, setSession, token } = useAuthStore()

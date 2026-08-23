@@ -6,8 +6,7 @@ import { User } from 'lucide-react'
 import Card from '@shared/components/ui/Card.jsx'
 import Input from '@shared/components/ui/Input.jsx'
 import Button from '@shared/components/ui/Button.jsx'
-import { useAuth } from '@shared/hooks/useAuth.js'
-import { useUpdateProfile } from '../hooks/useProfile.js'
+import { useUserProfile, useUpdateProfile } from '../hooks/useProfile.js'
 
 const schema = z.object({
   firstName: z.string().trim().min(1, 'First name is required'),
@@ -15,7 +14,7 @@ const schema = z.object({
 })
 
 export default function ProfileNameForm() {
-  const { user } = useAuth()
+  const { data: profile, isLoading } = useUserProfile()
   const { mutate: save, isPending } = useUpdateProfile()
 
   const {
@@ -26,17 +25,19 @@ export default function ProfileNameForm() {
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      firstName: user?.firstName ?? '',
-      lastName: user?.lastName ?? '',
+      firstName: '',
+      lastName: '',
     },
   })
 
   useEffect(() => {
-    reset({
-      firstName: user?.firstName ?? '',
-      lastName: user?.lastName ?? '',
-    })
-  }, [user?.firstName, user?.lastName, reset])
+    if (profile) {
+      reset({
+        firstName: profile.firstName ?? '',
+        lastName: profile.lastName ?? '',
+      })
+    }
+  }, [profile, reset])
 
   const onSubmit = (values) => {
     save({
@@ -44,6 +45,8 @@ export default function ProfileNameForm() {
       lastName: values.lastName.trim(),
     })
   }
+
+  const isDisabled = isLoading || isPending
 
   return (
     <Card className="flex flex-col gap-5 border border-slate-200/80 bg-white p-6 shadow-xs rounded-2xl">
@@ -63,7 +66,7 @@ export default function ProfileNameForm() {
             label="First Name"
             placeholder="e.g. Alex"
             error={errors.firstName?.message}
-            disabled={isPending}
+            disabled={isDisabled}
             {...register('firstName')}
           />
 
@@ -71,13 +74,13 @@ export default function ProfileNameForm() {
             label="Last Name"
             placeholder="e.g. Johnson"
             error={errors.lastName?.message}
-            disabled={isPending}
+            disabled={isDisabled}
             {...register('lastName')}
           />
         </div>
 
         <div className="flex justify-end pt-2">
-          <Button type="submit" variant="primary" size="md" isLoading={isPending} disabled={isPending} className="shadow-sm">
+          <Button type="submit" variant="primary" size="md" isLoading={isPending} disabled={isDisabled} className="shadow-sm">
             Save Changes
           </Button>
         </div>

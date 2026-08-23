@@ -6,7 +6,7 @@ import { Building } from 'lucide-react'
 import Card from '@shared/components/ui/Card.jsx'
 import Input from '@shared/components/ui/Input.jsx'
 import Button from '@shared/components/ui/Button.jsx'
-import { useAuth } from '@shared/hooks/useAuth.js'
+import { useUserProfile } from '../hooks/useProfile.js'
 import { useUpdateTenantCompany } from '../hooks/useTenantSettings.js'
 
 const schema = z.object({
@@ -18,10 +18,8 @@ const schema = z.object({
 })
 
 export default function TenantNameForm() {
-  const { user } = useAuth()
+  const { data: profile, isLoading } = useUserProfile()
   const { mutate: save, isPending } = useUpdateTenantCompany()
-
-  const currentCompanyName = user?.companyName || user?.tenantName || ''
 
   const {
     register,
@@ -31,19 +29,23 @@ export default function TenantNameForm() {
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      companyName: currentCompanyName,
+      companyName: '',
     },
   })
 
   useEffect(() => {
-    reset({
-      companyName: currentCompanyName,
-    })
-  }, [currentCompanyName, reset])
+    if (profile) {
+      reset({
+        companyName: profile.companyName ?? '',
+      })
+    }
+  }, [profile, reset])
 
   const onSubmit = (values) => {
     save({ companyName: values.companyName.trim() })
   }
+
+  const isDisabled = isLoading || isPending
 
   return (
     <Card className="flex flex-col gap-5 border border-slate-200/80 bg-white p-6 shadow-xs rounded-2xl">
@@ -62,7 +64,7 @@ export default function TenantNameForm() {
           label="Company Name"
           placeholder="e.g. Acme Corp"
           error={errors.companyName?.message}
-          disabled={isPending}
+          disabled={isDisabled}
           {...register('companyName')}
         />
 
@@ -72,7 +74,7 @@ export default function TenantNameForm() {
             variant="primary"
             size="md"
             isLoading={isPending}
-            disabled={isPending}
+            disabled={isDisabled}
             className="shadow-sm"
           >
             Save Changes

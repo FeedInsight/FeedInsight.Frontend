@@ -1,11 +1,11 @@
 import { axiosClient } from '@shared/api/axiosClient.js'
 import { ENDPOINTS } from '@shared/api/endpoints.js'
 
-/**
- * Update personal profile information (first and last name)
- * PUT /api/Profile/me
- * @param {{ firstName: string, lastName: string }} payload
- */
+export async function getProfile() {
+  const { data } = await axiosClient.get(ENDPOINTS.profile.update)
+  return data?.data
+}
+
 export async function updateProfile(payload) {
   const body = {
     firstName: payload.firstName,
@@ -15,11 +15,6 @@ export async function updateProfile(payload) {
   return data
 }
 
-/**
- * Update account password
- * PUT /api/Profile/me/password
- * @param {{ currentPassword: string, newPassword: string }} payload
- */
 export async function updatePassword(payload) {
   const body = {
     currentPassword: payload.currentPassword,
