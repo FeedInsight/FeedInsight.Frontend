@@ -1,127 +1,116 @@
-# FeedInsight Frontend
+# FeedInsight
 
-Single React (JavaScript) + Vite application serving **both** FeedInsight
-portals described in the platform README:
+**AI-Powered Product Intelligence & Backlog Automation** — A unified React frontend serving both a public Customer Feedback Portal and a secured Admin Workspace, enabling product teams to collect feedback, triage AI-extracted insights, manage backlogs, and sync directly to Jira.
 
-- **Customer Portal** — public, stateless, tenant-scoped feedback submission form.
-- **Admin Portal** — JWT-authenticated control center: AI analytics dashboard,
-  category management, backlog review workspace, AI Product Assistant chat,
-  tenant/Jira settings, and admin user management.
+## Features
 
-One project, one `package.json`, one build — not two separate apps — matching
-the request to keep everything unified. Angular was swapped for **React +
-JavaScript** throughout; Vite is the build tool.
+- **AI-Powered Triage** — Automatically processes customer feedback to extract product tasks, sentiment, and categorization using Semantic Kernel + GPT-4o mini
+- **Backlog Review Workspace** — Review AI-generated user stories, edit acceptance criteria, approve/reject workflows, and detect duplicates via Qdrant vector search
+- **AI Product Assistant Chat** — Conversational AI chat with retrieval-augmented generation (RAG) powered by Qdrant embeddings, SQL history, and GPT-4o mini
+- **Jira Integration** — Bidirectional sync: configure Jira credentials, publish approved stories as issues, and receive webhook updates
+- **Analytics Dashboard** — Real-time KPI cards, sentiment trend charts (Recharts), and top requested features aggregated from AI analysis
+- **Multi-Role Portal** — Role-based access for Super Admins, Product Owners, and Company Customers with dedicated layouts and permissions
+- **Customer Feedback Portal** — End-user feedback submission with AI triage categorization, submission history, and team response tracking
+- **Dark Mode** — Full class-based dark theme with manual toggle and persistent preference
+- **Multi-Tenancy** — Tenant isolation via automatic `X-Tenant-Id` header injection on every API request
+- **API Key Management** — Generate, revoke, and manage ingestion API keys with embedded code snippets for external feedback pipelines
 
----
+## Project Demo
 
-## Stack
+Watch the full demo video here:
 
-| Concern            | Choice                                   |
-|---------------------|-------------------------------------------|
-| Build tool          | Vite 5                                    |
-| UI library          | React 18 (JS, no TypeScript)              |
-| Routing             | react-router-dom v6                       |
-| Server state         | @tanstack/react-query v5                  |
-| Client/UI state     | zustand (auth, tenant, ui stores)          |
-| Forms + validation  | react-hook-form + zod                     |
-| HTTP client         | axios (single shared instance)            |
-| Styling             | Tailwind CSS                              |
-| Charts              | recharts                                  |
-| Icons               | lucide-react                              |
-| Toasts              | react-hot-toast                           |
+```text
+https://drive.google.com/file/d/1Q606wLIFDvU8GjAN2E1ZjAyTm5-bc44x/view?usp=sharing
+```
 
-## Getting started
+## Tech Stack & Architecture
+
+| Category | Technology |
+| :--- | :--- |
+| Framework | React 18 (JavaScript) |
+| Build Tool | Vite 5 |
+| Routing | React Router v6 |
+| Server State | TanStack React Query v5 |
+| Client State | Zustand |
+| Forms | React Hook Form + Zod |
+| HTTP Client | Axios (with interceptors & token refresh) |
+| Styling | Tailwind CSS 3 (class-based dark mode) |
+| Charts | Recharts |
+| Icons | Lucide React |
+| Notifications | React Hot Toast |
+| Dates | date-fns |
+| AI Backend | Semantic Kernel + GPT-4o mini + Qdrant Vector DB |
+| Backend API | ASP.NET Core Web API (Clean Architecture / CQRS) |
+| Deployment | Vercel (SPA rewrite) |
+
+### Architecture
+
+```text
+src/
+├── app/                 # Config, providers, Zustand stores
+│   ├── config/          # Constants, query keys, route paths
+│   ├── providers/       # Composable AppProviders (Router, Query, Theme)
+│   └── store/           # authStore, tenantStore, uiStore
+├── features/            # 14 vertical-slice feature modules
+│   ├── adminUsers/      # Super Admin user management
+│   ├── apiSettings/     # API key management
+│   ├── auth/            # JWT login & registration
+│   ├── backlog/         # User story review & approval
+│   ├── categories/      # Feedback category CRUD
+│   ├── chat/            # AI Product Assistant
+│   ├── customerFeedback/# Customer feedback submission & review
+│   ├── customers/       # Company customer management
+│   ├── dashboard/       # Analytics dashboard
+│   ├── jira/            # Jira integration settings
+│   ├── landing/         # Public marketing page
+│   ├── settings/        # Account & organization settings
+│   ├── tenantsDirectory/# Super Admin tenant directory
+│   └── triage/          # AI Triage Inbox
+├── router/              # AppRouter, ProtectedRoute, route config
+├── shared/              # Cross-cutting: API client, UI kit, hooks, utils
+├── styles/              # Global CSS & dark mode overrides
+└── assets/              # Static assets
+```
+
+Each feature module follows the **vertical-slice pattern**: `api/`, `hooks/`, `components/`, `pages/` — ensuring no cross-feature file dependencies.
+
+## Setup & Installation
 
 ```bash
+# 1. Clone the repository and install dependencies
+git clone https://github.com/YOUR_ORG/FeedInsight.Frontend.git
+cd FeedInsight.Frontend
 npm install
-cp .env.example .env      # then fill in VITE_API_BASE_URL etc.
+
+# 2. Configure environment variables
+cp .env.example .env
+# Edit .env and set VITE_API_BASE_URL to your backend API
+
+# 3. Start the development server
 npm run dev
 ```
 
-Build: `npm run build`. Preview a production build: `npm run preview`.
+| Command | Description |
+| :--- | :--- |
+| `npm run dev` | Start Vite dev server on `http://localhost:5173` |
+| `npm run build` | Production build |
+| `npm run preview` | Preview production build locally |
+| `npm run lint` | Run ESLint |
+| `npm run format` | Format code with Prettier |
 
-## Architecture
+### Environment Variables
 
-The codebase mirrors the backend's Clean Architecture / CQRS vertical-slice
-philosophy, translated to frontend conventions:
+| Variable | Description | Default |
+| :--- | :--- | :--- |
+| `VITE_API_BASE_URL` | Backend API base URL (no trailing slash) | `https://localhost:7001/api` |
+| `VITE_DEV_TENANT_ID` | Default tenant GUID for local dev | `00000000-...` |
+| `VITE_INGESTION_API_KEY` | Default API key for feedback ingestion | _(empty)_ |
+| `VITE_USE_MOCKS` | Toggle mock API mode (`true`/`false`) | `false` |
 
-```
-src/
-├── app/            # bootstrap: env & constants, global stores, providers
-├── router/          # route table, path constants, auth guard
-├── shared/          # cross-feature building blocks (ui kit, api client, layouts, hooks, utils)
-├── features/        # one folder per vertical slice (see below)
-└── styles/          # Tailwind entry + global overrides
-```
+### Role-Based Routes
 
-### Feature slices (`src/features/<name>/`)
-
-Each feature is self-contained with the same four sub-folders:
-
-- `api/` — axios calls, one function per backend endpoint, importing paths
-  from `shared/api/endpoints.js`. No React here.
-- `hooks/` — React Query (`useQuery`/`useMutation`) wrappers around `api/`.
-  Components never call `api/` functions directly.
-- `components/` — presentational + mid-level components specific to this
-  feature. Shared, feature-agnostic primitives live in `shared/components/ui`
-  instead.
-- `pages/` — top-level route targets, registered in `router/AppRouter.jsx`.
-  Pages only compose components and hooks; no business logic inline.
-
-Slices, mapped to the backend domain:
-
-| Feature            | Backend counterpart                                   |
-|---------------------|--------------------------------------------------------|
-| `customerPortal`    | Public feedback ingestion (`CustomerFeedbacks`)         |
-| `auth`              | `AdminUsers` JWT login                                  |
-| `dashboard`         | `DailyAnalyticsSnapshots`                                |
-| `categories`        | `Categories`                                             |
-| `backlog`           | `UserStories`, `ExtractedTasks`, Qdrant duplicate search |
-| `chat`              | `ChatSessions`, `ChatMessages` (AI Product Assistant)    |
-| `tenantSettings`    | `Tenants` (Jira connection, webhook secret)              |
-| `adminUsers`        | `AdminUsers` management                                  |
-
-### Why this avoids merge conflicts across contributors
-
-- **One feature = one folder.** Two people working on different features
-  (e.g. `backlog` vs `chat`) never touch the same file.
-- **`shared/api/endpoints.js` is the only shared "hot" file for API routes** —
-  additions are append-only per feature block, minimizing collision surface.
-- **`router/AppRouter.jsx` and `AdminSidebar.jsx`** are the only two files a
-  new page must touch outside its own feature folder — keep new-page PRs to
-  "add my feature folder + one line in each of these two files."
-- State is split by *kind*, not by feature: server data always goes through
-  React Query (feature-owned cache keys in `app/config/constants.js`
-  `QUERY_KEYS`), client/UI state always goes through one of the three
-  zustand stores in `app/store/`. This prevents the classic conflict of two
-  people both inventing their own ad-hoc global state solution.
-
-## Environment variables
-
-See `.env.example`. `VITE_API_BASE_URL` must point at `FeedInsight.WebApi`.
-`VITE_DEV_TENANT_ID` is a local-only convenience so the Customer Portal has
-a tenant context before real tenant-resolution-by-subdomain is implemented
-(see `features/customerPortal/components/TenantResolver.jsx` for the TODO).
-
-## Multi-tenancy
-
-Every outgoing request automatically gets an `X-Tenant-Id` header injected
-by `shared/api/axiosClient.js`'s request interceptor, reading from
-`app/store/tenantStore.js`. Feature code should never set this header
-manually.
-
-## Auth
-
-JWT stored in `app/store/authStore.js` (persisted to localStorage),
-attached as `Authorization: Bearer <token>` by the same axios interceptor.
-`router/ProtectedRoute.jsx` guards all `/admin/*` routes; a subset
-(`Tenant Settings`, `Admin Users`) is further restricted by role via
-`shared/constants/roles.js`.
-
-## Not yet wired to a real backend
-
-Several files contain `TODO` comments where the backend contract wasn't
-fully specified in the platform README (e.g. tenant-key-to-GUID lookup,
-top-requested-features aggregation, duplicate-story linking action). These
-are flagged inline rather than guessed at, to avoid baking in incorrect
-assumptions.
+| Role | Default Redirect | Portal |
+| :--- | :--- | :--- |
+| `SuperAdmin` | `/super-admin/tenants` | Platform administration |
+| `ProductOwner` | `/workspace/dashboard` | Product management workspace |
+| `CompanyCustomer` | `/customer/feedback` | Customer feedback portal |
